@@ -1,60 +1,49 @@
-# Quiz Cult 🎯
+# Quiz Cult
 
-A real-time multiplayer quiz application with AI-powered question generation and professional full-stack architecture.
+A real-time multiplayer quiz application with AI-powered question generation.
 
-## 🚀 Features
+## Features
 
-- **Real-time Multiplayer**: Socket.io powered live quiz sessions
-- **AI Question Generation**: OpenAI GPT-powered custom questions on any topic
-- **Difficulty Levels**: Easy, Medium, Hard with time-based scoring
-- **Professional Architecture**: Separated frontend/backend with scalable design
-- **Responsive UI**: Modern React interface with Tailwind CSS
-- **Score Tracking**: Real-time scoring with comprehensive results
+- Real-time multiplayer quiz sessions
+- AI question generation using OpenAI GPT (with fallback to sample questions)
+- Three difficulty levels with time-based scoring
+- Live scoring and leaderboards
+- Responsive web interface
 
-## 🏗️ Architecture
+## Tech Stack
+
+- **Frontend**: React, TypeScript, Vite, Tailwind CSS
+- **Backend**: Node.js, Express, TypeScript
+- **Database**: Firebase Realtime Database
+- **AI**: OpenAI GPT-3.5-turbo
+
+## Project Structure
 
 ```
 quiz-cult/
-├── frontend/          # React + TypeScript + Vite
-├── backend/           # Node.js + Express + Socket.io
+├── frontend/         
+├── backend/          
 ├── shared/            # Shared TypeScript types
-└── package.json       # Root coordination scripts
+└── package.json       # Root scripts
 ```
 
-### **Tech Stack**
-- **Frontend**: React 19, TypeScript, Vite, Tailwind CSS
-- **Backend**: Node.js, Express, Socket.io, TypeScript
-- **Database**: Firebase Realtime Database
-- **AI**: OpenAI GPT-3.5-turbo
-- **Deployment**: Azure App Service + Static Web Apps
+## Development Setup
 
-## 🎮 How to Play
 
-1. **Create Room**: Host creates a quiz with custom topic and difficulty
-2. **Join Room**: Players join using room code
-3. **Live Quiz**: Real-time questions with countdown timers
-4. **Results**: Comprehensive scoring and leaderboard
 
-## 🛠️ Development Setup
-
-### Prerequisites
-- Node.js 18+ 
-- npm or yarn
-- OpenAI API key (optional, fallback to sample questions)
-
-### Quick Start
+### Getting Started
 ```bash
-# Install all dependencies
+# Install dependencies
 npm run install:all
 
-# Start both frontend and backend
+# Start development servers
 npm run dev
 
 # Frontend: http://localhost:5173
 # Backend: http://localhost:3001
 ```
 
-### Individual Services
+### Individual Commands
 ```bash
 # Backend only
 npm run dev:backend
@@ -66,110 +55,47 @@ npm run dev:frontend
 npm run build
 ```
 
-## ⚙️ Configuration
+## Configuration
 
-### OpenAI Setup (Optional)
-1. Create `backend/.env` file:
+### OpenAI (Optional)
+Create `backend/.env`:
 ```env
-OPENAI_API_KEY=sk-your-openai-api-key-here
+OPENAI_API_KEY=your-api-key-here
 ```
 
-2. Restart development server
-3. See `SETUP_OPENAI.md` for detailed instructions
+The application works with sample questions if OpenAI is not configured.
 
-**Note**: App works perfectly with high-quality sample questions if OpenAI is not configured.
+### Firebase
+Create `frontend/.env.local`:
+```env
+VITE_FIREBASE_API_KEY=your-firebase-api-key
+VITE_FIREBASE_AUTH_DOMAIN=your-project.firebaseapp.com
+VITE_FIREBASE_DATABASE_URL=your-database-url
+VITE_FIREBASE_PROJECT_ID=your-project-id
+VITE_FIREBASE_STORAGE_BUCKET=your-bucket
+VITE_FIREBASE_MESSAGING_SENDER_ID=your-sender-id
+VITE_FIREBASE_APP_ID=your-app-id
+VITE_FIREBASE_MEASUREMENT_ID=your-measurement-id
+```
 
-## 🔥 Key Features
+## How It Works
 
-### Real-time Multiplayer
-- Live player join/leave notifications
-- Synchronized question timing
-- Real-time score updates
-- Host controls and game state management
+1. Host creates a room with a topic and difficulty level
+2. Players join using a 6-digit room code  
+3. Questions are generated (AI or samples based on configuration)
+4. Players answer questions in real-time
+5. Scores are calculated based on correctness and response time
+6. Final results show leaderboard and statistics
 
-### AI Question Generation
-- Custom questions on any topic
-- Difficulty-appropriate complexity
-- Intelligent fallback to sample questions
-- Cost-optimized API usage
+## API Endpoints
 
-### Professional Architecture
-- Backend-first with Firebase fallback
-- Scalable microservices design
-- Comprehensive error handling
-- Production-ready deployment
-
-## 📊 Performance
-
-- **Response Time**: < 200ms API calls
-- **Real-time Latency**: < 50ms Socket.io updates  
-- **Question Generation**: 2-5 seconds for AI questions
-- **Scalability**: Designed for 100+ concurrent users
-
-## 🚀 Deployment
-
-Ready for production deployment on:
-- **Azure App Service** (recommended)
-- **Vercel** (frontend) + **Railway** (backend)
-- **DigitalOcean App Platform**
-- **AWS ECS/Lambda**
-
-## 📝 API Documentation
-
-- `GET /health` - Backend health check
-- `POST /api/rooms` - Create new room
-- `POST /api/rooms/:id/join` - Join room
+- `GET /health` - Health check
+- `POST /api/rooms` - Create room
+- `POST /api/rooms/join` - Join room
 - `POST /api/rooms/:id/start` - Start game
-- `POST /api/questions/generate` - Generate AI questions
+- `POST /api/questions/generate` - Generate questions
 
-## 🔒 Security
 
-- Environment variables for API keys
-- CORS configuration
-- Input validation and sanitization  
-- Rate limiting
-- Firebase security rules
+## License
 
-## 🧪 Testing
-
-```bash
-# Backend API tests
-npm run test:backend
-
-# Frontend component tests  
-npm run test:frontend
-
-# End-to-end tests
-npm run test:e2e
-```
-
-## 📈 Monitoring
-
-- Health check endpoints
-- Error tracking and logging
-- Performance monitoring
-- Usage analytics
-
-## 👥 Contributing
-
-1. Fork the repository
-2. Create feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit changes (`git commit -m 'Add amazing feature'`)
-4. Push to branch (`git push origin feature/amazing-feature`)
-5. Open Pull Request
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🎯 Made with
-
-- Professional full-stack development practices
-- Modern React and Node.js ecosystem
-- Real-time web technologies
-- AI integration
-- Cloud-ready architecture
-
----
-
-**Quiz Cult** - Where knowledge meets competition! 🧠⚡
+MIT
