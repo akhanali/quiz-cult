@@ -14,12 +14,12 @@ let openaiClient: OpenAI | null = null;
  */
 const initializeOpenAI = (): OpenAI | null => {
   try {
-    const apiKey = process.env.VITE_OPENAI_API_KEY;
+    const apiKey = process.env.OPENAI_API_KEY;
     
     if (!apiKey) {
-      console.warn('⚠️ VITE_OPENAI_API_KEY environment variable not set');
+      console.warn('⚠️ OPENAI_API_KEY environment variable not set');
       console.warn('📝 AI question generation will not be available');
-      console.warn('🔧 Set VITE_OPENAI_API_KEY to enable AI features');
+      console.warn('🔧 Set OPENAI_API_KEY to enable AI features');
       return null;
     }
 
