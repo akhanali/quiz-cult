@@ -23,49 +23,29 @@ import {
 } from 'react-icons/io5';
 
 export default function ResultsPage() {
-  console.log('🚨 ResultsPage component is rendering!');
-  
   const { roomId } = useParams<{ roomId: string }>();
-  console.log('🔍 useParams roomId:', roomId, 'type:', typeof roomId);
-  
   const [room, setRoom] = useState<Room | null>(null);
   const [isLeaving, setIsLeaving] = useState(false);
   const navigate = useNavigate();
 
   const playerId = localStorage.getItem("userId");
-  console.log('🔍 playerId from localStorage:', playerId);
 
   // Fetch room data
   useEffect(() => {
-    console.log('🔍 useEffect running with roomId:', roomId, 'playerId:', playerId);
-    if (!roomId) {
-      console.log('❌ No roomId provided, returning early');
-      return;
-    }
-
-    console.log('🔍 ResultsPage: Setting up Firebase listener for room:', roomId);
-    console.log('🔍 Firebase db object:', db);
-    console.log('🔍 PlayerId:', playerId);
+    if (!roomId) return;
     
     const roomRef = ref(db, `rooms/${roomId}`);
-    console.log('🔍 Room reference created:', roomRef);
-    
     const unsub = onValue(roomRef, (snap) => {
-      console.log('🔍 Firebase listener callback triggered');
       const data = snap.val();
-      console.log('🔍 Firebase data received:', data);
       if (data) {
-        console.log('✅ Setting room data:', Object.keys(data));
         setRoom(data);
         
         // Set up onDisconnect cleanup when room data loads (same pattern as LobbyPage/QuizPage)
         if (playerId && data.players && playerId in data.players) {
-          console.log('🔍 Setting up presence manager (inside Firebase callback)');
           const currentPlayer = data.players[playerId];
           presenceManager.setupDisconnectCleanup(roomId, playerId, currentPlayer.isHost);
         }
       } else {
-        console.log('❌ No room data - redirecting to home');
         // Room doesn't exist, redirect to home
         navigate("/");
       }
@@ -73,11 +53,7 @@ export default function ResultsPage() {
       console.error('❌ Firebase listener error:', error);
     });
 
-    console.log('🔍 Firebase listener setup complete');
-    return () => {
-      console.log('🔍 Cleaning up Firebase listener');
-      unsub();
-    };
+    return () => unsub();
   }, [roomId, playerId]);
 
   // Cleanup on component unmount
@@ -106,21 +82,16 @@ export default function ResultsPage() {
 
       if (currentPlayer.isHost) {
         // Host: Delete entire room
-        console.log("🗑️ Host leaving results - deleting room", roomId);
         await remove(ref(db, `rooms/${roomId}`));
-        console.log("✅ Room deleted successfully");
       } else {
         // Player: Remove only themselves
-        console.log("👋 Player leaving results - removing from room", roomId);
         await remove(ref(db, `rooms/${roomId}/players/${playerId}`));
-        console.log("✅ Player removed successfully");
       }
       
       // Clear onDisconnect handlers to prevent double-cleanup
       presenceManager.clearDisconnectHandlers();
       
     } catch (error) {
-      console.error("❌ Error during cleanup:", error);
       // Still navigate to prevent user being stuck
     } finally {
       // Navigate after cleanup (or on error)
