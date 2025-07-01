@@ -13,8 +13,8 @@ function App() {
     <div className="min-h-screen bg-gray-100">
       <Routes>
         <Route path="/" element={<HomePage />} />
-        <Route path="/create" element={<CreateRoomPage />} />
-        <Route path="/join" element={<JoinRoomPage />} />
+        <Route path="/create-room" element={<CreateRoomPage />} />
+        <Route path="/join-room" element={<JoinRoomPage />} />
         <Route path="/lobby/:id" element={<LobbyPage />} />
         <Route path="/quiz/:id" element={<QuizPage />} />
         <Route path="/results/:roomId" element={<ResultsPage />} />
