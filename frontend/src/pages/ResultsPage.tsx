@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { db } from "../lib/firebase";
 import { onValue, ref, remove } from "firebase/database";
@@ -27,7 +27,6 @@ export default function ResultsPage() {
   const [room, setRoom] = useState<Room | null>(null);
   const [isLeaving, setIsLeaving] = useState(false);
   const navigate = useNavigate();
-  const presenceSetupRef = useRef(false);
 
   const playerId = localStorage.getItem("userId");
 
@@ -44,6 +43,13 @@ export default function ResultsPage() {
       if (data) {
         console.log('✅ Setting room data:', Object.keys(data));
         setRoom(data);
+        
+        // Set up onDisconnect cleanup when room data loads (same pattern as LobbyPage/QuizPage)
+        if (playerId && data.players && playerId in data.players) {
+          console.log('🔍 Setting up presence manager (inside Firebase callback)');
+          const currentPlayer = data.players[playerId];
+          presenceManager.setupDisconnectCleanup(id, playerId, currentPlayer.isHost);
+        }
       } else {
         console.log('❌ No room data - redirecting to home');
         // Room doesn't exist, redirect to home
@@ -57,25 +63,14 @@ export default function ResultsPage() {
       console.log('🔍 Cleaning up Firebase listener');
       unsub();
     };
-  }, [id]);
+  }, [id, playerId]);
 
-  // Set up presence management for disconnect cleanup (tab closing) - only once
+  // Cleanup on component unmount
   useEffect(() => {
-    if (!id || !room || !playerId || presenceSetupRef.current) return;
-    
-    const currentPlayer = room.players[playerId];
-    if (currentPlayer) {
-      console.log('🔍 Setting up presence manager (one time only)');
-      presenceManager.setupDisconnectCleanup(id, playerId, currentPlayer.isHost);
-      presenceSetupRef.current = true;
-    }
-
-    // DON'T clear handlers on unmount - let them handle tab closing
-    // Only clear when we do manual cleanup
     return () => {
-      // Removed: presenceManager.clearDisconnectHandlers();
+      presenceManager.clearDisconnectHandlers();
     };
-  }, [id, room, playerId]);
+  }, []);
 
   // Enhanced navigation handler with proper cleanup
   const handleBackToHome = async () => {
