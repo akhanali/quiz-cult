@@ -45,8 +45,22 @@ jobs:
         run: |
           cd frontend
           echo "Building with environment variables..."
-          echo "VITE_FIREBASE_PROJECT_ID is set: $([[ -n "$VITE_FIREBASE_PROJECT_ID" ]] && echo "YES" || echo "NO")"
+          echo "VITE_FIREBASE_PROJECT_ID: $VITE_FIREBASE_PROJECT_ID"
+          echo "VITE_FIREBASE_AUTH_DOMAIN: $VITE_FIREBASE_AUTH_DOMAIN"
+          echo "VITE_BACKEND_URL: $VITE_BACKEND_URL"
           npm run build
+      
+      - name: Clean up unnecessary files
+        run: |
+          cd frontend
+          # Remove node_modules and other unnecessary files to avoid "too many files" error
+          rm -rf node_modules
+          rm -rf .cache
+          rm -rf coverage
+          rm -f package-lock.json
+          ls -la
+          echo "Files in dist:"
+          ls -la dist/
       
       - name: Deploy to Azure Static Web Apps
         id: builddeploy
@@ -58,8 +72,6 @@ jobs:
           app_location: "/frontend"
           output_location: "dist"
           skip_app_build: true
-          skip_deploy_on_missing_secrets: true
-          deployment_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_LIVELY_DESERT_0A47F9003 }}
 
   close_pull_request_job:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
