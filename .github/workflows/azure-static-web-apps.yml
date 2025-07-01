@@ -49,6 +49,10 @@ jobs:
           echo "VITE_FIREBASE_AUTH_DOMAIN: $VITE_FIREBASE_AUTH_DOMAIN"
           echo "VITE_BACKEND_URL: $VITE_BACKEND_URL"
           npm run build
+
+          echo "📂 Listing public folder contents:"
+          ls -la public/
+          
           # Copy configuration files to dist folder
           cp public/staticwebapp.config.json dist/staticwebapp.config.json
           cp public/web.config dist/web.config
