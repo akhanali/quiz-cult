@@ -44,7 +44,7 @@ const parseEnvironment = (): EnvironmentConfig => {
     googleApplicationCredentials: process.env.GOOGLE_APPLICATION_CREDENTIALS,
     
     // OpenAI configuration
-    openaiApiKey: process.env.VITE_OPENAI_API_KEY,
+    openaiApiKey: process.env.OPENAI_API_KEY,
     
     // Optional configuration
     debug: process.env.DEBUG === 'true',
@@ -117,7 +117,7 @@ const printSetupInstructions = (errors: string[]) => {
   console.log('   # GOOGLE_APPLICATION_CREDENTIALS=./serviceAccountKey.json');
   console.log('');
   console.log('   # OpenAI Configuration (optional but recommended)');
-  console.log('   VITE_OPENAI_API_KEY=sk-your-openai-api-key-here');
+  console.log('   OPENAI_API_KEY=sk-your-openai-api-key-here');
   console.log('');
   console.log('   # Server Configuration (optional)');
   console.log('   PORT=3001');
@@ -133,7 +133,7 @@ const printSetupInstructions = (errors: string[]) => {
   console.log('🤖 OpenAI Setup:');
   console.log('   1. Go to https://platform.openai.com/api-keys');
   console.log('   2. Create a new API key');
-  console.log('   3. Copy the key (starts with sk-) to VITE_OPENAI_API_KEY');
+  console.log('   3. Copy the key (starts with sk-) to OPENAI_API_KEY');
 };
 
 // Parse and validate environment
