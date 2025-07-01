@@ -1,6 +1,6 @@
 {
   "name": "quiz-cult-backend",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Backend API for Quiz Cult multiplayer quiz application",
   "main": "dist/server.js",
   "scripts": {
