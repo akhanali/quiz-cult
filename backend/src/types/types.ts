@@ -1,0 +1,147 @@
+export type Answer = {
+  option: string;
+  isCorrect: boolean;
+  timeToAnswer: number;
+  scoreEarned?: number; // Optional for backward compatibility with existing data
+};
+
+export type Player = {
+  id: string;
+  nickname: string;
+  isHost: boolean;
+  score: number;
+  joinedAt: number;
+  answers: Record<number, Answer>;
+};
+
+// Difficulty level for questions and rooms
+export type DifficultyLevel = "easy" | "medium" | "hard";
+
+export type Question = {
+  text: string;
+  options: string[];
+  correctOption: string;
+  timeLimit: number;
+  difficulty?: DifficultyLevel; // Optional: for tracking question difficulty
+  timeReasoning?: string; // Optional: AI explanation for time limit
+};
+
+// Game phase for question state management
+export type QuestionPhase = "answering" | "showing-answer" | "showing-scoreboard" | "waiting-next";
+
+// Game timing and state tracking
+export type GameState = {
+  phase: QuestionPhase;
+  questionStartTime: number; // When current question started
+  questionEndTime?: number; // When current question should/did end
+  allPlayersAnswered: boolean; // Whether all players have submitted answers
+  resultsShownAt?: number; // When results were displayed
+  autoAdvanceAt?: number; // When to auto-advance to next question
+  awaitingHostAction?: "show-scoreboard" | "next-question"; // Host action required
+};
+
+export type Room = {
+  id: string;
+  roomCode: string;
+  topic: string;
+  difficulty: DifficultyLevel; // Room difficulty level
+  questionCount: number;
+  status: "waiting" | "active" | "finished";
+  hostId: string;
+  createdAt: number;
+  currentQuestionIndex: number;
+  players: Record<string, Player>;
+  questions: Question[];
+  
+  // Enhanced game state management
+  gameState?: GameState; // Game timing and phase information
+  startedAt?: number; // When the quiz game actually started
+  finishedAt?: number; // When the quiz game ended
+  totalQuestions: number; // Total number of questions in this quiz
+  isGameComplete: boolean; // Whether all questions have been completed
+};
+
+// API Request/Response types for backend communication
+export interface CreateRoomRequest {
+  nickname: string;
+  topic: string;
+  difficulty: DifficultyLevel;
+  questionCount: number;
+}
+
+export interface CreateRoomResponse {
+  roomId: string;
+  playerId: string;
+  aiGenerated: boolean;
+  fallbackReason?: string;
+}
+
+export interface JoinRoomRequest {
+  roomCode: string;
+  nickname: string;
+}
+
+export interface JoinRoomResponse {
+  roomId: string;
+  playerId: string;
+  room: Room;
+}
+
+export interface StartGameRequest {
+  hostId: string;
+}
+
+export interface StartGameResponse {
+  success: boolean;
+}
+
+export interface SubmitAnswerRequest {
+  roomId: string;
+  playerId: string;
+  questionIndex: number;
+  selectedOption: string;
+  timeToAnswer: number;
+}
+
+export interface SubmitAnswerResponse {
+  success: boolean;
+  isCorrect: boolean;
+  scoreEarned: number;
+  newTotalScore: number;
+}
+
+// Question Generation types (for AI service)
+export interface QuestionGenerationParams {
+  topic: string;
+  difficulty: DifficultyLevel;
+  count: number;
+}
+
+export interface QuestionGenerationResponse {
+  questions: Question[];
+  aiGenerated: boolean;
+  fallbackReason?: string;
+}
+
+// Socket.io event types
+export interface SocketEvents {
+  // Client to server events
+  'join-room': (roomId: string) => void;
+  'leave-room': (roomId: string) => void;
+  'submit-answer': (data: SubmitAnswerRequest) => void;
+  'game-state-change': (data: { roomId: string; gameState: GameState }) => void;
+  
+  // Server to client events
+  'player-joined': (data: { playerId: string; player: Player }) => void;
+  'player-left': (data: { playerId: string }) => void;
+  'answer-submitted': (data: { playerId: string; isCorrect: boolean }) => void;
+  'game-state-updated': (data: { gameState: GameState }) => void;
+  'room-updated': (data: { room: Room }) => void;
+}
+
+// Error response type
+export interface ErrorResponse {
+  error: string;
+  code?: string;
+  details?: string | string[];
+} 
