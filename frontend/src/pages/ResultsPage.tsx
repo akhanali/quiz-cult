@@ -25,8 +25,8 @@ import {
 export default function ResultsPage() {
   console.log('🚨 ResultsPage component is rendering!');
   
-  const { id } = useParams<{ id: string }>();
-  console.log('🔍 useParams id:', id, 'type:', typeof id);
+  const { roomId } = useParams<{ roomId: string }>();
+  console.log('🔍 useParams roomId:', roomId, 'type:', typeof roomId);
   
   const [room, setRoom] = useState<Room | null>(null);
   const [isLeaving, setIsLeaving] = useState(false);
@@ -37,17 +37,17 @@ export default function ResultsPage() {
 
   // Fetch room data
   useEffect(() => {
-    console.log('🔍 useEffect running with id:', id, 'playerId:', playerId);
-    if (!id) {
-      console.log('❌ No id provided, returning early');
+    console.log('🔍 useEffect running with roomId:', roomId, 'playerId:', playerId);
+    if (!roomId) {
+      console.log('❌ No roomId provided, returning early');
       return;
     }
 
-    console.log('🔍 ResultsPage: Setting up Firebase listener for room:', id);
+    console.log('🔍 ResultsPage: Setting up Firebase listener for room:', roomId);
     console.log('🔍 Firebase db object:', db);
     console.log('🔍 PlayerId:', playerId);
     
-    const roomRef = ref(db, `rooms/${id}`);
+    const roomRef = ref(db, `rooms/${roomId}`);
     console.log('🔍 Room reference created:', roomRef);
     
     const unsub = onValue(roomRef, (snap) => {
@@ -62,7 +62,7 @@ export default function ResultsPage() {
         if (playerId && data.players && playerId in data.players) {
           console.log('🔍 Setting up presence manager (inside Firebase callback)');
           const currentPlayer = data.players[playerId];
-          presenceManager.setupDisconnectCleanup(id, playerId, currentPlayer.isHost);
+          presenceManager.setupDisconnectCleanup(roomId, playerId, currentPlayer.isHost);
         }
       } else {
         console.log('❌ No room data - redirecting to home');
@@ -78,7 +78,7 @@ export default function ResultsPage() {
       console.log('🔍 Cleaning up Firebase listener');
       unsub();
     };
-  }, [id, playerId]);
+  }, [roomId, playerId]);
 
   // Cleanup on component unmount
   useEffect(() => {
@@ -93,7 +93,7 @@ export default function ResultsPage() {
     setIsLeaving(true);
 
     try {
-      if (!playerId || !id || !room) {
+      if (!playerId || !roomId || !room) {
         navigate("/");
         return;
       }
@@ -106,13 +106,13 @@ export default function ResultsPage() {
 
       if (currentPlayer.isHost) {
         // Host: Delete entire room
-        console.log("🗑️ Host leaving results - deleting room", id);
-        await remove(ref(db, `rooms/${id}`));
+        console.log("🗑️ Host leaving results - deleting room", roomId);
+        await remove(ref(db, `rooms/${roomId}`));
         console.log("✅ Room deleted successfully");
       } else {
         // Player: Remove only themselves
-        console.log("👋 Player leaving results - removing from room", id);
-        await remove(ref(db, `rooms/${id}/players/${playerId}`));
+        console.log("👋 Player leaving results - removing from room", roomId);
+        await remove(ref(db, `rooms/${roomId}/players/${playerId}`));
         console.log("✅ Player removed successfully");
       }
       
