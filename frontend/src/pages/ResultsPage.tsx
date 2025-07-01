@@ -23,6 +23,9 @@ import {
 } from 'react-icons/io5';
 
 export default function ResultsPage() {
+  console.log('🚨 ResultsPage component is rendering!');
+  alert('ResultsPage loaded!'); // This will show a popup if component renders
+  
   const { id } = useParams<{ id: string }>();
   const [room, setRoom] = useState<Room | null>(null);
   const [isLeaving, setIsLeaving] = useState(false);
@@ -35,7 +38,12 @@ export default function ResultsPage() {
     if (!id) return;
 
     console.log('🔍 ResultsPage: Setting up Firebase listener for room:', id);
+    console.log('🔍 Firebase db object:', db);
+    console.log('🔍 PlayerId:', playerId);
+    
     const roomRef = ref(db, `rooms/${id}`);
+    console.log('🔍 Room reference created:', roomRef);
+    
     const unsub = onValue(roomRef, (snap) => {
       console.log('🔍 Firebase listener callback triggered');
       const data = snap.val();
@@ -59,6 +67,7 @@ export default function ResultsPage() {
       console.error('❌ Firebase listener error:', error);
     });
 
+    console.log('🔍 Firebase listener setup complete');
     return () => {
       console.log('🔍 Cleaning up Firebase listener');
       unsub();
