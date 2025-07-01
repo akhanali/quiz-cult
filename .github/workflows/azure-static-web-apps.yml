@@ -63,6 +63,7 @@ jobs:
           output_location: "dist"
           skip_app_build: true
           skip_deploy_on_missing_secrets: true
+          deployment_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_LIVELY_DESERT_0A47F9003 }}
 
   close_pull_request_job:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
