@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { db } from "../lib/firebase";
 import { onValue, ref, remove } from "firebase/database";
@@ -27,6 +27,7 @@ export default function ResultsPage() {
   const [room, setRoom] = useState<Room | null>(null);
   const [isLeaving, setIsLeaving] = useState(false);
   const navigate = useNavigate();
+  const presenceSetupRef = useRef(false);
 
   const playerId = localStorage.getItem("userId");
 
@@ -58,13 +59,15 @@ export default function ResultsPage() {
     };
   }, [id]);
 
-  // Set up presence management for disconnect cleanup (tab closing)
+  // Set up presence management for disconnect cleanup (tab closing) - only once
   useEffect(() => {
-    if (!id || !room || !playerId) return;
+    if (!id || !room || !playerId || presenceSetupRef.current) return;
     
     const currentPlayer = room.players[playerId];
     if (currentPlayer) {
+      console.log('🔍 Setting up presence manager (one time only)');
       presenceManager.setupDisconnectCleanup(id, playerId, currentPlayer.isHost);
+      presenceSetupRef.current = true;
     }
 
     // DON'T clear handlers on unmount - let them handle tab closing
