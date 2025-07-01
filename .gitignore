@@ -91,3 +91,6 @@ start-dev.sh
 
 # Yarn Integrity file
 .yarn-integrity
+FIREBASE_TO_BACKEND_MAPPING.md
+MIGRATION_STRATEGY.md
+SETUP_OPENAI.md
