@@ -35,7 +35,7 @@ export default function JoinRoomPage() {
       // Set up onDisconnect for the player immediately after joining
       presenceManager.setupDisconnectCleanup(roomData.foundRoomId, roomData.playerId, false);
       
-      nav(`/room/${roomData.foundRoomId}`);
+      nav(`/lobby/${roomData.foundRoomId}`);
     } catch (err: unknown) {
       console.error("Error joining room:", err);
       const errorMessage = err instanceof Error ? err.message : "Failed to join room";

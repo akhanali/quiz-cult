@@ -91,7 +91,7 @@ export default function CreateRoomPage() {
       
       // Short delay to show success message, then navigate
       setTimeout(() => {
-        navigate(`/room/${roomData.roomId}`);
+        navigate(`/lobby/${roomData.roomId}`);
       }, 1500);
       
     } catch (error) {
