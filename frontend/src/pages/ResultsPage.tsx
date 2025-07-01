@@ -24,18 +24,24 @@ import {
 
 export default function ResultsPage() {
   console.log('🚨 ResultsPage component is rendering!');
-  alert('ResultsPage loaded!'); // This will show a popup if component renders
   
   const { id } = useParams<{ id: string }>();
+  console.log('🔍 useParams id:', id, 'type:', typeof id);
+  
   const [room, setRoom] = useState<Room | null>(null);
   const [isLeaving, setIsLeaving] = useState(false);
   const navigate = useNavigate();
 
   const playerId = localStorage.getItem("userId");
+  console.log('🔍 playerId from localStorage:', playerId);
 
   // Fetch room data
   useEffect(() => {
-    if (!id) return;
+    console.log('🔍 useEffect running with id:', id, 'playerId:', playerId);
+    if (!id) {
+      console.log('❌ No id provided, returning early');
+      return;
+    }
 
     console.log('🔍 ResultsPage: Setting up Firebase listener for room:', id);
     console.log('🔍 Firebase db object:', db);
