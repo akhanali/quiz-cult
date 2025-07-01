@@ -10,15 +10,12 @@ import {
   FaChartLine, 
   FaUsers, 
   FaHome,
-  FaGamepad,
   FaAward,
   FaClock,
   FaStar,
   FaSpinner
 } from 'react-icons/fa';
 import { 
-  MdQuiz, 
-  MdTopic,
   MdCelebration 
 } from 'react-icons/md';
 import { 
@@ -37,18 +34,28 @@ export default function ResultsPage() {
   useEffect(() => {
     if (!id) return;
 
+    console.log('🔍 ResultsPage: Setting up Firebase listener for room:', id);
     const roomRef = ref(db, `rooms/${id}`);
     const unsub = onValue(roomRef, (snap) => {
+      console.log('🔍 Firebase listener callback triggered');
       const data = snap.val();
+      console.log('🔍 Firebase data received:', data);
       if (data) {
+        console.log('✅ Setting room data:', Object.keys(data));
         setRoom(data);
       } else {
+        console.log('❌ No room data - redirecting to home');
         // Room doesn't exist, redirect to home
         navigate("/");
       }
+    }, (error) => {
+      console.error('❌ Firebase listener error:', error);
     });
 
-    return () => unsub();
+    return () => {
+      console.log('🔍 Cleaning up Firebase listener');
+      unsub();
+    };
   }, [id]);
 
   // Set up presence management for disconnect cleanup (tab closing)
@@ -210,8 +217,8 @@ export default function ResultsPage() {
 
           <div className="space-y-3 sm:space-y-4">
             {sortedPlayers.map((player, index) => (
-              <div
-                key={player.id}
+                <div
+                  key={player.id}
                 className={`flex items-center justify-between p-3 sm:p-4 rounded-xl border-2 transition-all duration-300 ${
                   index === 0
                     ? "bg-gradient-to-r from-yellow-50 to-orange-50 border-yellow-300 shadow-lg"
@@ -221,7 +228,7 @@ export default function ResultsPage() {
                     ? "bg-gradient-to-r from-orange-50 to-yellow-50 border-orange-300 shadow-md"
                     : "bg-gray-50 border-gray-200"
                 } ${player.id === playerId ? "ring-2 ring-blue-400" : ""}`}
-              >
+                >
                 <div className="flex items-center space-x-3 sm:space-x-4 min-w-0">
                   <div className="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gray-800 text-white font-bold text-sm sm:text-lg flex-shrink-0">
                     {index === 0 ? (
@@ -307,7 +314,7 @@ export default function ResultsPage() {
             className={`w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 rounded-xl font-semibold text-base sm:text-lg 
                        transition-all duration-300 flex items-center justify-center space-x-2 sm:space-x-3 
                        shadow-lg hover:shadow-xl transform hover:scale-105 min-h-[48px] sm:min-h-[56px] ${
-              isLeaving
+              isLeaving 
                 ? "bg-gray-400 text-gray-600 cursor-not-allowed"
                 : "bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700"
             }`}
