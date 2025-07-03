@@ -3,15 +3,14 @@ import { createRoom } from '../api/createRoom';
 import { useNavigate } from 'react-router-dom';
 import { presenceManager } from '../api/presenceManager';
 import { validateTopic } from '../services/questionGeneration';
-import { isOpenAIAvailable } from '../lib/openai';
-import type { DifficultyLevel } from '../../../shared/types';
 import { FaCheckCircle, FaClock, FaRocket, FaRobot, FaFileAlt, FaCheck, FaBook, FaBullseye } from 'react-icons/fa';
 import { MdAccessTime } from 'react-icons/md';
+import type { DifficultyLevel } from '../../../shared/types';
 
 export default function CreateRoomPage() {
   const [nickname, setNickname] = useState('');
   const [topic, setTopic] = useState('');
-  const [difficulty, setDifficulty] = useState<DifficultyLevel>('medium');
+  const [difficulty, setDifficulty] = useState('medium');
   const [count, setCount] = useState(5);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
@@ -65,22 +64,18 @@ export default function CreateRoomPage() {
     
     try {
       // Show appropriate generation status
-      if (isOpenAIAvailable) {
-        setGenerationStatus(`Generating ${count} ${difficulty} questions about "${topic}"...`);
-      } else {
-        setGenerationStatus(`Creating ${count} ${difficulty} questions (using sample questions)...`);
-      }
+      setGenerationStatus(`Creating ${count} ${difficulty} questions...`);
       
-      const roomData = await createRoom(nickname, topic, difficulty, count);
+      const roomData = await createRoom(nickname, topic, difficulty as DifficultyLevel, count);
       
       // Show success message with generation result
       if (roomData.aiGenerated) {
         setGenerationStatus(`Successfully generated ${count} AI questions about "${topic}"!`);
       } else {
         if (roomData.fallbackReason) {
-          setGenerationStatus(`Using sample questions (${roomData.fallbackReason})`);
+          setGenerationStatus(`Created ${count} questions (${roomData.fallbackReason})`);
         } else {
-          setGenerationStatus(`Created ${count} questions using samples`);
+          setGenerationStatus(`Created ${count} questions successfully`);
         }
       }
       
@@ -105,7 +100,7 @@ export default function CreateRoomPage() {
 
   const difficultyOptions = [
     {
-      value: 'easy' as DifficultyLevel,
+      value: 'easy',
       icon: FaCheckCircle,
       iconColor: 'text-green-600',
       title: 'Easy',
@@ -115,7 +110,7 @@ export default function CreateRoomPage() {
       time: '10–20 seconds'
     },
     {
-      value: 'medium' as DifficultyLevel,
+      value: 'medium',
       icon: FaClock,
       iconColor: 'text-yellow-600',
       title: 'Medium',
@@ -125,7 +120,7 @@ export default function CreateRoomPage() {
       time: '21–30 seconds'
     },
     {
-      value: 'hard' as DifficultyLevel,
+      value: 'hard',
       icon: FaRocket,
       iconColor: 'text-red-600',
       title: 'Hard',
@@ -141,26 +136,6 @@ export default function CreateRoomPage() {
       <div className="max-w-2xl mx-auto">
         <h2 className="text-2xl sm:text-3xl font-semibold mb-4 sm:mb-6 text-center">Create a Quiz Room</h2>
         
-        {/* AI Status Banner */}
-        <div className={`mb-4 sm:mb-6 p-3 sm:p-4 rounded-lg border ${isOpenAIAvailable 
-          ? 'bg-green-50 border-green-200 text-green-800' 
-          : 'bg-yellow-50 border-yellow-200 text-yellow-800'
-        }`}>
-          <div className="flex items-start sm:items-center">
-            {isOpenAIAvailable ? (
-              <FaRobot className="text-base sm:text-lg mr-2 mt-0.5 sm:mt-0 flex-shrink-0" />
-            ) : (
-              <FaFileAlt className="text-base sm:text-lg mr-2 mt-0.5 sm:mt-0 flex-shrink-0" />
-            )}
-            <span className="font-medium text-sm sm:text-base">
-              {isOpenAIAvailable 
-                ? 'AI Question Generation Active - Create questions about any topic!' 
-                : 'AI Unavailable - Using sample questions (see SETUP_OPENAI.md to enable AI)'
-              }
-            </span>
-          </div>
-        </div>
-
         {/* Error Messages */}
         {error && (
           <div className="bg-red-100 border border-red-400 text-red-700 px-3 sm:px-4 py-3 rounded mb-4 sm:mb-6 text-sm sm:text-base">
@@ -173,8 +148,8 @@ export default function CreateRoomPage() {
           <div className={`px-3 sm:px-4 py-3 rounded mb-4 sm:mb-6 text-center font-medium text-sm sm:text-base ${
             generationStatus.includes('Successfully generated') 
               ? 'bg-green-100 border border-green-400 text-green-700'
-              : generationStatus.includes('Using sample questions')
-              ? 'bg-yellow-100 border border-yellow-400 text-yellow-700'
+              : generationStatus.includes('Created')
+              ? 'bg-blue-100 border border-blue-400 text-blue-700'
               : 'bg-blue-100 border border-blue-400 text-blue-700'
           }`}>
             {generationStatus}
@@ -198,15 +173,12 @@ export default function CreateRoomPage() {
             
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Quiz Topic {isOpenAIAvailable && <span className="text-blue-600">(Any subject you want!)</span>}
+                Quiz Topic
               </label>
               <input
                 value={topic}
                 onChange={(e) => handleTopicChange(e.target.value)}
-                placeholder={isOpenAIAvailable 
-                  ? "e.g., Space Science, Ancient Rome, Marine Biology, JavaScript" 
-                  : "e.g., Science, History, Sports, Movies"
-                }
+                placeholder="e.g., Science, History, Sports, Movies"
                 className={`w-full border rounded-lg px-3 sm:px-4 py-2 sm:py-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent
                           text-base sm:text-lg min-h-[44px] sm:min-h-[48px] ${
                   topicError ? 'border-red-500' : ''
@@ -215,12 +187,6 @@ export default function CreateRoomPage() {
               />
               {topicError && (
                 <p className="text-red-600 text-sm mt-1">{topicError}</p>
-              )}
-              {isOpenAIAvailable && topic.trim() && !topicError && (
-                <p className="text-green-600 text-sm mt-1 flex items-center">
-                  <FaCheck className="mr-1" />
-                  Great topic choice! AI will generate custom questions.
-                </p>
               )}
             </div>
           </div>
@@ -298,24 +264,17 @@ export default function CreateRoomPage() {
             disabled={isLoading || !!topicError}
           >
             {isLoading 
-              ? (isOpenAIAvailable ? 'Generating Questions...' : 'Creating Room...') 
-              : (isOpenAIAvailable ? 'Generate AI Quiz' : 'Create Quiz')
+              ? 'Creating Room...' 
+              : 'Create Quiz'
             }
           </button>
 
           {/* Information Footer */}
           <div className="text-center text-gray-500 text-xs sm:text-sm">
-            {isOpenAIAvailable ? (
-              <p className="flex items-center justify-center">
-                <FaBullseye className="mr-2" />
-                AI will create unique questions tailored to your topic and difficulty level
-              </p>
-            ) : (
-              <p className="flex items-center justify-center">
-                <FaBook className="mr-2" />
-                Using high-quality sample questions. Enable AI in SETUP_OPENAI.md for unlimited topics!
-              </p>
-            )}
+            <p className="flex items-center justify-center">
+              <FaBook className="mr-2" />
+              Create engaging quiz questions on any topic you choose!
+            </p>
           </div>
         </div>
       </div>

@@ -1,8 +1,6 @@
 /// <reference types="vite/client" />
 
 interface ImportMetaEnv {
-  readonly OPENAI_API_KEY: string
-  
   // Backend configuration
   readonly VITE_BACKEND_URL?: string
   readonly VITE_API_TIMEOUT?: string

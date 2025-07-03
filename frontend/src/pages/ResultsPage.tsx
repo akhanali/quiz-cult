@@ -33,7 +33,7 @@ export default function ResultsPage() {
   // Fetch room data
   useEffect(() => {
     if (!roomId) return;
-    
+
     const roomRef = ref(db, `rooms/${roomId}`);
     const unsub = onValue(roomRef, (snap) => {
       const data = snap.val();

@@ -42,8 +42,8 @@ export const MIGRATION_FLAGS: Record<string, any> = {
 if (isDevelopment) {
   // In development, we can enable backend features for testing
   // But still default to false for safety
-  console.log('🛠️  Development mode: Migration flags available for testing');
-  console.log('📊 Current migration flags:', MIGRATION_FLAGS);
+  //console.log('🛠️  Development mode: Migration flags available for testing');
+  //console.log('📊 Current migration flags:', MIGRATION_FLAGS);
 }
 
 // A/B testing logic

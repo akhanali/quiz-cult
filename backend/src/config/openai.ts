@@ -65,10 +65,10 @@ export const getOpenAIClient = (): OpenAI | null => {
  * OpenAI Configuration Constants
  */
 export const OPENAI_CONFIG = {
-  model: 'gpt-3.5-turbo',
+  model: 'gpt-4o-mini',
   temperature: 0.7,
   max_tokens: 2000,
-  timeout: 30000, // 30 second timeout
+  timeout: 30000, 
 } as const;
 
 /**
@@ -220,7 +220,7 @@ export const getOpenAIInfo = () => {
   return {
     model: OPENAI_CONFIG.model,
     available: isOpenAIAvailable(),
-    estimatedCostPer1000Tokens: 0.002, // GPT-3.5-turbo pricing
+    estimatedCostPer1000Tokens: 0.002, 
     averageTokensPerQuestion: 100,
     estimatedCostPerQuestion: 0.0002,
   };

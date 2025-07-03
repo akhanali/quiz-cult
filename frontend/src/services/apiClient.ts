@@ -281,7 +281,7 @@ class BackendAPIClient {
     topic: string;
     difficulty: DifficultyLevel;
     count: number;
-  }): Promise<any[]> {
+  }): Promise<{ questions: any[]; aiGenerated: boolean; fallbackReason?: string }> {
     return this.retryRequest(() =>
       this.client.post('/api/questions/generate', data).then(response => response.data)
     );

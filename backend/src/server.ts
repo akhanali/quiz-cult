@@ -613,10 +613,23 @@ process.on('SIGTERM', () => {
 
 process.on('SIGINT', () => {
   console.log('\n🛑 Received SIGINT, shutting down gracefully...');
-  server.close(() => {
-    console.log('✅ Server closed');
-    process.exit(0);
+  
+  // Close Socket.io server first
+  io.close(() => {
+    console.log('✅ Socket.io server closed');
+    
+    // Then close HTTP server
+    server.close(() => {
+      console.log('✅ HTTP server closed');
+      process.exit(0);
+    });
   });
+  
+  // Force exit after 5 seconds if graceful shutdown fails
+  setTimeout(() => {
+    console.log('⏰ Force shutting down...');
+    process.exit(1);
+  }, 5000);
 });
 
 // Start the server
