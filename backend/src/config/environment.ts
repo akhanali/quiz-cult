@@ -14,6 +14,7 @@ export interface EnvironmentConfig {
   port: number;
   nodeEnv: string;
   frontendUrl: string;
+  corsOrigins: string[];
   
   // Firebase configuration
   firebaseDbUrl: string;
@@ -37,6 +38,7 @@ const parseEnvironment = (): EnvironmentConfig => {
     port: parseInt(process.env.PORT || '3001', 10),
     nodeEnv: process.env.NODE_ENV || 'development',
     frontendUrl: process.env.FRONTEND_URL || 'http://localhost:5173',
+    corsOrigins: process.env.CORS_ORIGINS ? process.env.CORS_ORIGINS.split(',') : [],
     
     // Firebase configuration
     firebaseDbUrl: process.env.VITE_FIREBASE_DATABASE_URL || 'https://quiz-cult-default-rtdb.europe-west1.firebasedatabase.app',

@@ -24,10 +24,20 @@ const app = express();
 // Create HTTP server
 const server = createServer(app);
 
+// Define allowed origins for CORS
+const allowedOrigins = [
+  env.frontendUrl, // Default localhost
+  'https://quiz-cult.azurewebsites.net', // Azure App Service domain
+  'https://quiz-cult-frontend.azurewebsites.net', // Alternative Azure domain
+  'https://quiz-cult.azurestaticapps.net', // Static Web Apps domain
+  'https://quiz-cult.z13.web.core.windows.net', // Azure Storage static website
+  ...env.corsOrigins, // Additional origins from environment variable
+];
+
 // Create Socket.io server
 const io = new SocketServer(server, {
   cors: {
-    origin: env.frontendUrl,
+    origin: allowedOrigins,
     methods: ['GET', 'POST'],
     credentials: true
   }
@@ -35,7 +45,21 @@ const io = new SocketServer(server, {
 
 // Middleware
 app.use(cors({
-  origin: env.frontendUrl,
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      if (env.debug) {
+        console.log(`✅ CORS allowed origin: ${origin}`);
+      }
+      callback(null, true);
+    } else {
+      console.log(`🚫 CORS blocked origin: ${origin}`);
+      console.log(`📋 Allowed origins: ${allowedOrigins.join(', ')}`);
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true
 }));
 
@@ -593,6 +617,7 @@ const startServer = async () => {
       console.log(`📊 Status Check: http://localhost:${env.port}/status`);
       console.log(`📖 API Info: http://localhost:${env.port}/api`);
       console.log(`🔌 Socket.io: Ready for connections`);
+      console.log(`🌍 CORS Origins: ${allowedOrigins.join(', ')}`);
       console.log('\n✅ Backend ready for Step 4: API Routes implementation\n');
     });
 
