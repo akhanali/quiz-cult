@@ -2,13 +2,14 @@
 
 interface ImportMetaEnv {
   // Backend configuration
-  readonly VITE_BACKEND_URL?: string
-  readonly VITE_API_TIMEOUT?: string
-  readonly VITE_API_RETRY_ATTEMPTS?: string
-  readonly VITE_HEALTH_CHECK_INTERVAL?: string
+  readonly VITE_BACKEND_URL: string
+  readonly VITE_API_TIMEOUT: string
+  readonly VITE_API_RETRY_ATTEMPTS: string
+  readonly VITE_HEALTH_CHECK_INTERVAL: string
   
   // Environment
-  readonly VITE_ENV?: string
+  readonly VITE_ENV: string
+  readonly OPENAI_API_KEY: string
   
   // Migration feature flags
   readonly VITE_USE_BACKEND_ROOM_CREATION?: string

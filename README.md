@@ -15,7 +15,7 @@ A real-time multiplayer quiz application with AI-powered question generation.
 - **Frontend**: React, TypeScript, Vite, Tailwind CSS
 - **Backend**: Node.js, Express, TypeScript
 - **Database**: Firebase Realtime Database
-- **AI**: OpenAI GPT-3.5-turbo
+- **AI**: OpenAI GPT-4o-mini
 
 ## Project Structure
 

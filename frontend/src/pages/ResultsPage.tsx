@@ -4,6 +4,7 @@ import { db } from "../lib/firebase";
 import { onValue, ref, remove } from "firebase/database";
 import type { Room } from "../../../shared/types";
 import { presenceManager } from "../api/presenceManager";
+import LeaderboardChart from "../components/LeaderboardChart";
 import { 
   FaTrophy, 
   FaCrown, 
@@ -13,7 +14,9 @@ import {
   FaAward,
   FaClock,
   FaStar,
-  FaSpinner
+  FaSpinner,
+  FaChartBar,
+  FaList
 } from 'react-icons/fa';
 import { 
   MdCelebration 
@@ -26,9 +29,27 @@ export default function ResultsPage() {
   const { roomId } = useParams<{ roomId: string }>();
   const [room, setRoom] = useState<Room | null>(null);
   const [isLeaving, setIsLeaving] = useState(false);
+  const [viewMode, setViewMode] = useState<'chart' | 'list'>('chart');
   const navigate = useNavigate();
 
   const playerId = localStorage.getItem("userId");
+
+  // Add CSS for confetti animation
+  useEffect(() => {
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes confetti-fall {
+        0% { opacity: 0; transform: translateY(-40px) rotate(0deg); }
+        10% { opacity: 1; }
+        100% { opacity: 0.7; transform: translateY(260px) rotate(360deg); }
+      }
+    `;
+    document.head.appendChild(style);
+    
+    return () => {
+      document.head.removeChild(style);
+    };
+  }, []);
 
   // Fetch room data
   useEffect(() => {
@@ -132,152 +153,255 @@ export default function ResultsPage() {
   const sortedPlayers = [...playersWithStats].sort((a, b) => b.score - a.score);
   const winner = sortedPlayers[0];
   const isCurrentPlayerWinner = winner?.id === playerId;
+  const maxScore = Math.max(...sortedPlayers.map(p => p.score));
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 p-4 sm:p-6 lg:p-8">
+    <div className="min-h-screen bg-[#FDF0DC] p-4 sm:p-6 lg:p-8">
       <div className="max-w-4xl mx-auto">
         {/* Winner Celebration Section */}
         <div className="text-center mb-6 sm:mb-8">
           <div className="relative">
-            {/* Celebration Animation */}
-            <div className="absolute inset-0 pointer-events-none overflow-hidden">
-              {[...Array(20)].map((_, i) => (
-                <div
-                  key={i}
-                  className={`absolute w-1 h-1 sm:w-2 sm:h-2 bg-yellow-400 rounded-full animate-bounce`}
-                  style={{
-                    left: `${Math.random() * 100}%`,
-                    top: `${Math.random() * 100}%`,
-                    animationDelay: `${Math.random() * 2}s`,
-                    animationDuration: `${1 + Math.random()}s`,
-                  }}
-                />
-              ))}
-            </div>
-
             <div className="flex items-center justify-center mb-4">
-              <MdCelebration className="text-3xl sm:text-4xl lg:text-5xl text-yellow-600 mr-2 sm:mr-3 animate-pulse" />
-              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-800">Quiz Complete!</h1>
-              <MdCelebration className="text-3xl sm:text-4xl lg:text-5xl text-yellow-600 ml-2 sm:ml-3 animate-pulse" />
+              <MdCelebration className="text-3xl sm:text-4xl lg:text-5xl text-yellow-400 mr-2 sm:mr-3" />
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-[#4E342E]">Quiz Complete!</h1>
+              <MdCelebration className="text-3xl sm:text-4xl lg:text-5xl text-yellow-400 ml-2 sm:ml-3" />
             </div>
 
-            <div className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white p-4 sm:p-6 rounded-2xl shadow-xl mb-4 sm:mb-6 transform hover:scale-105 transition-transform">
-              <FaCrown className="text-4xl sm:text-5xl lg:text-6xl mb-3 sm:mb-4 mx-auto animate-bounce" />
-              <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold mb-2">Winner: {winner.nickname}</h2>
-              <div className="flex items-center justify-center space-x-2 mb-2 sm:mb-3">
-                <FaTrophy className="text-lg sm:text-xl lg:text-2xl" />
-                <p className="text-lg sm:text-xl lg:text-2xl font-bold">{winner.score} points</p>
+            {/* Elegant Winner Card */}
+            <div className="bg-[#F7E2C0] text-[#4E342E] p-4 sm:p-6 lg:p-8 rounded-2xl shadow-xl mb-4 sm:mb-6 relative overflow-hidden border-2 border-[#4E342E]">
+              {/* Confetti is now inside the main card only */}
+              <div className="absolute inset-0 pointer-events-none z-10">
+                {[...Array(24)].map((_, i) => (
+                  <div
+                    key={i}
+                    style={{
+                      left: `${Math.random() * 95}%`,
+                      top: `${-10 + Math.random() * 10}px`,
+                      width: `${10 + Math.random() * 16}px`,
+                      height: `${3 + Math.random() * 5}px`,
+                      backgroundColor: ['#F6D35B', '#F4B46D', '#F6D35B', '#F4B46D', '#F6D35B', '#F4B46D', '#F6D35B', '#F4B46D', '#F6D35B'][Math.floor(Math.random() * 9)],
+                      borderRadius: '2px',
+                      position: 'absolute',
+                      opacity: 0.85,
+                      animation: `confetti-fall ${1.8 + Math.random() * 1.8}s linear ${Math.random() * 1.5}s infinite`,
+                      zIndex: 10,
+                    }}
+                  />
+                ))}
               </div>
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 text-xs sm:text-sm opacity-90">
-                <div className="flex items-center space-x-1">
-                  <FaAward />
-                  <span>{winner.accuracy}% accuracy</span>
+
+              <div className="relative z-20">
+                <div className="flex items-center justify-center mb-4 sm:mb-6">
+                  <FaCrown className="text-4xl sm:text-5xl lg:text-6xl mb-3 sm:mb-4 text-yellow-600 animate-pulse" />
                 </div>
-                <div className="flex items-center space-x-1">
-                  <FaClock />
-                  <span>{winner.avgResponseTime}s avg response</span>
+                
+                <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold mb-3 sm:mb-4 text-center text-[#4E342E]">Champion: {winner.nickname}</h2>
+                
+                <div className="flex items-center justify-center space-x-2 mb-4 sm:mb-6">
+                  <FaTrophy className="text-2xl sm:text-3xl lg:text-4xl text-[#F6D35B]" />
+                  <p className="text-2xl sm:text-3xl lg:text-4xl font-bold text-[#4E342E]">{winner.score} points</p>
+                </div>
+
+                {/* Readable Statistics Grid (now with dojo colors) */}
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-4 sm:mb-6">
+                  <div className="bg-white bg-opacity-90 p-2 sm:p-3 rounded-lg border-2 border-[#6D4C41] hover:bg-opacity-100 hover:scale-105 hover:shadow-lg transition-all duration-200 cursor-pointer text-[#4E342E] font-semibold">
+                    <div className="flex items-center justify-center space-x-1 mb-1">
+                      <FaAward className="text-sm sm:text-base text-[#F6D35B]" />
+                      <span className="text-xs sm:text-sm font-semibold">Accuracy</span>
+                    </div>
+                    <div className="text-lg sm:text-xl font-bold">{winner.accuracy}%</div>
+                  </div>
+                  <div className="bg-white bg-opacity-90 p-2 sm:p-3 rounded-lg border-2 border-[#6D4C41] hover:bg-opacity-100 hover:scale-105 hover:shadow-lg transition-all duration-200 cursor-pointer text-[#4E342E] font-semibold">
+                    <div className="flex items-center justify-center space-x-1 mb-1">
+                      <FaClock className="text-sm sm:text-base text-[#F6D35B]" />
+                      <span className="text-xs sm:text-sm font-semibold">Avg Time</span>
+                    </div>
+                    <div className="text-lg sm:text-xl font-bold">{winner.avgResponseTime}s</div>
+                  </div>
+                  <div className="bg-white bg-opacity-90 p-2 sm:p-3 rounded-lg border-2 border-[#6D4C41] hover:bg-opacity-100 hover:scale-105 hover:shadow-lg transition-all duration-200 cursor-pointer text-[#4E342E] font-semibold">
+                    <div className="flex items-center justify-center space-x-1 mb-1">
+                      <FaStar className="text-sm sm:text-base text-[#F6D35B]" />
+                      <span className="text-xs sm:text-sm font-semibold">Correct</span>
+                    </div>
+                    <div className="text-lg sm:text-xl font-bold">{winner.correctAnswers}/{winner.totalAnswers}</div>
+                  </div>
+                  <div className="bg-white bg-opacity-90 p-2 sm:p-3 rounded-lg border-2 border-[#6D4C41] hover:bg-opacity-100 hover:scale-105 hover:shadow-lg transition-all duration-200 cursor-pointer text-[#4E342E] font-semibold">
+                    <div className="flex items-center justify-center space-x-1 mb-1">
+                      <FaChartLine className="text-sm sm:text-base text-[#F6D35B]" />
+                      <span className="text-xs sm:text-sm font-semibold">Position</span>
+                    </div>
+                    <div className="text-lg sm:text-xl font-bold">1st Place</div>
+                  </div>
+                </div>
+
+                {/* Readable Performance Highlights (same style, dojo colors) */}
+                <div className="bg-white bg-opacity-90 p-3 sm:p-4 rounded-xl border-2 border-[#6D4C41] hover:bg-opacity-100 hover:scale-[1.02] hover:shadow-lg transition-all duration-200 cursor-pointer text-[#4E342E] font-semibold">
+                  <div className="flex items-center justify-center space-x-2 mb-2">
+                    <IoSparklesSharp className="text-lg sm:text-xl text-[#F6D35B]" />
+                    <span className="text-sm sm:text-base font-semibold">Performance Highlights</span>
+                    <IoSparklesSharp className="text-lg sm:text-xl text-[#F6D35B]" />
+                  </div>
+                  <div className="text-xs sm:text-sm opacity-90 text-center">
+                    {winner.accuracy >= 90 ? "🎯 Perfect accuracy! " : winner.accuracy >= 80 ? "🎯 Excellent accuracy! " : "🎯 Good accuracy! "}
+                    {winner.avgResponseTime <= 5 ? "⚡ Lightning fast responses! " : winner.avgResponseTime <= 10 ? "⚡ Quick thinking! " : "⚡ Steady performance! "}
+                    {winner.correctAnswers === winner.totalAnswers ? "🏅 Flawless victory! " : winner.correctAnswers >= winner.totalAnswers * 0.8 ? "🏅 Outstanding performance! " : "🏅 Great effort! "}
+                  </div>
                 </div>
               </div>
             </div>
 
-            {isCurrentPlayerWinner && (
-              <div className="bg-green-100 border border-green-400 text-green-700 px-4 sm:px-6 py-3 sm:py-4 rounded-xl mb-4 animate-bounce">
-                <div className="flex items-center justify-center space-x-2">
-                  <IoSparklesSharp className="text-lg sm:text-xl lg:text-2xl" />
-                  <span className="text-sm sm:text-base lg:text-lg font-bold">Congratulations! You won!</span>
-                  <IoSparklesSharp className="text-lg sm:text-xl lg:text-2xl" />
+            {/* Runner-up Recognition */}
+            {sortedPlayers.length > 1 && (
+              <div className="bg-[#F7E2C0] p-3 sm:p-4 rounded-xl mb-4 border-2 border-[#6D4C41]">
+                <div className="flex items-center justify-center space-x-2 mb-2">
+                  <FaAward className="text-lg sm:text-xl text-[#6D4C41]" />
+                  <span className="text-sm sm:text-base font-semibold text-[#4E342E]">Runner-up: {sortedPlayers[1].nickname}</span>
+                  <FaAward className="text-lg sm:text-xl text-[#6D4C41]" />
+                </div>
+                <div className="text-xs sm:text-sm text-[#6D4C41]">
+                  {sortedPlayers[1].score} points • {sortedPlayers[1].accuracy}% accuracy • {sortedPlayers[1].avgResponseTime}s avg
                 </div>
               </div>
             )}
           </div>
         </div>
 
-        {/* Leaderboard */}
-        <div className="bg-white rounded-2xl shadow-xl p-4 sm:p-6 mb-6 sm:mb-8">
-          <div className="flex items-center justify-center mb-4 sm:mb-6">
-            <FaChartLine className="text-2xl sm:text-3xl text-blue-600 mr-2 sm:mr-3" />
-            <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-800">Final Leaderboard</h2>
+        {/* Leaderboard with Toggle */}
+        <div className="bg-[#F7E2C0] rounded-2xl shadow-xl p-4 sm:p-6 mb-6 sm:mb-8 border-2 border-[#4E342E]">
+          <div className="flex flex-col sm:flex-row items-center justify-between mb-4 sm:mb-6">
+            <div className="flex items-center mb-4 sm:mb-0">
+              <FaChartLine className="text-2xl sm:text-3xl text-[#10A3A2] mr-2 sm:mr-3" />
+              <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-[#4E342E]">Final Leaderboard</h2>
+            </div>
+            
+            {/* View Toggle */}
+            <div className="flex bg-white rounded-lg p-1 border border-[#6D4C41]">
+              <button
+                onClick={() => setViewMode('chart')}
+                className={`flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
+                  viewMode === 'chart'
+                    ? 'bg-[#10A3A2] text-white shadow-sm'
+                    : 'text-[#6D4C41] hover:text-[#4E342E]'
+                }`}
+              >
+                <FaChartBar className="text-sm" />
+                <span>Chart</span>
+              </button>
+              <button
+                onClick={() => setViewMode('list')}
+                className={`flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
+                  viewMode === 'list'
+                    ? 'bg-[#10A3A2] text-white shadow-sm'
+                    : 'text-[#6D4C41] hover:text-[#4E342E]'
+                }`}
+              >
+                <FaList className="text-sm" />
+                <span>List</span>
+              </button>
+            </div>
           </div>
 
-          <div className="space-y-3 sm:space-y-4">
-            {sortedPlayers.map((player, index) => (
-                <div
-                  key={player.id}
-                className={`flex items-center justify-between p-3 sm:p-4 rounded-xl border-2 transition-all duration-300 ${
-                  index === 0
-                    ? "bg-gradient-to-r from-yellow-50 to-orange-50 border-yellow-300 shadow-lg"
-                    : index === 1
-                    ? "bg-gradient-to-r from-gray-50 to-gray-100 border-gray-300 shadow-md"
-                    : index === 2
-                    ? "bg-gradient-to-r from-orange-50 to-yellow-50 border-orange-300 shadow-md"
-                    : "bg-gray-50 border-gray-200"
-                } ${player.id === playerId ? "ring-2 ring-blue-400" : ""}`}
-                >
-                <div className="flex items-center space-x-3 sm:space-x-4 min-w-0">
-                  <div className="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gray-800 text-white font-bold text-sm sm:text-lg flex-shrink-0">
-                    {index === 0 ? (
-                      <FaCrown className="text-yellow-400" />
-                    ) : index === 1 ? (
-                      <FaAward className="text-gray-400" />
-                    ) : index === 2 ? (
-                      <FaStar className="text-orange-400" />
-                    ) : (
-                      index + 1
-                    )}
-                  </div>
-                  <div className="min-w-0">
-                    <p className="text-sm sm:text-base lg:text-lg font-bold text-gray-800 truncate">
-                      {player.nickname}
-                      {player.id === playerId && (
-                        <span className="text-blue-600 font-medium text-xs sm:text-sm ml-1">(You)</span>
-                      )}
-                    </p>
-                    <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-4 text-xs sm:text-sm text-gray-600">
-                      <span>{player.correctAnswers}/{player.totalAnswers} correct</span>
-                      <span>{player.accuracy}% accuracy</span>
-                      <span>{player.avgResponseTime}s avg</span>
+          {/* Chart View */}
+          <div className="relative ">
+            <div className={`transition-all duration-500 ease-in-out ${viewMode === 'chart' ? 'opacity-100 transform translate-x-0' : 'opacity-0 transform translate-x-4 absolute'}`}>
+              {viewMode === 'chart' && (
+                <LeaderboardChart
+                  players={sortedPlayers}
+                  currentPlayerId={playerId}
+                  maxScore={maxScore}
+                />
+              )}
+            </div>
+
+            {/* List View (Original) */}
+            <div className={`transition-all duration-500 ease-in-out ${viewMode === 'list' ? 'opacity-100 transform translate-x-0' : 'opacity-0 transform -translate-x-4 absolute'}`}>
+              {viewMode === 'list' && (
+                <div className="space-y-2">
+                  {sortedPlayers.map((player, index) => (
+                    <div
+                      key={player.id}
+                      className={`flex items-center justify-between p-2 rounded-lg border-2 transition-all duration-300 ${
+                        index === 0
+                          ? "bg-[#F6D35B] border-[#F4B46D] shadow-lg"
+                          : index === 1
+                          ? "bg-white border-[#6D4C41] shadow-md"
+                          : index === 2
+                          ? "bg-[#F4B46D] border-[#F6D35B] shadow-md"
+                          : "bg-white border-[#6D4C41]"
+                      } ${player.id === playerId ? "ring-2 ring-[#10A3A2]" : ""}`}
+                    >
+                      <div className="flex items-center space-x-3 min-w-0">
+                        <div className="flex items-center justify-center w-8 h-8 rounded-full bg-[#4E342E] text-white font-bold text-sm flex-shrink-0">
+                          {index === 0 ? (
+                            <FaCrown className="text-[#F6D35B]" />
+                          ) : index === 1 ? (
+                            <FaAward className="text-[#6D4C41]" />
+                          ) : index === 2 ? (
+                            <FaStar className="text-[#F4B46D]" />
+                          ) : (
+                            index + 1
+                          )}
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <div className="flex items-center space-x-2">
+                            <span className={`text-sm font-semibold truncate ${
+                              player.id === playerId ? 'text-[#4E342E]' : 'text-[#4E342E]'
+                            }`}>
+                              {player.nickname}
+                              {player.id === playerId && (
+                                <span className="font-medium ml-1 text-[#10A3A2]">(You)</span>
+                              )}
+                            </span>
+                          </div>
+                          <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-4 text-xs text-[#6D4C41]">
+                            <span>{player.correctAnswers}/{player.totalAnswers} correct</span>
+                            <span>{player.accuracy}% accuracy</span>
+                            <span>{player.avgResponseTime}s avg</span>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="text-right flex-shrink-0">
+                        <div className="flex items-center space-x-1">
+                          <FaTrophy className="text-[#F6D35B] text-xs" />
+                          <span className="text-sm font-bold text-[#4E342E]">{player.score}</span>
+                        </div>
+                      </div>
                     </div>
-                  </div>
+                  ))}
                 </div>
-                <div className="text-right flex-shrink-0">
-                  <p className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-800">
-                    {player.score}
-                  </p>
-                  <p className="text-xs sm:text-sm text-gray-600">points</p>
-                </div>
-              </div>
-            ))}
+              )}
+            </div>
           </div>
         </div>
 
         {/* Game Statistics */}
-        <div className="bg-white rounded-2xl shadow-xl p-4 sm:p-6 mb-6 sm:mb-8">
+        <div className="bg-[#F7E2C0] rounded-2xl shadow-xl p-4 sm:p-6 mb-6 sm:mb-8 border-2 border-[#4E342E]">
           <div className="flex items-center justify-center mb-4 sm:mb-6">
-            <FaUsers className="text-2xl sm:text-3xl text-green-600 mr-2 sm:mr-3" />
-            <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-800">Game Statistics</h2>
+            <FaUsers className="text-2xl sm:text-3xl text-[#10A3A2] mr-2 sm:mr-3" />
+            <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-[#4E342E]">Game Statistics</h2>
           </div>
 
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-            <div className="bg-blue-50 p-3 sm:p-4 rounded-xl text-center border border-blue-200">
-              <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-blue-600 mb-1">
+            <div className="bg-white p-3 sm:p-4 rounded-xl text-center border-2 border-[#6D4C41] hover:bg-opacity-100 hover:scale-105 hover:shadow-lg transition-all duration-200 cursor-pointer">
+              <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-[#4E342E] mb-1">
                 {room.questions.length}
               </div>
-              <div className="text-xs sm:text-sm text-gray-600">Questions</div>
+              <div className="text-xs sm:text-sm text-[#6D4C41] group-hover:text-[#4E342E] transition-colors duration-300">Questions</div>
             </div>
-            <div className="bg-green-50 p-3 sm:p-4 rounded-xl text-center border border-green-200">
-              <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-green-600 mb-1">
+            <div className="bg-white p-3 sm:p-4 rounded-xl text-center border-2 border-[#6D4C41] hover:bg-opacity-100 hover:scale-105 hover:shadow-lg transition-all duration-200 cursor-pointer">
+              <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-[#4E342E] mb-1">
                 {Object.keys(room.players).length}
               </div>
-              <div className="text-xs sm:text-sm text-gray-600">Players</div>
+              <div className="text-xs sm:text-sm text-[#6D4C41] group-hover:text-[#4E342E] transition-colors duration-300">Players</div>
             </div>
-            <div className="bg-purple-50 p-3 sm:p-4 rounded-xl text-center border border-purple-200">
-              <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-purple-600 mb-1 capitalize">
+            <div className="bg-white p-3 sm:p-4 rounded-xl text-center border-2 border-[#6D4C41] hover:bg-opacity-100 hover:scale-105 hover:shadow-lg transition-all duration-200 cursor-pointer">
+              <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-[#4E342E] mb-1 capitalize">
                 {room.difficulty}
               </div>
-              <div className="text-xs sm:text-sm text-gray-600">Difficulty</div>
+              <div className="text-xs sm:text-sm text-[#6D4C41] group-hover:text-[#4E342E] transition-colors duration-300">Difficulty</div>
             </div>
-            <div className="bg-yellow-50 p-3 sm:p-4 rounded-xl text-center border border-yellow-200">
-              <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-yellow-600 mb-1">
+            <div className="bg-white p-3 sm:p-4 rounded-xl text-center border-2 border-[#6D4C41] hover:bg-opacity-100 hover:scale-105 hover:shadow-lg transition-all duration-200 cursor-pointer">
+              <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-[#4E342E] mb-1 ">
                 {Math.round(
                   Object.values(room.players).reduce(
                     (sum, p) => sum + (Object.values(p.answers || {}).reduce((s, a) => s + a.timeToAnswer, 0) / Object.values(p.answers || {}).length || 0),
@@ -285,7 +409,7 @@ export default function ResultsPage() {
                   ) / Object.keys(room.players).length / 1000 * 10
                 ) / 10}s
               </div>
-              <div className="text-xs sm:text-sm text-gray-600">Avg Time</div>
+              <div className="text-xs sm:text-sm text-[#6D4C41] group-hover:text-[#4E342E] transition-colors duration-300">Avg Time</div>
             </div>
           </div>
         </div>
@@ -299,8 +423,8 @@ export default function ResultsPage() {
                        transition-all duration-300 flex items-center justify-center space-x-2 sm:space-x-3 
                        shadow-lg hover:shadow-xl transform hover:scale-105 min-h-[48px] sm:min-h-[56px] ${
               isLeaving 
-                ? "bg-gray-400 text-gray-600 cursor-not-allowed"
-                : "bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700"
+                ? "bg-[#6D4C41] text-[#F7E2C0] cursor-not-allowed"
+                : "bg-[#10A3A2] text-white hover:bg-[#05717B]"
             }`}
           >
             {isLeaving ? (
@@ -316,7 +440,7 @@ export default function ResultsPage() {
             )}
           </button>
 
-          <p className="text-xs sm:text-sm text-gray-500 px-4">
+          <p className="text-xs sm:text-sm text-[#6D4C41] px-4">
             Thanks for playing! Create another room to play again.
           </p>
         </div>

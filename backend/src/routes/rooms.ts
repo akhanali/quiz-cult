@@ -402,8 +402,12 @@ router.post('/', async (req: Request, res: Response) => {
       answers: {}
     };
 
-    // Create room data (questions will be added in next step)
-    const roomData: Omit<Room, 'questions'> & { questions: Question[] } = {
+    // Generate questions for the room immediately
+    console.log(`🧠 Generating questions for room creation: ${questionCount} ${difficulty} questions about "${topic}"`);
+    const questionResult = await generateQuestionsForRoom(topic.trim(), difficulty as DifficultyLevel, questionCount);
+
+    // Create room data with questions already generated
+    const roomData: Room = {
       id: roomId,
       roomCode,
       topic: topic.trim(),
@@ -416,7 +420,7 @@ router.post('/', async (req: Request, res: Response) => {
       players: {
         [playerId]: hostPlayer
       },
-      questions: [], // Will be populated when game starts
+      questions: questionResult.questions,
       totalQuestions: questionCount,
       isGameComplete: false
     };
@@ -424,13 +428,13 @@ router.post('/', async (req: Request, res: Response) => {
     // Save room to Firebase
     await db!.ref(`rooms/${roomId}`).set(roomData);
 
-    console.log(`✅ Room ${roomCode} created successfully with ID: ${roomId}`);
+    console.log(`✅ Room ${roomCode} created successfully with ID: ${roomId} (${questionResult.questions.length} questions, AI: ${questionResult.aiGenerated})`);
 
     const response: CreateRoomResponse = {
       roomId,
       playerId,
-      aiGenerated: false, // Will be updated when questions are generated
-      fallbackReason: 'Questions will be generated when game starts'
+      aiGenerated: questionResult.aiGenerated,
+      fallbackReason: questionResult.fallbackReason
     };
 
     res.status(201).json(response);
@@ -569,7 +573,7 @@ router.get('/:roomId', async (req: Request, res: Response) => {
 
 /**
  * POST /api/rooms/:roomId/start
- * Start a game (host only) - generates questions and starts the game
+ * Start a game (host only) - starts the game with pre-generated questions
  */
 router.post('/:roomId/start', async (req: Request, res: Response) => {
   try {
@@ -617,17 +621,20 @@ router.post('/:roomId/start', async (req: Request, res: Response) => {
       } as ErrorResponse);
     }
 
-    // Generate questions for the game
-    console.log(`🧠 Generating questions for room ${roomId}...`);
-    const questionResult = await generateQuestionsForRoom(room.topic, room.difficulty, room.questionCount);
+    // Check if questions are available
+    if (!room.questions || room.questions.length === 0) {
+      return res.status(400).json({
+        error: 'No questions available for this room',
+        code: 'NO_QUESTIONS_AVAILABLE'
+      } as ErrorResponse);
+    }
 
-    // Update room with questions and start the game
+    // Start the game with pre-generated questions
     const gameStartTime = Date.now();
-    const firstQuestion = questionResult.questions[0];
+    const firstQuestion = room.questions[0];
     const questionEndTime = gameStartTime + (firstQuestion.timeLimit * 1000);
     
     await db!.ref(`rooms/${roomId}`).update({
-      questions: questionResult.questions,
       status: 'active',
       startedAt: gameStartTime,
       gameState: {
@@ -638,12 +645,10 @@ router.post('/:roomId/start', async (req: Request, res: Response) => {
       }
     });
 
-    console.log(`✅ Game started for room ${roomId} with ${playerCount} players and ${questionResult.questions.length} questions`);
+    console.log(`✅ Game started for room ${roomId} with ${playerCount} players and ${room.questions.length} questions`);
 
-    const response: StartGameResponse & { aiGenerated: boolean, fallbackReason?: string } = {
-      success: true,
-      aiGenerated: questionResult.aiGenerated,
-      fallbackReason: questionResult.fallbackReason
+    const response: StartGameResponse = {
+      success: true
     };
 
     res.status(200).json(response);

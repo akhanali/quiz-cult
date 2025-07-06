@@ -102,7 +102,7 @@ export default function CreateRoomPage() {
     {
       value: 'easy',
       icon: FaCheckCircle,
-      iconColor: 'text-green-600',
+      iconColor: 'text-[#10A3A2]',
       title: 'Easy',
       description: 'Basic recall or recognition',
       details: 'Answerable with little to no thinking. No calculations, minimal reading.',
@@ -112,7 +112,7 @@ export default function CreateRoomPage() {
     {
       value: 'medium',
       icon: FaClock,
-      iconColor: 'text-yellow-600',
+      iconColor: 'text-[#F6D35B]',
       title: 'Medium',
       description: 'Understanding and light reasoning',
       details: 'Might involve basic calculations or comparisons. Moderate reading or decision-making.',
@@ -122,7 +122,7 @@ export default function CreateRoomPage() {
     {
       value: 'hard',
       icon: FaRocket,
-      iconColor: 'text-red-600',
+      iconColor: 'text-[#F4B46D]',
       title: 'Hard',
       description: 'Critical thinking and domain knowledge',
       details: 'Could involve reading a passage, analyzing data, or solving multi-step problems.',
@@ -132,13 +132,13 @@ export default function CreateRoomPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 py-4 sm:py-8 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-[#FDF0DC] py-4 sm:py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-2xl mx-auto">
-        <h2 className="text-2xl sm:text-3xl font-semibold mb-4 sm:mb-6 text-center">Create a Quiz Room</h2>
+        <h2 className="text-2xl sm:text-3xl font-semibold mb-4 sm:mb-6 text-center text-[#4E342E]">Create a Quiz Room</h2>
         
         {/* Error Messages */}
         {error && (
-          <div className="bg-red-100 border border-red-400 text-red-700 px-3 sm:px-4 py-3 rounded mb-4 sm:mb-6 text-sm sm:text-base">
+          <div className="bg-[#F4B46D]/20 border border-[#F4B46D] text-[#4E342E] px-3 sm:px-4 py-3 rounded mb-4 sm:mb-6 text-sm sm:text-base">
             {error}
           </div>
         )}
@@ -147,61 +147,61 @@ export default function CreateRoomPage() {
         {generationStatus && (
           <div className={`px-3 sm:px-4 py-3 rounded mb-4 sm:mb-6 text-center font-medium text-sm sm:text-base ${
             generationStatus.includes('Successfully generated') 
-              ? 'bg-green-100 border border-green-400 text-green-700'
+              ? 'bg-[#10A3A2]/20 border border-[#10A3A2] text-[#4E342E]'
               : generationStatus.includes('Created')
-              ? 'bg-blue-100 border border-blue-400 text-blue-700'
-              : 'bg-blue-100 border border-blue-400 text-blue-700'
+              ? 'bg-[#F6D35B]/20 border border-[#F6D35B] text-[#4E342E]'
+              : 'bg-[#05717B]/20 border border-[#05717B] text-[#4E342E]'
           }`}>
             {generationStatus}
           </div>
         )}
         
-        <div className="bg-white rounded-xl shadow-lg p-4 sm:p-6 space-y-4 sm:space-y-6">
+        <div className="bg-[#F7E2C0] rounded-xl shadow-lg p-4 sm:p-6 space-y-4 sm:space-y-6 border border-[#4E342E]/20">
           {/* Basic Info */}
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Your Nickname</label>
+              <label className="block text-sm font-medium text-[#4E342E] mb-2">Your Nickname</label>
               <input
                 value={nickname}
                 onChange={(e) => setNickname(e.target.value)}
                 placeholder="Enter your nickname"
-                className="w-full border rounded-lg px-3 sm:px-4 py-2 sm:py-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent
-                         text-base sm:text-lg min-h-[44px] sm:min-h-[48px]"
+                className="w-full border border-[#4E342E]/30 rounded-lg px-3 sm:px-4 py-2 sm:py-3 focus:ring-2 focus:ring-[#10A3A2] focus:border-[#10A3A2]
+                         text-base sm:text-lg min-h-[44px] sm:min-h-[48px] bg-[#FDF0DC] text-[#4E342E] placeholder-[#6D4C41]/60"
                 disabled={isLoading}
               />
             </div>
             
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-[#4E342E] mb-2">
                 Quiz Topic
               </label>
               <input
                 value={topic}
                 onChange={(e) => handleTopicChange(e.target.value)}
                 placeholder="e.g., Science, History, Sports, Movies"
-                className={`w-full border rounded-lg px-3 sm:px-4 py-2 sm:py-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent
-                          text-base sm:text-lg min-h-[44px] sm:min-h-[48px] ${
-                  topicError ? 'border-red-500' : ''
+                className={`w-full border rounded-lg px-3 sm:px-4 py-2 sm:py-3 focus:ring-2 focus:ring-[#10A3A2] focus:border-[#10A3A2]
+                          text-base sm:text-lg min-h-[44px] sm:min-h-[48px] bg-[#FDF0DC] text-[#4E342E] placeholder-[#6D4C41]/60 ${
+                  topicError ? 'border-[#F4B46D]' : 'border-[#4E342E]/30'
                 }`}
                 disabled={isLoading}
               />
               {topicError && (
-                <p className="text-red-600 text-sm mt-1">{topicError}</p>
+                <p className="text-[#F4B46D] text-sm mt-1">{topicError}</p>
               )}
             </div>
           </div>
 
           {/* Difficulty Selection */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-3 sm:mb-4">Difficulty Level</label>
+            <label className="block text-sm font-medium text-[#4E342E] mb-3 sm:mb-4">Difficulty Level</label>
             <div className="space-y-3">
               {difficultyOptions.map((option) => (
                 <div
                   key={option.value}
                   className={`relative rounded-lg border-2 p-3 sm:p-4 cursor-pointer transition-all ${
                     difficulty === option.value
-                      ? 'border-blue-500 bg-blue-50'
-                      : 'border-gray-200 hover:border-gray-300 bg-white'
+                      ? 'border-[#10A3A2] bg-[#10A3A2]/10'
+                      : 'border-[#4E342E]/30 hover:border-[#4E342E]/50 bg-[#FDF0DC]'
                   }`}
                   onClick={() => setDifficulty(option.value)}
                 >
@@ -210,23 +210,23 @@ export default function CreateRoomPage() {
                       type="radio"
                       checked={difficulty === option.value}
                       onChange={() => setDifficulty(option.value)}
-                      className="mt-1 mr-3 w-4 h-4 sm:w-5 sm:h-5"
+                      className="mt-1 mr-3 w-4 h-4 sm:w-5 sm:h-5 text-[#10A3A2] focus:ring-[#10A3A2]"
                       disabled={isLoading}
                     />
                     <div className="flex-1 min-w-0">
                       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-2">
                         <div className="flex items-center mb-1 sm:mb-0">
                           <option.icon className={`text-lg sm:text-xl mr-2 ${option.iconColor}`} />
-                          <span className="font-semibold text-base sm:text-lg">{option.title}</span>
+                          <span className="font-semibold text-base sm:text-lg text-[#4E342E]">{option.title}</span>
                         </div>
-                        <span className="text-xs sm:text-sm text-gray-600 flex items-center">
+                        <span className="text-xs sm:text-sm text-[#6D4C41] flex items-center">
                           <MdAccessTime className="mr-1" />
                           {option.time}
                         </span>
                       </div>
-                      <p className="text-gray-700 font-medium mb-1 text-sm sm:text-base">{option.description}</p>
-                      <p className="text-gray-600 text-xs sm:text-sm mb-2">{option.details}</p>
-                      <p className="text-gray-500 text-xs">
+                      <p className="text-[#4E342E] font-medium mb-1 text-sm sm:text-base">{option.description}</p>
+                      <p className="text-[#6D4C41] text-xs sm:text-sm mb-2">{option.details}</p>
+                      <p className="text-[#6D4C41]/80 text-xs">
                         <strong>Examples:</strong> {option.examples}
                       </p>
                     </div>
@@ -238,18 +238,18 @@ export default function CreateRoomPage() {
 
           {/* Question Count */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Number of Questions</label>
+            <label className="block text-sm font-medium text-[#4E342E] mb-2">Number of Questions</label>
             <input
               type="number"
               value={count}
               onChange={(e) => setCount(Number(e.target.value))}
               min={1}
               max={20}
-              className="w-full border rounded-lg px-3 sm:px-4 py-2 sm:py-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent
-                       text-base sm:text-lg min-h-[44px] sm:min-h-[48px]"
+              className="w-full border border-[#4E342E]/30 rounded-lg px-3 sm:px-4 py-2 sm:py-3 focus:ring-2 focus:ring-[#10A3A2] focus:border-[#10A3A2]
+                       text-base sm:text-lg min-h-[44px] sm:min-h-[48px] bg-[#FDF0DC] text-[#4E342E]"
               disabled={isLoading}
             />
-            <p className="text-gray-500 text-sm mt-1">Choose between 1-20 questions</p>
+            <p className="text-[#6D4C41] text-sm mt-1">Choose between 1-20 questions</p>
           </div>
 
           {/* Create Button */}
@@ -258,8 +258,8 @@ export default function CreateRoomPage() {
             className={`w-full px-4 sm:px-6 py-3 sm:py-4 rounded-lg font-semibold text-base sm:text-lg transition-colors
                        min-h-[48px] sm:min-h-[56px] ${
               isLoading 
-                ? 'bg-gray-400 cursor-not-allowed' 
-                : 'bg-green-500 hover:bg-green-600'
+                ? 'bg-[#6D4C41] cursor-not-allowed' 
+                : 'bg-[#10A3A2] hover:bg-[#05717B]'
             } text-white disabled:opacity-50 disabled:cursor-not-allowed`}
             disabled={isLoading || !!topicError}
           >
@@ -270,7 +270,7 @@ export default function CreateRoomPage() {
           </button>
 
           {/* Information Footer */}
-          <div className="text-center text-gray-500 text-xs sm:text-sm">
+          <div className="text-center text-[#6D4C41] text-xs sm:text-sm">
             <p className="flex items-center justify-center">
               <FaBook className="mr-2" />
               Create engaging quiz questions on any topic you choose!

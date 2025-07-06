@@ -15,7 +15,8 @@ import {
   FaTrophy,
   FaArrowLeft,
   FaFlag,
-  FaSpinner
+  FaSpinner,
+  FaCross
 } from 'react-icons/fa';
 import { 
   MdQuiz, 
@@ -422,12 +423,12 @@ export default function QuizPage() {
                         {selectedOption === question.correctOption ? (
                           <FaCheckCircle className="text-green-600 text-xl" />
                         ) : (
-                          <FaClock className="text-red-600 text-xl" />
+                          <FaCross className="text-red-600 text-xl" />
                         )}
                         <p className={`font-bold text-lg ${
                           selectedOption === question.correctOption ? "text-green-700" : "text-red-700"
                         }`}>
-                          Your answer: {selectedOption} {selectedOption === question.correctOption ? "Correct!" : "Incorrect"}
+                          Your answer is {selectedOption === question.correctOption ? "Correct!" : "Incorrect"}
                         </p>
                       </div>
                       {selectedOption === question.correctOption && (
