@@ -6,6 +6,7 @@ import { validateTopic } from '../services/questionGeneration';
 import { FaCheckCircle, FaClock, FaRocket, FaRobot, FaFileAlt, FaCheck, FaBook, FaBullseye } from 'react-icons/fa';
 import { MdAccessTime } from 'react-icons/md';
 import type { DifficultyLevel } from '../../../shared/types';
+import quizDojoLogo from '../assets/quiz-dojo-simple-logo.png';
 
 export default function CreateRoomPage() {
   const [nickname, setNickname] = useState('');
@@ -134,7 +135,17 @@ export default function CreateRoomPage() {
   return (
     <div className="min-h-screen bg-[#FDF0DC] py-4 sm:py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-2xl mx-auto">
-        <h2 className="text-2xl sm:text-3xl font-semibold mb-4 sm:mb-6 text-center text-[#4E342E]">Create a Quiz Room</h2>
+        {/* Header Section */}
+        <div className="text-center mb-6 sm:mb-8">
+          <div className="flex items-center justify-center mb-4">
+            <img 
+              src={quizDojoLogo} 
+              alt="Quiz Dojo" 
+              className="h-10 sm:h-12 w-auto"
+            />
+          </div>
+          <h2 className="text-2xl sm:text-3xl font-semibold mb-4 sm:mb-6 text-center text-[#4E342E]">Create a Quiz Room</h2>
+        </div>
         
         {/* Error Messages */}
         {error && (

@@ -24,6 +24,7 @@ import {
 import { 
   IoSparklesSharp 
 } from 'react-icons/io5';
+import quizDojoLogo from '../assets/quiz-dojo-simple-logo.png';
 
 export default function LobbyPage() {
   const { id } = useParams<{ id: string }>();
@@ -98,10 +99,10 @@ export default function LobbyPage() {
 
   if (!room) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 flex items-center justify-center">
-        <div className="bg-white rounded-2xl shadow-xl p-8 text-center">
-          <div className="animate-spin w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full mx-auto mb-4"></div>
-          <p className="text-gray-600 text-lg">Loading room...</p>
+      <div className="min-h-screen bg-[#FDF0DC] flex items-center justify-center">
+        <div className="bg-[#F7E2C0] rounded-2xl shadow-xl p-8 text-center border border-[#4E342E]/20">
+          <div className="animate-spin w-12 h-12 border-4 border-[#10A3A2] border-t-transparent rounded-full mx-auto mb-4"></div>
+          <p className="text-[#6D4C41] text-lg">Loading room...</p>
         </div>
       </div>
     );
@@ -113,20 +114,20 @@ export default function LobbyPage() {
       easy: { 
         label: 'Easy', 
         time: '10-15s per question', 
-        color: 'text-green-600 bg-green-50 border-green-200',
-        iconColor: 'text-green-600'
+        color: 'text-[#10A3A2] bg-[#10A3A2]/10 border-[#10A3A2]/30',
+        iconColor: 'text-[#10A3A2]'
       },
       medium: { 
         label: 'Medium', 
         time: '15-25s per question', 
-        color: 'text-yellow-600 bg-yellow-50 border-yellow-200',
-        iconColor: 'text-yellow-600'
+        color: 'text-[#F6D35B] bg-[#F6D35B]/10 border-[#F6D35B]/30',
+        iconColor: 'text-[#F6D35B]'
       },
       hard: { 
         label: 'Hard', 
         time: '30+ per question', 
-        color: 'text-red-600 bg-red-50 border-red-200',
-        iconColor: 'text-red-600'
+        color: 'text-[#F4B46D] bg-[#F4B46D]/10 border-[#F4B46D]/30',
+        iconColor: 'text-[#F4B46D]'
       }
     };
     return difficultyMap[difficulty];
@@ -145,42 +146,45 @@ export default function LobbyPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50">
+    <div className="min-h-screen bg-[#FDF0DC]">
       <div className="px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
         <div className="max-w-5xl mx-auto">
           {/* Header Section */}
           <div className="text-center mb-6 sm:mb-8">
             <div className="flex items-center justify-center mb-4">
-              <MdQuiz className="text-4xl sm:text-5xl text-blue-600 mr-2 sm:mr-3" />
-              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-800">Quiz Lobby</h1>
+              <img 
+                src={quizDojoLogo} 
+                alt="Quiz Dojo" 
+                className="h-10 sm:h-12 w-auto"
+              />
             </div>
             <div className="flex items-center justify-center space-x-2 mb-2">
-              <FaUsers className="text-xl sm:text-2xl text-purple-600" />
-              <p className="text-lg sm:text-xl text-gray-600">Waiting for players to join...</p>
+              <FaUsers className="text-xl sm:text-2xl text-[#10A3A2]" />
+              <p className="text-lg sm:text-xl text-[#6D4C41]">Waiting for players to join...</p>
             </div>
           </div>
 
           {/* Room Info Grid */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
             {/* Room Code */}
-            <div className="bg-white rounded-2xl shadow-lg p-4 sm:p-6 text-center border border-blue-100">
+            <div className="bg-[#F7E2C0] rounded-2xl shadow-lg p-4 sm:p-6 text-center border border-[#4E342E]/20">
               <div className="flex items-center justify-center mb-3">
-                <FaCopy className="text-xl sm:text-2xl text-blue-600 mr-2" />
-                <h3 className="text-base sm:text-lg font-bold text-blue-800">Room Code</h3>
+                <FaCopy className="text-xl sm:text-2xl text-[#10A3A2] mr-2" />
+                <h3 className="text-base sm:text-lg font-bold text-[#4E342E]">Room Code</h3>
               </div>
               <div className="relative">
-                <p className="text-2xl sm:text-3xl font-bold text-blue-600 font-mono tracking-wider mb-3">
+                <p className="text-2xl sm:text-3xl font-bold text-[#10A3A2] font-mono tracking-wider mb-3">
                   {room.roomCode}
                 </p>
                 <button
                   onClick={copyRoomCode}
-                  className="bg-blue-100 hover:bg-blue-200 text-blue-700 px-3 sm:px-4 py-2 rounded-lg 
-                           transition-colors duration-300 flex items-center space-x-2 mx-auto text-sm sm:text-base"
+                  className="bg-[#10A3A2]/20 hover:bg-[#10A3A2]/30 text-[#10A3A2] px-3 sm:px-4 py-2 rounded-lg 
+                           transition-colors duration-300 flex items-center space-x-2 mx-auto text-sm sm:text-base border border-[#10A3A2]/30"
                 >
                   {copiedCode ? (
                     <>
-                      <FaCheckCircle className="text-green-600" />
-                      <span className="text-green-600">Copied!</span>
+                      <FaCheckCircle className="text-[#F6D35B]" />
+                      <span className="text-[#F6D35B]">Copied!</span>
                     </>
                   ) : (
                     <>
@@ -193,48 +197,49 @@ export default function LobbyPage() {
             </div>
 
             {/* Topic */}
-            <div className="bg-white rounded-2xl shadow-lg p-4 sm:p-6 text-center border border-purple-100">
+            <div className="bg-[#F7E2C0] rounded-2xl shadow-lg p-4 sm:p-6 text-center border border-[#4E342E]/20">
               <div className="flex items-center justify-center mb-3">
-                <MdTopic className="text-xl sm:text-2xl text-purple-600 mr-2" />
-                <h3 className="text-base sm:text-lg font-bold text-purple-800">Topic</h3>
+                <MdTopic className="text-xl sm:text-2xl text-[#05717B] mr-2" />
+                <h3 className="text-base sm:text-lg font-bold text-[#4E342E]">Topic</h3>
               </div>
-              <p className="text-xl sm:text-2xl font-bold text-purple-600 break-words">{room.topic}</p>
+              <p className="text-xl sm:text-2xl font-bold text-[#05717B] break-words">{room.topic}</p>
             </div>
 
             {/* Difficulty */}
-            <div className={`bg-white rounded-2xl shadow-lg p-4 sm:p-6 text-center border ${
-              difficultyInfo.color.includes('green') ? 'border-green-100' : 
-              difficultyInfo.color.includes('yellow') ? 'border-yellow-100' : 'border-red-100'
-            }`}>
+            <div className={`bg-[#F7E2C0] rounded-2xl shadow-lg p-4 sm:p-6 text-center border border-[#4E342E]/20`}>
               <div className="flex items-center justify-center mb-3">
-                {difficultyInfo.label === 'Easy' && <FaCheckCircle className={`text-xl sm:text-2xl mr-2 ${difficultyInfo.iconColor}`} />}
-                {difficultyInfo.label === 'Medium' && <FaClock className={`text-xl sm:text-2xl mr-2 ${difficultyInfo.iconColor}`} />}
-                {difficultyInfo.label === 'Hard' && <FaRocket className={`text-xl sm:text-2xl mr-2 ${difficultyInfo.iconColor}`} />}
-                <h3 className="text-base sm:text-lg font-bold">Difficulty</h3>
+                {difficultyInfo.label === 'Easy' && <FaCheckCircle className="text-xl sm:text-2xl mr-2 text-[#10A3A2]" />}
+                {difficultyInfo.label === 'Medium' && <FaClock className="text-xl sm:text-2xl mr-2 text-[#05717B]" />}
+                {difficultyInfo.label === 'Hard' && <FaRocket className="text-xl sm:text-2xl mr-2 text-[#F4B46D]" />}
+                <h3 className="text-base sm:text-lg font-bold text-[#4E342E]">Difficulty</h3>
               </div>
               <div className="space-y-1">
-                <p className="text-xl sm:text-2xl font-bold">{difficultyInfo.label}</p>
-                <p className="text-xs sm:text-sm opacity-75">{difficultyInfo.time}</p>
+                <p className={`text-xl sm:text-2xl font-bold ${
+                  difficultyInfo.label === 'Easy' ? 'text-[#10A3A2]' :
+                  difficultyInfo.label === 'Medium' ? 'text-[#05717B]' :
+                  'text-[#F4B46D]'
+                }`}>{difficultyInfo.label}</p>
+                <p className="text-xs sm:text-sm text-[#6D4C41]">{difficultyInfo.time}</p>
               </div>
             </div>
           </div>
 
           {/* Questions Count */}
-          <div className="bg-white rounded-2xl shadow-lg p-4 sm:p-6 mb-6 sm:mb-8 border border-gray-100">
+          <div className="bg-[#F7E2C0] rounded-2xl shadow-lg p-4 sm:p-6 mb-6 sm:mb-8 border border-[#4E342E]/20">
             <div className="flex items-center justify-center space-x-3">
-              <FaQuestionCircle className="text-2xl sm:text-3xl text-gray-600" />
+              <FaQuestionCircle className="text-2xl sm:text-3xl text-[#F4B46D]" />
               <div className="text-center">
-                <p className="text-xl sm:text-2xl font-bold text-gray-800">{room.totalQuestions} Questions</p>
-                <p className="text-sm sm:text-base text-gray-600">Ready to challenge you</p>
+                <p className="text-xl sm:text-2xl font-bold text-[#4E342E]">{room.totalQuestions} Questions</p>
+                <p className="text-sm sm:text-base text-[#6D4C41]">Ready to challenge you</p>
               </div>
             </div>
           </div>
 
           {/* Players Section */}
-          <div className="bg-white rounded-2xl shadow-lg p-4 sm:p-6 mb-6 sm:mb-8 border border-gray-100">
+          <div className="bg-[#F7E2C0] rounded-2xl shadow-lg p-4 sm:p-6 mb-6 sm:mb-8 border border-[#4E342E]/20">
             <div className="flex items-center mb-4 sm:mb-6">
-              <FaUsers className="text-xl sm:text-2xl text-gray-700 mr-3" />
-              <h3 className="text-xl sm:text-2xl font-bold text-gray-800">
+              <FaUsers className="text-xl sm:text-2xl text-[#10A3A2] mr-3" />
+              <h3 className="text-xl sm:text-2xl font-bold text-[#4E342E]">
                 Players ({Object.keys(room.players).length})
               </h3>
             </div>
@@ -245,32 +250,32 @@ export default function LobbyPage() {
                   key={roomPlayer.id}
                   className={`flex items-center justify-between p-3 sm:p-4 rounded-xl border-2 transition-all duration-300 ${
                     roomPlayer.isHost 
-                      ? 'bg-gradient-to-r from-yellow-50 to-orange-50 border-yellow-300 shadow-md' 
-                      : 'bg-gray-50 border-gray-200 hover:border-gray-300'
+                      ? 'bg-[#F4B46D]/30 border-[#F4B46D]/60 shadow-md' 
+                      : 'bg-[#FDF0DC] border-[#4E342E]/30 hover:border-[#4E342E]/50'
                   }`}
                 >
                   <div className="flex items-center space-x-3 sm:space-x-4 min-w-0">
                     <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center flex-shrink-0 ${
-                      roomPlayer.isHost ? 'bg-yellow-200' : 'bg-blue-100'
+                      roomPlayer.isHost ? 'bg-[#F4B46D]/40' : 'bg-[#10A3A2]/20'
                     }`}>
                       {roomPlayer.isHost ? (
-                        <FaCrown className="text-lg sm:text-2xl text-yellow-600" />
+                        <FaCrown className="text-lg sm:text-2xl text-[#F4B46D]" />
                       ) : (
-                        <FaUser className="text-lg sm:text-2xl text-blue-600" />
+                        <FaUser className="text-lg sm:text-2xl text-[#10A3A2]" />
                       )}
                     </div>
                     <div className="min-w-0">
-                      <span className="text-base sm:text-lg font-bold text-gray-800 block truncate">
+                      <span className="text-base sm:text-lg font-bold text-[#4E342E] block truncate">
                         {roomPlayer.nickname}
                       </span>
                       {roomPlayer.id === player?.id && (
-                        <span className="text-blue-600 font-medium text-sm">(You)</span>
+                        <span className="text-[#10A3A2] font-medium text-sm">(You)</span>
                       )}
                     </div>
                   </div>
                   {roomPlayer.isHost && (
                     <div className="flex items-center space-x-2 flex-shrink-0">
-                      <div className="bg-yellow-200 text-yellow-800 px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-bold flex items-center space-x-1">
+                      <div className="bg-[#F4B46D]/50 text-[#4E342E] px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-bold flex items-center space-x-1 border border-[#F4B46D]/70">
                         <FaCrown className="text-xs" />
                         <span className="hidden sm:inline">Host</span>
                       </div>
@@ -288,17 +293,17 @@ export default function LobbyPage() {
               player &&
               player.id === room.hostId &&
               room.status === "waiting" && (
-                <div className="bg-white rounded-2xl shadow-lg p-6 sm:p-8 border border-green-100">
+                <div className="bg-[#F7E2C0] rounded-2xl shadow-lg p-6 sm:p-8 border border-[#4E342E]/20">
                   <div className="flex items-center justify-center mb-4">
-                    <IoSparklesSharp className="text-2xl sm:text-3xl text-green-600 mr-2" />
-                    <h3 className="text-xl sm:text-2xl font-bold text-gray-800">Ready to Start?</h3>
+                    <IoSparklesSharp className="text-2xl sm:text-3xl text-[#F4B46D] mr-2" />
+                    <h3 className="text-xl sm:text-2xl font-bold text-[#4E342E]">Ready to Start?</h3>
                   </div>
-                  <p className="text-sm sm:text-base text-gray-600 mb-4 sm:mb-6 px-4">
+                  <p className="text-sm sm:text-base text-[#6D4C41] mb-4 sm:mb-6 px-4">
                     All players are waiting for you to begin the quiz!
                   </p>
                   <button 
                     onClick={() => startGame(room.id)}
-                    className="bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 
+                    className="bg-[#10A3A2] hover:bg-[#05717B] 
                              text-white font-bold py-3 sm:py-4 px-6 sm:px-8 rounded-xl transition-all duration-300 
                              text-base sm:text-xl shadow-lg hover:shadow-xl transform hover:scale-105
                              flex items-center space-x-2 sm:space-x-3 mx-auto min-h-[48px] sm:min-h-[56px]"
@@ -306,7 +311,7 @@ export default function LobbyPage() {
                     <FaRocket className="text-lg sm:text-2xl" />
                     <span>Start Quiz</span>
                   </button>
-                  <p className="text-gray-500 text-xs sm:text-sm mt-3">
+                  <p className="text-[#6D4C41] text-xs sm:text-sm mt-3">
                     Only the host can start the quiz
                   </p>
                 </div>
@@ -317,18 +322,18 @@ export default function LobbyPage() {
               player &&
               player.id !== room.hostId &&
               room.status === "waiting" && (
-                <div className="bg-white rounded-2xl shadow-lg p-6 sm:p-8 border border-blue-100">
+                <div className="bg-[#F7E2C0] rounded-2xl shadow-lg p-6 sm:p-8 border border-[#4E342E]/20">
                   <div className="flex items-center justify-center mb-4">
-                    <MdAccessTime className="text-2xl sm:text-3xl text-blue-600 mr-2 animate-pulse" />
-                    <h3 className="text-xl sm:text-2xl font-bold text-gray-800">Almost Ready!</h3>
+                    <MdAccessTime className="text-2xl sm:text-3xl text-[#10A3A2] mr-2 animate-pulse" />
+                    <h3 className="text-xl sm:text-2xl font-bold text-[#4E342E]">Almost Ready!</h3>
                   </div>
-                  <p className="text-sm sm:text-base text-gray-600 text-lg mb-4">
+                  <p className="text-sm sm:text-base text-[#6D4C41] text-lg mb-4">
                     Waiting for the host to start the quiz...
                   </p>
-                  <div className="flex items-center justify-center space-x-2 text-blue-600">
-                    <div className="w-2 h-2 bg-blue-600 rounded-full animate-bounce"></div>
-                    <div className="w-2 h-2 bg-blue-600 rounded-full animate-bounce" style={{animationDelay: '0.1s'}}></div>
-                    <div className="w-2 h-2 bg-blue-600 rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
+                  <div className="flex items-center justify-center space-x-2 text-[#10A3A2]">
+                    <div className="w-2 h-2 bg-[#10A3A2] rounded-full animate-bounce"></div>
+                    <div className="w-2 h-2 bg-[#10A3A2] rounded-full animate-bounce" style={{animationDelay: '0.1s'}}></div>
+                    <div className="w-2 h-2 bg-[#10A3A2] rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
                   </div>
                 </div>
               )}
