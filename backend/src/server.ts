@@ -31,13 +31,61 @@ const allowedOrigins = [
   'https://quiz-cult-frontend.azurewebsites.net', // Alternative Azure domain
   'https://quiz-cult.azurestaticapps.net', // Static Web Apps domain
   'https://quiz-cult.z13.web.core.windows.net', // Azure Storage static website
+  'https://quizdojo.live', // Custom domain (without trailing slash)
+  'https://quizdojo.live/', // Custom domain (with trailing slash)
   ...env.corsOrigins, // Additional origins from environment variable
 ];
+
+// Helper function to normalize URLs (remove trailing slash)
+const normalizeUrl = (url: string): string => {
+  return url.endsWith('/') ? url.slice(0, -1) : url;
+};
+
+// Helper function to check if origin is allowed (with wildcard support)
+const isOriginAllowed = (origin: string): boolean => {
+  // Normalize the origin URL
+  const normalizedOrigin = normalizeUrl(origin);
+  
+  // Check exact matches (normalized)
+  for (const allowedOrigin of allowedOrigins) {
+    const normalizedAllowed = normalizeUrl(allowedOrigin);
+    if (normalizedOrigin === normalizedAllowed) {
+      return true;
+    }
+  }
+  
+  // Check wildcard patterns for Azure Static Web Apps
+  if (normalizedOrigin.endsWith('.azurestaticapps.net')) {
+    return true;
+  }
+  
+  // Check wildcard patterns for Azure App Service
+  if (normalizedOrigin.endsWith('.azurewebsites.net')) {
+    return true;
+  }
+  
+  return false;
+};
 
 // Create Socket.io server
 const io = new SocketServer(server, {
   cors: {
-    origin: allowedOrigins,
+    origin: function (origin, callback) {
+      // Allow requests with no origin (like mobile apps or curl requests)
+      if (!origin) return callback(null, true);
+      
+      if (isOriginAllowed(origin)) {
+        if (env.debug) {
+          console.log(`✅ CORS allowed origin: ${origin}`);
+        }
+        callback(null, true);
+      } else {
+        console.log(`🚫 CORS blocked origin: ${origin}`);
+        console.log(`📋 Allowed origins: ${allowedOrigins.join(', ')}`);
+        console.log(`🌐 Wildcard patterns: *.azurestaticapps.net, *.azurewebsites.net`);
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
     methods: ['GET', 'POST'],
     credentials: true
   }
@@ -49,7 +97,7 @@ app.use(cors({
     // Allow requests with no origin (like mobile apps or curl requests)
     if (!origin) return callback(null, true);
     
-    if (allowedOrigins.indexOf(origin) !== -1) {
+    if (isOriginAllowed(origin)) {
       if (env.debug) {
         console.log(`✅ CORS allowed origin: ${origin}`);
       }
@@ -57,6 +105,7 @@ app.use(cors({
     } else {
       console.log(`🚫 CORS blocked origin: ${origin}`);
       console.log(`📋 Allowed origins: ${allowedOrigins.join(', ')}`);
+      console.log(`🌐 Wildcard patterns: *.azurestaticapps.net, *.azurewebsites.net`);
       callback(new Error('Not allowed by CORS'));
     }
   },

@@ -33,12 +33,17 @@ export interface EnvironmentConfig {
  * Parse and validate environment variables
  */
 const parseEnvironment = (): EnvironmentConfig => {
+  // Parse CORS origins from environment variable
+  const corsOriginsFromEnv = process.env.CORS_ORIGINS 
+    ? process.env.CORS_ORIGINS.split(',').map(origin => origin.trim()).filter(origin => origin.length > 0)
+    : [];
+
   return {
     // Server configuration
     port: parseInt(process.env.PORT || '3001', 10),
     nodeEnv: process.env.NODE_ENV || 'development',
     frontendUrl: process.env.FRONTEND_URL || 'http://localhost:5173',
-    corsOrigins: process.env.CORS_ORIGINS ? process.env.CORS_ORIGINS.split(',') : [],
+    corsOrigins: corsOriginsFromEnv,
     
     // Firebase configuration
     firebaseDbUrl: process.env.VITE_FIREBASE_DATABASE_URL || 'https://quiz-cult-default-rtdb.europe-west1.firebasedatabase.app',
@@ -95,6 +100,7 @@ const printEnvironmentStatus = (config: EnvironmentConfig) => {
   console.log(`   Node Environment: ${config.nodeEnv}`);
   console.log(`   Server Port: ${config.port}`);
   console.log(`   Frontend URL: ${config.frontendUrl}`);
+  console.log(`   CORS Origins: ${config.corsOrigins.length > 0 ? config.corsOrigins.join(', ') : 'None (using defaults)'}`);
   console.log(`   Firebase DB URL: ${config.firebaseDbUrl}`);
   console.log(`   Firebase Credentials: ${config.firebaseServiceAccount ? '✅ Environment Variable' : config.googleApplicationCredentials ? '✅ File Path' : '❌ Missing'}`);
   console.log(`   OpenAI API Key: ${config.openaiApiKey ? '✅ Configured' : '⚠️ Not Set'}`);
@@ -126,6 +132,9 @@ const printSetupInstructions = (errors: string[]) => {
   console.log('   FRONTEND_URL=http://localhost:5173');
   console.log('   DEBUG=true');
   console.log('');
+  console.log('   # CORS Configuration (optional - for additional domains)');
+  console.log('   CORS_ORIGINS=https://yourdomain.com,https://anotherdomain.com');
+  console.log('');
   console.log('🔥 Firebase Setup:');
   console.log('   1. Go to Firebase Console > Project Settings > Service Accounts');
   console.log('   2. Click "Generate new private key"');
@@ -136,6 +145,12 @@ const printSetupInstructions = (errors: string[]) => {
   console.log('   1. Go to https://platform.openai.com/api-keys');
   console.log('   2. Create a new API key');
   console.log('   3. Copy the key (starts with sk-) to OPENAI_API_KEY');
+  console.log('');
+  console.log('🌐 CORS Setup:');
+  console.log('   1. Add additional domains to CORS_ORIGINS (comma-separated)');
+  console.log('   2. Azure Static Web Apps domains are automatically allowed');
+  console.log('   3. Azure App Service domains are automatically allowed');
+  console.log('   4. Custom domains should be added to CORS_ORIGINS');
 };
 
 // Parse and validate environment
