@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { createRoom } from '../api/createRoom';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { presenceManager } from '../api/presenceManager';
 import { validateTopic } from '../services/questionGeneration';
-import { FaCheckCircle, FaClock, FaRocket, FaRobot, FaFileAlt, FaCheck, FaBook, FaBullseye } from 'react-icons/fa';
+import { FaCheckCircle, FaClock, FaRocket, FaRobot, FaFileAlt, FaCheck, FaBook, FaBullseye, FaHome } from 'react-icons/fa';
 import { MdAccessTime } from 'react-icons/md';
 import type { DifficultyLevel } from '../../../shared/types';
 import quizDojoLogo from '../assets/quiz-dojo-simple-logo.png';
@@ -12,13 +12,25 @@ export default function CreateRoomPage() {
   const [nickname, setNickname] = useState('');
   const [topic, setTopic] = useState('');
   const [difficulty, setDifficulty] = useState('medium');
-  const [count, setCount] = useState(5);
+  const [count, setCount] = useState('5');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [generationStatus, setGenerationStatus] = useState('');
   const [topicError, setTopicError] = useState('');
 
   const navigate = useNavigate();
+
+  // Handle count input change - allow deletion
+  const handleCountChange = (value: string) => {
+    setCount(value);
+  };
+
+  // Reset to default when leaving field empty
+  const handleCountBlur = () => {
+    if (count === '') {
+      setCount('5');
+    }
+  };
 
   // Real-time topic validation
   const handleTopicChange = (value: string) => {
@@ -56,8 +68,9 @@ export default function CreateRoomPage() {
       return;
     }
     
-    if (count < 1 || count > 20) {
-      setError('Number of questions must be between 1 and 20');
+    const questionCount = Number(count);
+    if (questionCount < 1 || questionCount > 50) {
+      setError('Number of questions must be between 1 and 50');
       return;
     }
     
@@ -65,18 +78,18 @@ export default function CreateRoomPage() {
     
     try {
       // Show appropriate generation status
-      setGenerationStatus(`Creating ${count} ${difficulty} questions...`);
+      setGenerationStatus(`Creating ${questionCount} ${difficulty} questions...`);
       
-      const roomData = await createRoom(nickname, topic, difficulty as DifficultyLevel, count);
+      const roomData = await createRoom(nickname, topic, difficulty as DifficultyLevel, questionCount);
       
       // Show success message with generation result
       if (roomData.aiGenerated) {
-        setGenerationStatus(`Successfully generated ${count} AI questions about "${topic}"!`);
+        setGenerationStatus(`Successfully generated ${questionCount} AI questions about "${topic}"!`);
       } else {
         if (roomData.fallbackReason) {
-          setGenerationStatus(`Created ${count} questions (${roomData.fallbackReason})`);
+          setGenerationStatus(`Created ${questionCount} questions (${roomData.fallbackReason})`);
         } else {
-          setGenerationStatus(`Created ${count} questions successfully`);
+          setGenerationStatus(`Created ${questionCount} questions successfully`);
         }
       }
       
@@ -140,7 +153,7 @@ export default function CreateRoomPage() {
           <div className="flex items-center justify-center mb-4">
             <img 
               src={quizDojoLogo} 
-              alt="Quiz Dojo" 
+              alt="Logo" 
               className="h-10 sm:h-12 w-auto"
             />
           </div>
@@ -253,14 +266,15 @@ export default function CreateRoomPage() {
             <input
               type="number"
               value={count}
-              onChange={(e) => setCount(Number(e.target.value))}
+              onChange={(e) => handleCountChange(e.target.value)}
+              onBlur={handleCountBlur}
               min={1}
               max={20}
               className="w-full border border-[#4E342E]/30 rounded-lg px-3 sm:px-4 py-2 sm:py-3 focus:ring-2 focus:ring-[#10A3A2] focus:border-[#10A3A2]
                        text-base sm:text-lg min-h-[44px] sm:min-h-[48px] bg-[#FDF0DC] text-[#4E342E]"
               disabled={isLoading}
             />
-            <p className="text-[#6D4C41] text-sm mt-1">Choose between 1-20 questions</p>
+            <p className="text-[#6D4C41] text-sm mt-1">Choose between 1-50 questions</p>
           </div>
 
           {/* Create Button */}
@@ -287,6 +301,18 @@ export default function CreateRoomPage() {
               Create engaging quiz questions on any topic you choose!
             </p>
           </div>
+        </div>
+
+        {/* Back to Home */}
+        <div className="text-center mt-6">
+          <Link 
+            to="/" 
+            className="inline-flex items-center space-x-2 text-[#6D4C41] hover:text-[#4E342E] 
+                     transition-colors duration-300 font-medium text-sm sm:text-base py-2 px-4 rounded-lg hover:bg-[#F7E2C0]/50"
+          >
+            <FaHome className="text-base sm:text-lg" />
+            <span>Back to Home</span>
+          </Link>
         </div>
       </div>
     </div>

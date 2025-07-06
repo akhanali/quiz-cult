@@ -117,7 +117,7 @@ export default function HomePage() {
             <div className="text-center mb-6 sm:mb-8">
               <div className="flex items-center justify-center mb-4">
                 <IoSparklesSharp className="text-3xl sm:text-4xl text-[#F4B46D] mr-2" />
-                <h2 className="text-2xl sm:text-3xl font-bold text-[#4E342E]">Why Choose QuizCult?</h2>
+                <h2 className="text-2xl sm:text-3xl font-bold text-[#4E342E]">Why Choose Quiz Dojo?</h2>
               </div>
             </div>
 

@@ -258,23 +258,23 @@ export default function QuizPage() {
       easy: { 
         icon: FaCheckCircle, 
         label: 'Easy', 
-        color: 'text-green-600',
-        bgColor: 'bg-green-50',
-        borderColor: 'border-green-200'
+        color: 'text-teal-600',
+        bgColor: 'bg-teal-50',
+        borderColor: 'border-teal-200'
       },
       medium: { 
         icon: FaClock, 
         label: 'Medium', 
-        color: 'text-yellow-600',
-        bgColor: 'bg-yellow-50',
-        borderColor: 'border-yellow-200'
+        color: 'text-amber-600',
+        bgColor: 'bg-amber-50',
+        borderColor: 'border-amber-200'
       },
       hard: { 
         icon: FaRocket, 
         label: 'Hard', 
-        color: 'text-red-600',
-        bgColor: 'bg-red-50',
-        borderColor: 'border-red-200'
+        color: 'text-orange-600',
+        bgColor: 'bg-orange-50',
+        borderColor: 'border-orange-200'
       }
     };
     return difficultyMap[difficulty];
@@ -283,15 +283,15 @@ export default function QuizPage() {
   const difficultyInfo = getDifficultyDisplay(room.difficulty);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50">
+    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50">
       <div className="px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
         <div className="max-w-4xl mx-auto">
-          <div className="bg-white rounded-2xl shadow-xl p-4 sm:p-6 mb-4 sm:mb-6">
+          <div className="bg-white rounded-2xl shadow-xl p-4 sm:p-6 mb-4 sm:mb-6 border border-amber-100">
             {/* Header */}
             <div className="flex flex-col lg:flex-row justify-between items-center mb-6 sm:mb-8 space-y-4 lg:space-y-0">
               <div className="text-center lg:text-left w-full lg:w-auto">
                 <div className="flex items-center justify-center lg:justify-start mb-2">
-                  <MdQuiz className="text-2xl sm:text-3xl text-blue-600 mr-2" />
+                  <MdQuiz className="text-2xl sm:text-3xl text-amber-600 mr-2" />
                   <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-800">
                     Question {qIndex + 1} of {room.questions.length}
                   </h1>
@@ -312,41 +312,41 @@ export default function QuizPage() {
               
               {/* Timer during answering phase, scores during other phases */}
               {currentPhase === "answering" ? (
-                <div className="bg-gradient-to-r from-red-50 to-orange-50 rounded-xl p-3 sm:p-4 text-center border-2 border-red-200 shadow-lg w-full sm:w-auto">
+                <div className="bg-gradient-to-r from-orange-50 to-red-50 rounded-xl p-3 sm:p-4 text-center border-2 border-orange-200 shadow-lg w-full sm:w-auto">
                   <div className="flex items-center justify-center space-x-2 sm:space-x-3 mb-2">
                     <MdAccessTime className={`text-2xl sm:text-3xl animate-pulse ${
                       timeLeft <= 10 ? 'text-red-600' : 
                       timeLeft <= 30 ? 'text-orange-600' : 
-                      'text-blue-600'
+                      'text-amber-600'
                     }`} />
                     <p className={`text-xl sm:text-2xl font-bold ${
                       timeLeft <= 10 ? 'text-red-700' : 
                       timeLeft <= 30 ? 'text-orange-700' : 
-                      'text-blue-700'
+                      'text-amber-700'
                     }`}>
                       {timeLeft}s
                     </p>
                   </div>
                   <p className="text-xs sm:text-sm text-gray-600 font-medium">Time Remaining</p>
                   {hasAnswered && (
-                    <div className="mt-2 bg-blue-100 border border-blue-300 rounded-lg p-2">
+                    <div className="mt-2 bg-teal-100 border border-teal-300 rounded-lg p-2">
                       <div className="flex items-center justify-center space-x-1">
-                        <FaCheckCircle className="text-blue-600 text-xs sm:text-sm" />
-                        <p className="text-blue-700 font-medium text-xs">Answer Submitted!</p>
+                        <FaCheckCircle className="text-teal-600 text-xs sm:text-sm" />
+                        <p className="text-teal-700 font-medium text-xs">Answer Submitted!</p>
                       </div>
                     </div>
                   )}
                 </div>
               ) : (
-                <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl p-3 sm:p-4 text-center lg:text-right border border-blue-200 w-full sm:w-auto">
+                <div className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-xl p-3 sm:p-4 text-center lg:text-right border border-amber-200 w-full sm:w-auto">
                   <div className="flex items-center justify-center lg:justify-end space-x-1 sm:space-x-2 mb-1">
-                    <FaTrophy className="text-yellow-600 text-sm sm:text-base" />
-                    <p className="text-xs sm:text-sm text-gray-600">Your Score: <span className="font-bold text-blue-600">{room.players[playerId || ""]?.score || 0}</span></p>
+                    <FaTrophy className="text-amber-600 text-sm sm:text-base" />
+                    <p className="text-xs sm:text-sm text-gray-600">Your Score: <span className="font-bold text-amber-600">{room.players[playerId || ""]?.score || 0}</span></p>
                   </div>
                   <div className="flex items-center justify-center lg:justify-end space-x-1 sm:space-x-2">
-                    <FaUsers className="text-green-600 text-sm sm:text-base" />
+                    <FaUsers className="text-teal-600 text-sm sm:text-base" />
                     <p className="text-xs sm:text-sm text-gray-600">
-                      Leading: <span className="font-bold text-green-600">{Math.max(...Object.values(room.players).map(p => p.score))}</span>
+                      Leading: <span className="font-bold text-teal-600">{Math.max(...Object.values(room.players).map(p => p.score))}</span>
                     </p>
                   </div>
                 </div>
@@ -354,7 +354,7 @@ export default function QuizPage() {
             </div>
             
             {/* Question Card */}
-            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-2xl p-4 sm:p-6 lg:p-8 mb-6 sm:mb-8">
+            <div className="bg-gradient-to-r from-amber-50 to-orange-50 border-2 border-amber-200 rounded-2xl p-4 sm:p-6 lg:p-8 mb-6 sm:mb-8">
               <h2 className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-800 mb-4 sm:mb-6 leading-relaxed">{question.text}</h2>
               
               <div className="grid gap-3 sm:gap-4">
@@ -364,7 +364,7 @@ export default function QuizPage() {
                   if (currentPhase === "showing-answer") {
                     // Show results: highlight correct answer and user's selection
                     if (opt === question.correctOption) {
-                      buttonClass += "bg-green-100 border-green-500 text-green-800 shadow-lg"; // Correct answer in green
+                      buttonClass += "bg-teal-100 border-teal-500 text-teal-800 shadow-lg"; // Correct answer in teal
                     } else if (opt === selectedOption) {
                       buttonClass += "bg-red-100 border-red-500 text-red-800 shadow-lg"; // Wrong selection in red
                     } else {
@@ -373,9 +373,9 @@ export default function QuizPage() {
                   } else {
                     // Answering phase: highlight selected option
                     if (selectedOption === opt) {
-                      buttonClass += "bg-blue-100 border-blue-500 text-blue-800 shadow-lg";
+                      buttonClass += "bg-amber-100 border-amber-500 text-amber-800 shadow-lg";
                     } else {
-                      buttonClass += "bg-white border-gray-300 text-gray-800 hover:bg-gray-50 hover:border-gray-400 shadow-sm hover:shadow-md";
+                      buttonClass += "bg-white border-gray-300 text-gray-800 hover:bg-amber-50 hover:border-amber-400 shadow-sm hover:shadow-md";
                     }
                   }
 
@@ -400,14 +400,14 @@ export default function QuizPage() {
 
             {/* Answer Reveal Phase - Show correct answer and host controls */}
             {currentPhase === "showing-answer" && (
-              <div className="bg-white rounded-xl shadow-lg p-6 mb-6 border border-gray-200">
+              <div className="bg-white rounded-xl shadow-lg p-6 mb-6 border border-amber-200">
                 <div className="text-center mb-6">
                   <div className="flex items-center justify-center space-x-2 mb-4">
-                    <IoSparklesSharp className="text-2xl text-green-600" />
+                    <IoSparklesSharp className="text-2xl text-teal-600" />
                     <h3 className="text-2xl font-bold text-gray-800">Correct Answer</h3>
                   </div>
-                  <div className="bg-green-100 border-2 border-green-500 rounded-xl p-4 mb-6">
-                    <p className="text-lg font-bold text-green-800">{question.correctOption}</p>
+                  <div className="bg-teal-100 border-2 border-teal-500 rounded-xl p-4 mb-6">
+                    <p className="text-lg font-bold text-teal-800">{question.correctOption}</p>
                   </div>
                 </div>
                 
@@ -416,17 +416,17 @@ export default function QuizPage() {
                   <div className="mb-6">
                     <div className={`p-4 rounded-xl border-2 ${
                       selectedOption === question.correctOption 
-                        ? "bg-green-50 border-green-300" 
+                        ? "bg-teal-50 border-teal-300" 
                         : "bg-red-50 border-red-300"
                     }`}>
                       <div className="flex items-center justify-center space-x-2 mb-2">
                         {selectedOption === question.correctOption ? (
-                          <FaCheckCircle className="text-green-600 text-xl" />
+                          <FaCheckCircle className="text-teal-600 text-xl" />
                         ) : (
                           <FaCross className="text-red-600 text-xl" />
                         )}
                         <p className={`font-bold text-lg ${
-                          selectedOption === question.correctOption ? "text-green-700" : "text-red-700"
+                          selectedOption === question.correctOption ? "text-teal-700" : "text-red-700"
                         }`}>
                           Your answer is {selectedOption === question.correctOption ? "Correct!" : "Incorrect"}
                         </p>
@@ -434,8 +434,8 @@ export default function QuizPage() {
                       {selectedOption === question.correctOption && (
                         <div className="text-center">
                           <div className="flex items-center justify-center space-x-2">
-                            <FaTrophy className="text-yellow-600" />
-                            <p className="text-blue-700 font-semibold">
+                            <FaTrophy className="text-amber-600" />
+                            <p className="text-amber-700 font-semibold">
                               Points earned: {(() => {
                                 // Use stored score if available, fallback to calculation for backward compatibility
                                 const playerAnswer = room.players[playerId || ""]?.answers?.[room.currentQuestionIndex];
@@ -462,8 +462,8 @@ export default function QuizPage() {
                   <div className="flex flex-col sm:flex-row gap-4 justify-center">
                     <button 
                       onClick={showScoreboard}
-                      className="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-6 py-3 rounded-xl 
-                               hover:from-purple-700 hover:to-blue-700 transition-all duration-300 
+                      className="bg-gradient-to-r from-amber-600 to-orange-600 text-white px-6 py-3 rounded-xl 
+                               hover:from-amber-700 hover:to-orange-700 transition-all duration-300 
                                flex items-center justify-center space-x-2 shadow-lg hover:shadow-xl
                                transform hover:scale-105 font-semibold"
                     >
@@ -472,8 +472,8 @@ export default function QuizPage() {
                     </button>
                     <button 
                       onClick={nextQuestion}
-                      className="bg-gradient-to-r from-green-600 to-blue-600 text-white px-6 py-3 rounded-xl 
-                               hover:from-green-700 hover:to-blue-700 transition-all duration-300 
+                      className="bg-gradient-to-r from-teal-600 to-amber-600 text-white px-6 py-3 rounded-xl 
+                               hover:from-teal-700 hover:to-amber-700 transition-all duration-300 
                                flex items-center justify-center space-x-2 shadow-lg hover:shadow-xl
                                transform hover:scale-105 font-semibold"
                     >
@@ -495,10 +495,10 @@ export default function QuizPage() {
                 {/* Non-host waiting message */}
                 {!isHost && (
                   <div className="text-center">
-                    <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
+                    <div className="bg-amber-50 border border-amber-200 rounded-xl p-4">
                       <div className="flex items-center justify-center space-x-2">
-                        <FaSpinner className="text-blue-600 animate-spin" />
-                        <p className="text-blue-700 font-medium">Waiting for host to continue...</p>
+                        <FaSpinner className="text-amber-600 animate-spin" />
+                        <p className="text-amber-700 font-medium">Waiting for host to continue...</p>
                       </div>
                     </div>
                   </div>
@@ -508,10 +508,10 @@ export default function QuizPage() {
 
             {/* Mid-Quiz Scoreboard Phase */}
             {currentPhase === "showing-scoreboard" && (
-              <div className="bg-white rounded-xl shadow-lg p-6 mb-6 border border-gray-200">
+              <div className="bg-white rounded-xl shadow-lg p-6 mb-6 border border-amber-200">
                 <div className="text-center mb-6">
                   <div className="flex items-center justify-center space-x-2 mb-4">
-                    <FaTrophy className="text-3xl text-yellow-600" />
+                    <FaTrophy className="text-3xl text-amber-600" />
                     <h3 className="text-3xl font-bold text-gray-800">Current Scores</h3>
                   </div>
                 </div>
@@ -525,27 +525,27 @@ export default function QuizPage() {
                         key={player.id}
                         className={`flex items-center justify-between p-4 rounded-xl border-2 transition-all duration-300 ${
                           player.id === playerId 
-                            ? 'bg-gradient-to-r from-yellow-50 to-orange-50 border-yellow-400 shadow-lg' 
+                            ? 'bg-gradient-to-r from-amber-50 to-orange-50 border-amber-400 shadow-lg' 
                             : 'bg-gray-50 border-gray-200 hover:border-gray-300'
                         }`}
                       >
                         <div className="flex items-center space-x-4">
                           <div className={`w-12 h-12 rounded-full flex items-center justify-center text-xl font-bold ${
-                            index === 0 ? 'bg-yellow-200 text-yellow-800' :
+                            index === 0 ? 'bg-amber-200 text-amber-800' :
                             index === 1 ? 'bg-gray-200 text-gray-700' :
                             index === 2 ? 'bg-orange-200 text-orange-800' :
-                            'bg-blue-100 text-blue-700'
+                            'bg-teal-100 text-teal-700'
                           }`}>
                             {index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : `#${index + 1}`}
                           </div>
-                          <span className={`text-lg font-bold ${player.id === playerId ? 'text-yellow-800' : 'text-gray-800'}`}>
+                          <span className={`text-lg font-bold ${player.id === playerId ? 'text-amber-800' : 'text-gray-800'}`}>
                             {player.nickname}
                             {player.id === playerId && " (You)"}
                           </span>
                         </div>
                         <div className="flex items-center space-x-2">
-                          <FaTrophy className="text-blue-600" />
-                          <span className="text-xl font-bold text-blue-600">
+                          <FaTrophy className="text-amber-600" />
+                          <span className="text-xl font-bold text-amber-600">
                             {player.score} pts
                           </span>
                         </div>
@@ -580,8 +580,8 @@ export default function QuizPage() {
                     </button>
                     <button 
                       onClick={nextQuestion}
-                      className="bg-gradient-to-r from-green-600 to-blue-600 text-white px-6 py-3 rounded-xl 
-                               hover:from-green-700 hover:to-blue-700 transition-all duration-300 
+                      className="bg-gradient-to-r from-teal-600 to-amber-600 text-white px-6 py-3 rounded-xl 
+                               hover:from-teal-700 hover:to-amber-700 transition-all duration-300 
                                flex items-center justify-center space-x-2 shadow-lg hover:shadow-xl
                                transform hover:scale-105 font-semibold"
                     >
@@ -603,10 +603,10 @@ export default function QuizPage() {
                 {/* Non-host waiting message */}
                 {!isHost && (
                   <div className="text-center">
-                    <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
+                    <div className="bg-amber-50 border border-amber-200 rounded-xl p-4">
                       <div className="flex items-center justify-center space-x-2">
-                        <FaSpinner className="text-blue-600 animate-spin" />
-                        <p className="text-blue-700 font-medium">Waiting for host to continue...</p>
+                        <FaSpinner className="text-amber-600 animate-spin" />
+                        <p className="text-amber-700 font-medium">Waiting for host to continue...</p>
                       </div>
                     </div>
                   </div>
