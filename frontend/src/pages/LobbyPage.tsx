@@ -1,10 +1,9 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { db } from "../lib/firebase";
-import { onValue, ref } from "firebase/database";
+import { onValue, ref, update } from "firebase/database";
 import type { Room, Player, DifficultyLevel } from "../../../shared/types";
 import { startGame } from "../api/startGame";
-import { useNavigate } from "react-router-dom";
 import { presenceManager } from "../api/presenceManager";
 import { 
   FaUsers, 
@@ -14,7 +13,11 @@ import {
   FaRocket,
   FaQuestionCircle,
   FaCopy,
-  FaCheckCircle
+  FaCheckCircle,
+  FaPlay,
+  FaArrowLeft,
+  FaSpinner,
+  FaTrophy
 } from 'react-icons/fa';
 import { 
   MdQuiz, 
@@ -26,6 +29,7 @@ import {
 } from 'react-icons/io5';
 import quizDojoLogo from '/logo-lockup.png';
 import { useTranslation } from 'react-i18next';
+import { trackQuizEvent, trackEngagement } from '../utils/analytics';
 
 export default function LobbyPage() {
   const { id } = useParams<{ id: string }>();
@@ -147,6 +151,27 @@ export default function LobbyPage() {
     }
   };
 
+  const isHost = room && player && player.id === room.hostId;
+
+  const handleStartQuiz = async () => {
+    if (!room || !isHost) return;
+
+    try {
+      // Track quiz start event
+      const playerCount = Object.keys(room.players).length;
+      trackQuizEvent.quizStarted(room.roomCode, playerCount);
+      trackEngagement.buttonClick('start_quiz', 'lobby_page');
+
+      await update(ref(db, `rooms/${room.id}`), {
+        status: "in-progress",
+        startedAt: Date.now(),
+        currentQuestionIndex: 0
+      });
+    } catch (error) {
+      console.error("Failed to start quiz:", error);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-[#FDF0DC]">
       <div className="px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
@@ -232,7 +257,7 @@ export default function LobbyPage() {
             <div className="flex items-center justify-center space-x-3">
               <FaQuestionCircle className="text-2xl sm:text-3xl text-[#F4B46D]" />
               <div className="text-center">
-                <p className="text-xl sm:text-2xl font-bold text-[#4E342E]">{room.totalQuestions} {t('numberOfQuestions')}</p>
+                <p className="text-xl sm:text-2xl font-bold text-[#4E342E]">{t('numberOfQuestions')}:{room.totalQuestions} </p>
                 <p className="text-sm sm:text-base text-[#6D4C41]">{t('Ready to challenge you')}</p>
               </div>
             </div>
@@ -305,7 +330,7 @@ export default function LobbyPage() {
                     {t('All players are waiting for you to begin the quiz!')}
                   </p>
                   <button 
-                    onClick={() => startGame(room.id)}
+                    onClick={handleStartQuiz}
                     className="bg-[#10A3A2] hover:bg-[#05717B] 
                              text-white font-bold py-3 sm:py-4 px-6 sm:px-8 rounded-xl transition-all duration-300 
                              text-base sm:text-xl shadow-lg hover:shadow-xl transform hover:scale-105

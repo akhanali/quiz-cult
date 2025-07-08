@@ -13,6 +13,7 @@ import {
 import { MdQuiz } from 'react-icons/md';
 import quizDojoLogo from '/logo-lockup.png';
 import { useTranslation } from 'react-i18next';
+import { trackQuizEvent, trackEngagement } from '../utils/analytics';
 
 export default function JoinRoomPage() {
   const [roomCode, setRoomCode] = useState("");
@@ -32,6 +33,10 @@ export default function JoinRoomPage() {
     setError("");
     
     try {
+      // Track room joining event
+      trackQuizEvent.roomJoined(roomCode);
+      trackEngagement.buttonClick('join_room', 'join_room_page');
+
       const roomData = await joinRoom(roomCode, nickname);
       localStorage.setItem("userId", roomData.playerId);
       

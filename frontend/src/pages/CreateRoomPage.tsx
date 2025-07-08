@@ -8,6 +8,7 @@ import { MdAccessTime } from 'react-icons/md';
 import type { DifficultyLevel } from '../../../shared/types';
 import quizDojoLogo from '/logo-lockup.png';
 import { useTranslation } from 'react-i18next';
+import { trackQuizEvent, trackEngagement } from '../utils/analytics';
 
 export default function CreateRoomPage() {
   const [nickname, setNickname] = useState('');
@@ -82,6 +83,10 @@ export default function CreateRoomPage() {
       // Show appropriate generation status
       setGenerationStatus(`Creating ${questionCount} ${difficulty} questions...`);
       
+      // Track room creation event
+      trackQuizEvent.roomCreated(topic, difficulty as DifficultyLevel, questionCount);
+      trackEngagement.buttonClick('create_room', 'create_room_page');
+
       const roomData = await createRoom(nickname, topic, difficulty as DifficultyLevel, questionCount);
       
       // Show success message with generation result

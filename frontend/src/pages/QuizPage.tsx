@@ -27,6 +27,7 @@ import {
   IoSparklesSharp 
 } from 'react-icons/io5';
 import { useTranslation } from 'react-i18next';
+import { trackQuizEvent } from '../utils/analytics';
 
 export default function QuizPage() {
   const { t } = useTranslation();
@@ -180,8 +181,12 @@ export default function QuizPage() {
     const nextIndex = room.currentQuestionIndex + 1;
     
     if (nextIndex >= room.questions.length) {
-      // End game
-      await update(ref(db, `rooms/${id}`), { 
+      // End game - track quiz completion
+      const playerCount = Object.keys(room.players).length;
+      const questionsAnswered = room.questions.length;
+      trackQuizEvent.quizCompleted(room.roomCode, playerCount, questionsAnswered);
+      
+      await update(ref(db, `rooms/${room.id}`), { 
         status: "finished",
         finishedAt: Date.now() 
       });
@@ -197,7 +202,7 @@ export default function QuizPage() {
         allPlayersAnswered: false,
       };
 
-      await update(ref(db, `rooms/${id}`), {
+      await update(ref(db, `rooms/${room.id}`), {
         currentQuestionIndex: nextIndex,
         gameState
       });
@@ -219,6 +224,9 @@ export default function QuizPage() {
     
     // Calculate score using centralized utility
     const scoreEarned = calculateScore(isCorrect, timeUsedMs, question.timeLimit);
+
+    // Track question answered event
+    trackQuizEvent.questionAnswered(isCorrect, timeUsedMs);
 
     const answer: Answer = {
       option,
@@ -429,7 +437,7 @@ export default function QuizPage() {
                         <p className={`font-bold text-lg ${
                           selectedOption === question.correctOption ? "text-teal-700" : "text-red-700"
                         }`}>
-                          Your answer is {selectedOption === question.correctOption ? "Correct!" : "Incorrect"}
+                          {t('Your answer is')} {selectedOption === question.correctOption ? t('Correct!') : t('Incorrect')}
                         </p>
                       </div>
                       {selectedOption === question.correctOption && (

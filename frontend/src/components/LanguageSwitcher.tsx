@@ -1,42 +1,58 @@
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FaGlobe } from 'react-icons/fa';
+import { FaGlobe, FaChevronDown } from 'react-icons/fa';
+import { trackQuizEvent } from '../utils/analytics';
 
 export default function LanguageSwitcher() {
   const { i18n } = useTranslation();
+  const [isOpen, setIsOpen] = useState(false);
 
-  const changeLanguage = (lng: string) => {
-    i18n.changeLanguage(lng);
-    localStorage.setItem('lng', lng);
+  const languages = [
+    { code: 'en', name: 'English', flag: '🇬🇧' },
+    { code: 'ru', name: 'Русский', flag: '🇷🇺' }
+  ];
+
+  const currentLanguage = languages.find(lang => lang.code === i18n.language) || languages[0];
+
+  const handleLanguageChange = (languageCode: string) => {
+    i18n.changeLanguage(languageCode);
+    localStorage.setItem('lng', languageCode);
+    setIsOpen(false);
+    
+    // Track language change event
+    trackQuizEvent.languageChanged(languageCode);
   };
 
   return (
-    <div className="flex items-center space-x-1 text-sm opacity-80">
-      <FaGlobe className="text-[#6D4C41] mr-1" style={{ fontSize: '1rem' }} />
+    <div className="relative">
       <button
-        onClick={() => changeLanguage('en')}
-        className={`px-2 py-0.5 rounded border bg-transparent transition-colors duration-200
-          ${i18n.language === 'en'
-            ? 'border-[#10A3A2] text-[#10A3A2] bg-[#10A3A2]/10 font-semibold'
-            : 'border-[#BCAAA4] text-[#6D4C41] hover:border-[#10A3A2] hover:text-[#10A3A2]'}
-        `}
-        style={{ minWidth: 28 }}
-        aria-label="Switch to English"
+        onClick={() => setIsOpen(!isOpen)}
+        className="flex items-center space-x-2 bg-white/80 backdrop-blur-sm px-3 py-2 rounded-lg 
+                   border border-gray-200 hover:bg-white/90 transition-all duration-200 
+                   shadow-sm hover:shadow-md text-gray-700 hover:text-gray-900"
+        aria-label="Switch language"
       >
-        EN
+        <FaGlobe className="text-sm" />
+        <span className="text-sm font-medium">{currentLanguage.flag}</span>
+        <FaChevronDown className={`text-xs transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
       </button>
-      <span className="text-[#BCAAA4]">|</span>
-      <button
-        onClick={() => changeLanguage('ru')}
-        className={`px-2 py-0.5 rounded border bg-transparent transition-colors duration-200
-          ${i18n.language === 'ru'
-            ? 'border-[#10A3A2] text-[#10A3A2] bg-[#10A3A2]/10 font-semibold'
-            : 'border-[#BCAAA4] text-[#6D4C41] hover:border-[#10A3A2] hover:text-[#10A3A2]'}
-        `}
-        style={{ minWidth: 28 }}
-        aria-label="Switch to Russian"
-      >
-        RU
-      </button>
+
+      {isOpen && (
+        <div className="absolute right-0 top-full mt-1 bg-white rounded-lg shadow-lg border border-gray-200 
+                        py-1 min-w-[140px] z-50">
+          {languages.map((language) => (
+            <button
+              key={language.code}
+              onClick={() => handleLanguageChange(language.code)}
+              className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-50 transition-colors duration-150
+                         ${i18n.language === language.code ? 'bg-blue-50 text-blue-700' : 'text-gray-700'}`}
+            >
+              <span className="mr-2">{language.flag}</span>
+              {language.name}
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   );
 } 
