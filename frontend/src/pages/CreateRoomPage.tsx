@@ -6,7 +6,8 @@ import { validateTopic } from '../services/questionGeneration';
 import { FaCheckCircle, FaClock, FaRocket, FaRobot, FaFileAlt, FaCheck, FaBook, FaBullseye, FaHome } from 'react-icons/fa';
 import { MdAccessTime } from 'react-icons/md';
 import type { DifficultyLevel } from '../../../shared/types';
-import quizDojoLogo from '../assets/quiz-dojo-simple-logo.png';
+import quizDojoLogo from '/logo-lockup.png';
+import { useTranslation } from 'react-i18next';
 
 export default function CreateRoomPage() {
   const [nickname, setNickname] = useState('');
@@ -19,6 +20,7 @@ export default function CreateRoomPage() {
   const [topicError, setTopicError] = useState('');
 
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   // Handle count input change - allow deletion
   const handleCountChange = (value: string) => {
@@ -117,31 +119,31 @@ export default function CreateRoomPage() {
       value: 'easy',
       icon: FaCheckCircle,
       iconColor: 'text-[#10A3A2]',
-      title: 'Easy',
-      description: 'Basic recall or recognition',
-      details: 'Answerable with little to no thinking. No calculations, minimal reading.',
-      examples: 'Naming a capital city, identifying a color, simple true/false',
-      time: '10–20 seconds'
+      title: t('easyTitle'),
+      description: t('easyDescription'),
+      details: t('easyDetails'),
+      examples: t('easyExamples'),
+      time: t('easyTime')
     },
     {
       value: 'medium',
       icon: FaClock,
       iconColor: 'text-[#F6D35B]',
-      title: 'Medium',
-      description: 'Understanding and light reasoning',
-      details: 'Might involve basic calculations or comparisons. Moderate reading or decision-making.',
-      examples: 'Choosing the correct formula, interpreting a small graph, simple logic',
-      time: '21–30 seconds'
+      title: t('mediumTitle'),
+      description: t('mediumDescription'),
+      details: t('mediumDetails'),
+      examples: t('mediumExamples'),
+      time: t('mediumTime')
     },
     {
       value: 'hard',
       icon: FaRocket,
       iconColor: 'text-[#F4B46D]',
-      title: 'Hard',
-      description: 'Critical thinking and domain knowledge',
-      details: 'Could involve reading a passage, analyzing data, or solving multi-step problems.',
-      examples: 'Solving math problems with multiple operations, interpreting research results',
-      time: '35+ seconds'
+      title: t('hardTitle'),
+      description: t('hardDescription'),
+      details: t('hardDetails'),
+      examples: t('hardExamples'),
+      time: t('hardTime')
     }
   ];
 
@@ -150,14 +152,15 @@ export default function CreateRoomPage() {
       <div className="max-w-2xl mx-auto">
         {/* Header Section */}
         <div className="text-center mb-6 sm:mb-8">
-          <div className="flex items-center justify-center mb-4">
-            <img 
-              src={quizDojoLogo} 
-              alt="Logo" 
-              className="h-10 sm:h-12 w-auto"
+          <div className="flex items-center justify-center mb-6">
+            <img
+              src={quizDojoLogo}
+              alt="Quiz Dojo logo"
+              className="h-12 sm:h-16 lg:h-20 w-auto"
             />
+            <span className="dojo-title ml-3 text-3xl sm:text-4xl font-bold text-[#4E342E]" style={{ fontFamily: 'Baloo 2, cursive' }}>Quiz Dojo</span>
           </div>
-          <h2 className="text-2xl sm:text-3xl font-semibold mb-4 sm:mb-6 text-center text-[#4E342E]">Create a Quiz Room</h2>
+          <h2 className="text-2xl sm:text-3xl font-semibold mb-4 sm:mb-6 text-center text-[#4E342E]">{t('createRoom')}</h2>
         </div>
         
         {/* Error Messages */}
@@ -184,11 +187,11 @@ export default function CreateRoomPage() {
           {/* Basic Info */}
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-[#4E342E] mb-2">Your Nickname</label>
+              <label className="block text-sm font-medium text-[#4E342E] mb-2">{t('nickname')}</label>
               <input
                 value={nickname}
                 onChange={(e) => setNickname(e.target.value)}
-                placeholder="Enter your nickname"
+                placeholder={t('Enter your nickname')}
                 className="w-full border border-[#4E342E]/30 rounded-lg px-3 sm:px-4 py-2 sm:py-3 focus:ring-2 focus:ring-[#10A3A2] focus:border-[#10A3A2]
                          text-base sm:text-lg min-h-[44px] sm:min-h-[48px] bg-[#FDF0DC] text-[#4E342E] placeholder-[#6D4C41]/60"
                 disabled={isLoading}
@@ -196,13 +199,11 @@ export default function CreateRoomPage() {
             </div>
             
             <div>
-              <label className="block text-sm font-medium text-[#4E342E] mb-2">
-                Quiz Topic
-              </label>
+              <label className="block text-sm font-medium text-[#4E342E] mb-2">{t('quizTopic')}</label>
               <input
                 value={topic}
                 onChange={(e) => handleTopicChange(e.target.value)}
-                placeholder="e.g., Science, History, Sports, Movies"
+                placeholder={t('e.g., Science, History, Sports, Movies')}
                 className={`w-full border rounded-lg px-3 sm:px-4 py-2 sm:py-3 focus:ring-2 focus:ring-[#10A3A2] focus:border-[#10A3A2]
                           text-base sm:text-lg min-h-[44px] sm:min-h-[48px] bg-[#FDF0DC] text-[#4E342E] placeholder-[#6D4C41]/60 ${
                   topicError ? 'border-[#F4B46D]' : 'border-[#4E342E]/30'
@@ -217,7 +218,7 @@ export default function CreateRoomPage() {
 
           {/* Difficulty Selection */}
           <div>
-            <label className="block text-sm font-medium text-[#4E342E] mb-3 sm:mb-4">Difficulty Level</label>
+            <label className="block text-sm font-medium text-[#4E342E] mb-3 sm:mb-4">{t('difficulty')}</label>
             <div className="space-y-3">
               {difficultyOptions.map((option) => (
                 <div
@@ -251,7 +252,7 @@ export default function CreateRoomPage() {
                       <p className="text-[#4E342E] font-medium mb-1 text-sm sm:text-base">{option.description}</p>
                       <p className="text-[#6D4C41] text-xs sm:text-sm mb-2">{option.details}</p>
                       <p className="text-[#6D4C41]/80 text-xs">
-                        <strong>Examples:</strong> {option.examples}
+                        <strong>{t('Examples:')}</strong> {option.examples}
                       </p>
                     </div>
                   </div>
@@ -262,7 +263,7 @@ export default function CreateRoomPage() {
 
           {/* Question Count */}
           <div>
-            <label className="block text-sm font-medium text-[#4E342E] mb-2">Number of Questions</label>
+            <label className="block text-sm font-medium text-[#4E342E] mb-2">{t('numberOfQuestions')}</label>
             <input
               type="number"
               value={count}
@@ -274,7 +275,7 @@ export default function CreateRoomPage() {
                        text-base sm:text-lg min-h-[44px] sm:min-h-[48px] bg-[#FDF0DC] text-[#4E342E]"
               disabled={isLoading}
             />
-            <p className="text-[#6D4C41] text-sm mt-1">Choose between 1-50 questions</p>
+            <p className="text-[#6D4C41] text-sm mt-1">{t('Choose between 1-50 questions')}</p>
           </div>
 
           {/* Create Button */}
@@ -289,8 +290,8 @@ export default function CreateRoomPage() {
             disabled={isLoading || !!topicError}
           >
             {isLoading 
-              ? 'Creating Room...' 
-              : 'Create Quiz'
+              ? t('Creating Room...') 
+              : t('Create Quiz')
             }
           </button>
 
@@ -298,7 +299,7 @@ export default function CreateRoomPage() {
           <div className="text-center text-[#6D4C41] text-xs sm:text-sm">
             <p className="flex items-center justify-center">
               <FaBook className="mr-2" />
-              Create engaging quiz questions on any topic you choose!
+              {t('Create engaging quiz questions on any topic you choose!')}
             </p>
           </div>
         </div>
@@ -311,7 +312,7 @@ export default function CreateRoomPage() {
                      transition-colors duration-300 font-medium text-sm sm:text-base py-2 px-4 rounded-lg hover:bg-[#F7E2C0]/50"
           >
             <FaHome className="text-base sm:text-lg" />
-            <span>Back to Home</span>
+            <span>{t('backToHome')}</span>
           </Link>
         </div>
       </div>

@@ -24,7 +24,8 @@ import {
 import { 
   IoSparklesSharp 
 } from 'react-icons/io5';
-import quizDojoLogo from '../assets/quiz-dojo-simple-logo.png';
+import quizDojoLogo from '/logo-lockup.png';
+import { useTranslation } from 'react-i18next';
 
 export default function LobbyPage() {
   const { id } = useParams<{ id: string }>();
@@ -32,6 +33,7 @@ export default function LobbyPage() {
   const navigate = useNavigate();
   const [player, setPlayer] = useState<Player | null>(null);
   const [copiedCode, setCopiedCode] = useState(false);
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (room?.status === "active") {
@@ -102,7 +104,7 @@ export default function LobbyPage() {
       <div className="min-h-screen bg-[#FDF0DC] flex items-center justify-center">
         <div className="bg-[#F7E2C0] rounded-2xl shadow-xl p-8 text-center border border-[#4E342E]/20">
           <div className="animate-spin w-12 h-12 border-4 border-[#10A3A2] border-t-transparent rounded-full mx-auto mb-4"></div>
-          <p className="text-[#6D4C41] text-lg">Loading room...</p>
+          <p className="text-[#6D4C41] text-lg">{t('Loading room...')}</p>
         </div>
       </div>
     );
@@ -112,20 +114,20 @@ export default function LobbyPage() {
   const getDifficultyDisplay = (difficulty: DifficultyLevel) => {
     const difficultyMap = {
       easy: { 
-        label: 'Easy', 
-        time: '10-15s per question', 
+        label: t('easyTitle'), 
+        time: t('easyTime'), 
         color: 'text-[#10A3A2] bg-[#10A3A2]/10 border-[#10A3A2]/30',
         iconColor: 'text-[#10A3A2]'
       },
       medium: { 
-        label: 'Medium', 
-        time: '15-25s per question', 
+        label: t('mediumTitle'), 
+        time: t('mediumTime'), 
         color: 'text-[#F6D35B] bg-[#F6D35B]/10 border-[#F6D35B]/30',
         iconColor: 'text-[#F6D35B]'
       },
       hard: { 
-        label: 'Hard', 
-        time: '30+ per question', 
+        label: t('hardTitle'), 
+        time: t('hardTime'), 
         color: 'text-[#F4B46D] bg-[#F4B46D]/10 border-[#F4B46D]/30',
         iconColor: 'text-[#F4B46D]'
       }
@@ -151,16 +153,17 @@ export default function LobbyPage() {
         <div className="max-w-5xl mx-auto">
           {/* Header Section */}
           <div className="text-center mb-6 sm:mb-8">
-            <div className="flex items-center justify-center mb-4">
-              <img 
-                src={quizDojoLogo} 
-                alt="Quiz Dojo" 
-                className="h-10 sm:h-12 w-auto"
+            <div className="flex items-center justify-center mb-6">
+              <img
+                src={quizDojoLogo}
+                alt="Quiz Dojo logo"
+                className="h-12 sm:h-16 lg:h-20 w-auto"
               />
+              <span className="dojo-title ml-3 text-3xl sm:text-4xl font-bold text-[#4E342E]" style={{ fontFamily: 'Baloo 2, cursive' }}>Quiz Dojo</span>
             </div>
             <div className="flex items-center justify-center space-x-2 mb-2">
               <FaUsers className="text-xl sm:text-2xl text-[#10A3A2]" />
-              <p className="text-lg sm:text-xl text-[#6D4C41]">Waiting for players to join...</p>
+              <p className="text-lg sm:text-xl text-[#6D4C41]">{t('Waiting for players to join...', 'Waiting for players to join...')}</p>
             </div>
           </div>
 
@@ -170,7 +173,7 @@ export default function LobbyPage() {
             <div className="bg-[#F7E2C0] rounded-2xl shadow-lg p-4 sm:p-6 text-center border border-[#4E342E]/20">
               <div className="flex items-center justify-center mb-3">
                 <FaCopy className="text-xl sm:text-2xl text-[#10A3A2] mr-2" />
-                <h3 className="text-base sm:text-lg font-bold text-[#4E342E]">Room Code</h3>
+                <h3 className="text-base sm:text-lg font-bold text-[#4E342E] mb-3">{t('roomCode', 'Room Code')}</h3>
               </div>
               <div className="relative">
                 <p className="text-2xl sm:text-3xl font-bold text-[#10A3A2] font-mono tracking-wider mb-3">
@@ -200,7 +203,7 @@ export default function LobbyPage() {
             <div className="bg-[#F7E2C0] rounded-2xl shadow-lg p-4 sm:p-6 text-center border border-[#4E342E]/20">
               <div className="flex items-center justify-center mb-3">
                 <MdTopic className="text-xl sm:text-2xl text-[#05717B] mr-2" />
-                <h3 className="text-base sm:text-lg font-bold text-[#4E342E]">Topic</h3>
+                <h3 className="text-base sm:text-lg font-bold text-[#4E342E]">{t('quizTopic')}</h3>
               </div>
               <p className="text-xl sm:text-2xl font-bold text-[#05717B] break-words">{room.topic}</p>
             </div>
@@ -211,7 +214,7 @@ export default function LobbyPage() {
                 {difficultyInfo.label === 'Easy' && <FaCheckCircle className="text-xl sm:text-2xl mr-2 text-[#10A3A2]" />}
                 {difficultyInfo.label === 'Medium' && <FaClock className="text-xl sm:text-2xl mr-2 text-[#05717B]" />}
                 {difficultyInfo.label === 'Hard' && <FaRocket className="text-xl sm:text-2xl mr-2 text-[#F4B46D]" />}
-                <h3 className="text-base sm:text-lg font-bold text-[#4E342E]">Difficulty</h3>
+                <h3 className="text-base sm:text-lg font-bold text-[#4E342E]">{t('difficulty')}</h3>
               </div>
               <div className="space-y-1">
                 <p className={`text-xl sm:text-2xl font-bold ${
@@ -229,8 +232,8 @@ export default function LobbyPage() {
             <div className="flex items-center justify-center space-x-3">
               <FaQuestionCircle className="text-2xl sm:text-3xl text-[#F4B46D]" />
               <div className="text-center">
-                <p className="text-xl sm:text-2xl font-bold text-[#4E342E]">{room.totalQuestions} Questions</p>
-                <p className="text-sm sm:text-base text-[#6D4C41]">Ready to challenge you</p>
+                <p className="text-xl sm:text-2xl font-bold text-[#4E342E]">{room.totalQuestions} {t('numberOfQuestions')}</p>
+                <p className="text-sm sm:text-base text-[#6D4C41]">{t('Ready to challenge you')}</p>
               </div>
             </div>
           </div>
@@ -240,7 +243,7 @@ export default function LobbyPage() {
             <div className="flex items-center mb-4 sm:mb-6">
               <FaUsers className="text-xl sm:text-2xl text-[#10A3A2] mr-3" />
               <h3 className="text-xl sm:text-2xl font-bold text-[#4E342E]">
-                Players ({Object.keys(room.players).length})
+                {t('Players')} ({Object.keys(room.players).length})
               </h3>
             </div>
             
@@ -277,7 +280,7 @@ export default function LobbyPage() {
                     <div className="flex items-center space-x-2 flex-shrink-0">
                       <div className="bg-[#F4B46D]/50 text-[#4E342E] px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-bold flex items-center space-x-1 border border-[#F4B46D]/70">
                         <FaCrown className="text-xs" />
-                        <span className="hidden sm:inline">Host</span>
+                        <span className="hidden sm:inline">{t('Host')}</span>
                       </div>
                     </div>
                   )}
@@ -296,10 +299,10 @@ export default function LobbyPage() {
                 <div className="bg-[#F7E2C0] rounded-2xl shadow-lg p-6 sm:p-8 border border-[#4E342E]/20">
                   <div className="flex items-center justify-center mb-4">
                     <IoSparklesSharp className="text-2xl sm:text-3xl text-[#F4B46D] mr-2" />
-                    <h3 className="text-xl sm:text-2xl font-bold text-[#4E342E]">Ready to Start?</h3>
+                    <h3 className="text-xl sm:text-2xl font-bold text-[#4E342E]">{t('Ready to Start?')}</h3>
                   </div>
                   <p className="text-sm sm:text-base text-[#6D4C41] mb-4 sm:mb-6 px-4">
-                    All players are waiting for you to begin the quiz!
+                    {t('All players are waiting for you to begin the quiz!')}
                   </p>
                   <button 
                     onClick={() => startGame(room.id)}
@@ -309,10 +312,10 @@ export default function LobbyPage() {
                              flex items-center space-x-2 sm:space-x-3 mx-auto min-h-[48px] sm:min-h-[56px]"
                   >
                     <FaRocket className="text-lg sm:text-2xl" />
-                    <span>Start Quiz</span>
+                    <span>{t('Start Quiz')}</span>
                   </button>
                   <p className="text-[#6D4C41] text-xs sm:text-sm mt-3">
-                    Only the host can start the quiz
+                    {t('Only the host can start the quiz')}
                   </p>
                 </div>
               )}
@@ -328,7 +331,7 @@ export default function LobbyPage() {
                     <h3 className="text-xl sm:text-2xl font-bold text-[#4E342E]">Almost Ready!</h3>
                   </div>
                   <p className="text-sm sm:text-base text-[#6D4C41] text-lg mb-4">
-                    Waiting for the host to start the quiz...
+                    {t('Waiting for the host to start the quiz...')}  
                   </p>
                   <div className="flex items-center justify-center space-x-2 text-[#10A3A2]">
                     <div className="w-2 h-2 bg-[#10A3A2] rounded-full animate-bounce"></div>

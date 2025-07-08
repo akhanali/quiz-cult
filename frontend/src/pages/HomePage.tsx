@@ -13,9 +13,12 @@ import {
 } from 'react-icons/fa';
 import { IoSparklesSharp } from 'react-icons/io5';
 import { MdQuiz } from 'react-icons/md';
-import quizDojoLogo from '../assets/quiz-dojo-simple-logo.png';
+import quizDojoLogo from '/logo-lockup.png';
+import LanguageSwitcher from '../components/LanguageSwitcher';
+import { useTranslation } from 'react-i18next';
 
 export default function HomePage() {
+  const { t } = useTranslation();
   // Clear any existing disconnect handlers when returning to home page
   useEffect(() => {
     presenceManager.clearDisconnectHandlers();
@@ -34,13 +37,13 @@ export default function HomePage() {
                 alt="Quiz Dojo" 
                 className="h-12 sm:h-16 lg:h-20 w-auto"
               />
+              <span className="dojo-title ml-3 text-3xl sm:text-4xl font-bold text-[#4E342E]" style={{ fontFamily: 'Baloo 2' }}>Quiz Dojo</span>
             </div>
             <p className="text-lg sm:text-xl lg:text-2xl text-[#6D4C41] mb-2 px-4">
-              The Ultimate AI-Powered Quiz Experience
+              {t('welcome')}
             </p>
             <p className="text-base sm:text-lg text-[#6D4C41] max-w-2xl mx-auto px-4">
-              Create custom quizzes on any topic, compete with friends in real-time, 
-              and track your performance with detailed analytics
+              {t('Create custom quizzes on any topic, compete with friends in real-time, and track your performance with detailed analytics', 'Create custom quizzes on any topic, compete with friends in real-time, and track your performance with detailed analytics')}
             </p>
           </div>
 
@@ -54,7 +57,7 @@ export default function HomePage() {
                          min-h-[48px] sm:min-h-[56px]"
             >
               <FaPlus className="text-lg sm:text-xl group-hover:rotate-90 transition-transform duration-300" />
-              <span>Create Room</span>
+              <span>{t('createRoom')}</span>
             </Link>
             
             <Link 
@@ -65,7 +68,7 @@ export default function HomePage() {
                          min-h-[48px] sm:min-h-[56px]"
             >
               <FaUserFriends className="text-lg sm:text-xl group-hover:scale-110 transition-transform duration-300" />
-              <span>Join Room</span>
+              <span>{t('joinRoom')}</span>
             </Link>
           </div>
 
@@ -75,9 +78,9 @@ export default function HomePage() {
               <div className="bg-[#10A3A2]/20 w-12 h-12 sm:w-16 sm:h-16 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
                 <FaRobot className="text-2xl sm:text-3xl text-[#10A3A2]" />
               </div>
-              <h3 className="text-lg sm:text-xl font-bold text-[#4E342E] mb-2">AI-Powered</h3>
+              <h3 className="text-lg sm:text-xl font-bold text-[#4E342E] mb-2">{t('AI-Powered')}</h3>
               <p className="text-sm sm:text-base text-[#6D4C41]">
-                Generate unique questions on any topic using advanced AI technology
+                {t('Generate unique questions on any topic using advanced AI technology')}
               </p>
             </div>
 
@@ -85,9 +88,9 @@ export default function HomePage() {
               <div className="bg-[#10A3A2]/30 w-12 h-12 sm:w-16 sm:h-16 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
                 <FaGamepad className="text-2xl sm:text-3xl text-[#10A3A2]" />
               </div>
-              <h3 className="text-lg sm:text-xl font-bold text-[#4E342E] mb-2">Real-Time</h3>
+              <h3 className="text-lg sm:text-xl font-bold text-[#4E342E] mb-2">{t('Real-Time')}</h3>
               <p className="text-sm sm:text-base text-[#6D4C41]">
-                Compete with friends in live multiplayer quiz sessions
+                {t('Compete with friends in live multiplayer quiz sessions')}
               </p>
             </div>
 
@@ -95,9 +98,9 @@ export default function HomePage() {
               <div className="bg-[#05717B]/30 w-12 h-12 sm:w-16 sm:h-16 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
                 <FaLightbulb className="text-2xl sm:text-3xl text-[#05717B]" />
               </div>
-              <h3 className="text-lg sm:text-xl font-bold text-[#4E342E] mb-2">Smart Difficulty</h3>
+              <h3 className="text-lg sm:text-xl font-bold text-[#4E342E] mb-2">{t('Smart Difficulty', 'Smart Difficulty')}</h3>
               <p className="text-sm sm:text-base text-[#6D4C41]">
-                Choose from Easy, Medium, or Hard difficulty levels
+                {t('Choose from Easy, Medium, or Hard difficulty levels')}
               </p>
             </div>
 
@@ -105,9 +108,9 @@ export default function HomePage() {
               <div className="bg-[#05717B]/20 w-12 h-12 sm:w-16 sm:h-16 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
                 <FaChartLine className="text-2xl sm:text-3xl text-[#05717B]" />
               </div>
-              <h3 className="text-lg sm:text-xl font-bold text-[#4E342E] mb-2">Analytics</h3>
+              <h3 className="text-lg sm:text-xl font-bold text-[#4E342E] mb-2">{t('Analytics', 'Analytics')}</h3>
               <p className="text-sm sm:text-base text-[#6D4C41]">
-                Track performance with detailed stats and leaderboards
+                {t('Track performance with detailed stats and leaderboards')}
               </p>
             </div>
           </div>
@@ -117,7 +120,7 @@ export default function HomePage() {
             <div className="text-center mb-6 sm:mb-8">
               <div className="flex items-center justify-center mb-4">
                 <IoSparklesSharp className="text-3xl sm:text-4xl text-[#F4B46D] mr-2" />
-                <h2 className="text-2xl sm:text-3xl font-bold text-[#4E342E]">Why Choose Quiz Dojo?</h2>
+                <h2 className="text-2xl sm:text-3xl font-bold text-[#4E342E]">{t('Why Choose Quiz Dojo?')}</h2>
               </div>
             </div>
 
@@ -126,9 +129,9 @@ export default function HomePage() {
                 <div className="bg-[#10A3A2]/20 w-16 h-16 sm:w-20 sm:h-20 rounded-full flex items-center justify-center mx-auto mb-4">
                   <FaClock className="text-3xl sm:text-4xl text-[#10A3A2]" />
                 </div>
-                <h3 className="text-lg sm:text-xl font-semibold text-[#4E342E] mb-3">Host Control</h3>
+                <h3 className="text-lg sm:text-xl font-semibold text-[#4E342E] mb-3">{t('Host Control', 'Host Control')}</h3>
                 <p className="text-sm sm:text-base text-[#6D4C41]">
-                  Full control over quiz pacing with mid-game scoreboards and dynamic timing
+                  {t('Full control over quiz pacing with mid-game scoreboards and dynamic timing')}
                 </p>
               </div>
 
@@ -136,9 +139,9 @@ export default function HomePage() {
                 <div className="bg-[#05717B]/30 w-16 h-16 sm:w-20 sm:h-20 rounded-full flex items-center justify-center mx-auto mb-4">
                   <FaTrophy className="text-3xl sm:text-4xl text-[#05717B]" />
                 </div>
-                <h3 className="text-lg sm:text-xl font-semibold text-[#4E342E] mb-3">Competitive</h3>
+                <h3 className="text-lg sm:text-xl font-semibold text-[#4E342E] mb-3">{t('Competitive', 'Competitive')}</h3>
                 <p className="text-sm sm:text-base text-[#6D4C41]">
-                  Time-based scoring system with live leaderboards and celebration animations
+                  {t('Time-based scoring system with live leaderboards and celebration animations')}
                 </p>
               </div>
 
@@ -146,9 +149,9 @@ export default function HomePage() {
                 <div className="bg-[#10A3A2]/30 w-16 h-16 sm:w-20 sm:h-20 rounded-full flex items-center justify-center mx-auto mb-4">
                   <FaUserFriends className="text-3xl sm:text-4xl text-[#10A3A2]" />
                 </div>
-                <h3 className="text-lg sm:text-xl font-semibold text-[#4E342E] mb-3">Social</h3>
+                <h3 className="text-lg sm:text-xl font-semibold text-[#4E342E] mb-3">{t('Social', 'Social')}</h3>
                 <p className="text-sm sm:text-base text-[#6D4C41]">
-                  Easy room sharing with codes, multiplayer support, and engaging gameplay
+                  {t('Easy room sharing with codes, multiplayer support, and engaging gameplay')}
                 </p>
               </div>
             </div>
@@ -160,19 +163,19 @@ export default function HomePage() {
               <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-8 text-xs sm:text-sm">
                 <div className="flex items-center space-x-2">
                   <FaRobot className="text-[#10A3A2]" />
-                  <span>AI Questions</span>
+                  <span>{t('AI Questions', 'AI Questions')}</span>
                 </div>
                 <div className="flex items-center space-x-2">
                   <FaGamepad className="text-[#F6D35B]" />
-                  <span>Real-time Play</span>
+                  <span>{t('Real-time Play', 'Real-time Play')}</span>
                 </div>
                 <div className="flex items-center space-x-2">
                   <FaChartLine className="text-[#F4B46D]" />
-                  <span>Performance Tracking</span>
+                  <span>{t('Performance Tracking', 'Performance Tracking')}</span>
                 </div>
                 <div className="flex items-center space-x-2">
                   <FaTrophy className="text-[#F6D35B]" />
-                  <span>Competitive Scoring</span>
+                  <span>{t('Competitive Scoring', 'Competitive Scoring')}</span>
                 </div>
               </div>
             </div>

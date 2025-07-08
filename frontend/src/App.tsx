@@ -6,11 +6,16 @@ import LobbyPage from './pages/LobbyPage';
 import QuizPage from './pages/QuizPage';
 import ResultsPage from './pages/ResultsPage';
 import HealthMonitor from './components/HealthMonitor';
+import LanguageSwitcher from './components/LanguageSwitcher';
 
 // Force new deployment to use updated workflow
 function App() {
   return (
     <div className="min-h-screen bg-gray-100">
+      {/* Floating language switcher in the top-right corner */}
+      <div className="fixed top-2 right-2 z-50 opacity-70 hover:opacity-100 transition-opacity duration-200 pointer-events-auto">
+        <LanguageSwitcher />
+      </div>
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/create-room" element={<CreateRoomPage />} />

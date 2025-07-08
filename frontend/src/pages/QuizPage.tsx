@@ -26,8 +26,10 @@ import {
 import { 
   IoSparklesSharp 
 } from 'react-icons/io5';
+import { useTranslation } from 'react-i18next';
 
 export default function QuizPage() {
+  const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const [room, setRoom] = useState<Room | null>(null);
   const [timeLeft, setTimeLeft] = useState<number>(0);
@@ -237,19 +239,18 @@ export default function QuizPage() {
     setHasAnswered(true);
   };
 
-  if (!room) return <div>Loading quiz...</div>;
+  if (!room) return <div>{t('Loading quiz...')}</div>;
 
   const qIndex = room.currentQuestionIndex;
   const question: Question | undefined = room.questions[qIndex];
   const gameState = room.gameState;
   const currentPhase = gameState?.phase || "answering";
 
-  if (!question) return <div>No question found.</div>;
+  if (!question) return <div>{t('No question found.')}</div>;
 
   // Initialize game state if host and no game state exists
   if (isHost && !gameState) {
-    initializeQuestion();
-    return <div>Initializing game...</div>;
+    return <div>{t('Initializing game...')}</div>;
   }
 
   // Difficulty display helper
@@ -257,21 +258,21 @@ export default function QuizPage() {
     const difficultyMap = {
       easy: { 
         icon: FaCheckCircle, 
-        label: 'Easy', 
+        label: t('easyTitle'), 
         color: 'text-teal-600',
         bgColor: 'bg-teal-50',
         borderColor: 'border-teal-200'
       },
       medium: { 
         icon: FaClock, 
-        label: 'Medium', 
+        label: t('mediumTitle'), 
         color: 'text-amber-600',
         bgColor: 'bg-amber-50',
         borderColor: 'border-amber-200'
       },
       hard: { 
         icon: FaRocket, 
-        label: 'Hard', 
+        label: t('hardTitle'), 
         color: 'text-orange-600',
         bgColor: 'bg-orange-50',
         borderColor: 'border-orange-200'
@@ -293,7 +294,7 @@ export default function QuizPage() {
                 <div className="flex items-center justify-center lg:justify-start mb-2">
                   <MdQuiz className="text-2xl sm:text-3xl text-amber-600 mr-2" />
                   <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-800">
-                    Question {qIndex + 1} of {room.questions.length}
+                    {t('Question')} {qIndex + 1} {t('of')} {room.questions.length}
                   </h1>
                 </div>
                 <div className="flex flex-wrap items-center justify-center lg:justify-start gap-2 sm:gap-4 mt-3">
@@ -327,12 +328,12 @@ export default function QuizPage() {
                       {timeLeft}s
                     </p>
                   </div>
-                  <p className="text-xs sm:text-sm text-gray-600 font-medium">Time Remaining</p>
+                  <p className="text-xs sm:text-sm text-gray-600 font-medium">{t('Time Remaining')}</p>
                   {hasAnswered && (
                     <div className="mt-2 bg-teal-100 border border-teal-300 rounded-lg p-2">
                       <div className="flex items-center justify-center space-x-1">
                         <FaCheckCircle className="text-teal-600 text-xs sm:text-sm" />
-                        <p className="text-teal-700 font-medium text-xs">Answer Submitted!</p>
+                        <p className="text-teal-700 font-medium text-xs">{t('Answer Submitted!')}</p>
                       </div>
                     </div>
                   )}
@@ -341,12 +342,12 @@ export default function QuizPage() {
                 <div className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-xl p-3 sm:p-4 text-center lg:text-right border border-amber-200 w-full sm:w-auto">
                   <div className="flex items-center justify-center lg:justify-end space-x-1 sm:space-x-2 mb-1">
                     <FaTrophy className="text-amber-600 text-sm sm:text-base" />
-                    <p className="text-xs sm:text-sm text-gray-600">Your Score: <span className="font-bold text-amber-600">{room.players[playerId || ""]?.score || 0}</span></p>
+                    <p className="text-xs sm:text-sm text-gray-600">{t('Your Score')}: <span className="font-bold text-amber-600">{room.players[playerId || ""]?.score || 0}</span></p>
                   </div>
                   <div className="flex items-center justify-center lg:justify-end space-x-1 sm:space-x-2">
                     <FaUsers className="text-teal-600 text-sm sm:text-base" />
                     <p className="text-xs sm:text-sm text-gray-600">
-                      Leading: <span className="font-bold text-teal-600">{Math.max(...Object.values(room.players).map(p => p.score))}</span>
+                      {t('Leading')}: <span className="font-bold text-teal-600">{Math.max(...Object.values(room.players).map(p => p.score))}</span>
                     </p>
                   </div>
                 </div>
@@ -404,7 +405,7 @@ export default function QuizPage() {
                 <div className="text-center mb-6">
                   <div className="flex items-center justify-center space-x-2 mb-4">
                     <IoSparklesSharp className="text-2xl text-teal-600" />
-                    <h3 className="text-2xl font-bold text-gray-800">Correct Answer</h3>
+                    <h3 className="text-2xl font-bold text-gray-800">{t('Correct Answer')}</h3>
                   </div>
                   <div className="bg-teal-100 border-2 border-teal-500 rounded-xl p-4 mb-6">
                     <p className="text-lg font-bold text-teal-800">{question.correctOption}</p>
@@ -436,7 +437,7 @@ export default function QuizPage() {
                           <div className="flex items-center justify-center space-x-2">
                             <FaTrophy className="text-amber-600" />
                             <p className="text-amber-700 font-semibold">
-                              Points earned: {(() => {
+                              {t('Points earned')}: {(() => {
                                 // Use stored score if available, fallback to calculation for backward compatibility
                                 const playerAnswer = room.players[playerId || ""]?.answers?.[room.currentQuestionIndex];
                                 if (playerAnswer?.scoreEarned !== undefined) {
@@ -468,7 +469,7 @@ export default function QuizPage() {
                                transform hover:scale-105 font-semibold"
                     >
                       <FaChartLine className="text-lg" />
-                      <span>Show Scoreboard</span>
+                      <span>{t('Show Scoreboard')}</span>
                     </button>
                     <button 
                       onClick={nextQuestion}
@@ -480,12 +481,12 @@ export default function QuizPage() {
                       {qIndex + 1 >= room.questions.length ? (
                         <>
                           <FaFlag className="text-lg" />
-                          <span>End Quiz</span>
+                          <span>{t('End Quiz')}</span>
                         </>
                       ) : (
                         <>
                           <FaArrowRight className="text-lg" />
-                          <span>Next Question</span>
+                          <span>{t('Next Question')}</span>
                         </>
                       )}
                     </button>
@@ -498,7 +499,7 @@ export default function QuizPage() {
                     <div className="bg-amber-50 border border-amber-200 rounded-xl p-4">
                       <div className="flex items-center justify-center space-x-2">
                         <FaSpinner className="text-amber-600 animate-spin" />
-                        <p className="text-amber-700 font-medium">Waiting for host to continue...</p>
+                        <p className="text-amber-700 font-medium">{t('Waiting for host to continue...')}</p>
                       </div>
                     </div>
                   </div>
@@ -512,7 +513,7 @@ export default function QuizPage() {
                 <div className="text-center mb-6">
                   <div className="flex items-center justify-center space-x-2 mb-4">
                     <FaTrophy className="text-3xl text-amber-600" />
-                    <h3 className="text-3xl font-bold text-gray-800">Current Scores</h3>
+                    <h3 className="text-3xl font-bold text-gray-800">{t('Current Scores')}</h3>
                   </div>
                 </div>
                 
@@ -559,7 +560,7 @@ export default function QuizPage() {
                     <div className="flex items-center justify-center space-x-2">
                       <MdQuiz className="text-gray-600" />
                       <p className="text-gray-700 font-medium">
-                        Question {qIndex + 1} of {room.questions.length}
+                        {t('Question')} {qIndex + 1} {t('of')} {room.questions.length}
                       </p>
                     </div>
                   </div>
@@ -576,7 +577,7 @@ export default function QuizPage() {
                                transform hover:scale-105 font-semibold"
                     >
                       <FaArrowLeft className="text-lg" />
-                      <span>Back to Answer</span>
+                      <span>{t('Back to Answer')}</span>
                     </button>
                     <button 
                       onClick={nextQuestion}
@@ -588,12 +589,12 @@ export default function QuizPage() {
                       {qIndex + 1 >= room.questions.length ? (
                         <>
                           <FaFlag className="text-lg" />
-                          <span>End Quiz</span>
+                          <span>{t('End Quiz')}</span>
                         </>
                       ) : (
                         <>
                           <FaArrowRight className="text-lg" />
-                          <span>Next Question</span>
+                          <span>{t('Next Question')}</span>
                         </>
                       )}
                     </button>
@@ -606,7 +607,7 @@ export default function QuizPage() {
                     <div className="bg-amber-50 border border-amber-200 rounded-xl p-4">
                       <div className="flex items-center justify-center space-x-2">
                         <FaSpinner className="text-amber-600 animate-spin" />
-                        <p className="text-amber-700 font-medium">Waiting for host to continue...</p>
+                        <p className="text-amber-700 font-medium">{t('Waiting for host to continue...')}</p>
                       </div>
                     </div>
                   </div>

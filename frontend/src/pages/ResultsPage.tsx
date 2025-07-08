@@ -24,6 +24,8 @@ import {
 import { 
   IoSparklesSharp 
 } from 'react-icons/io5';
+import quizDojoLogo from "/logo-lockup.png";
+import { useTranslation } from 'react-i18next';
 
 export default function ResultsPage() {
   const { roomId } = useParams<{ roomId: string }>();
@@ -31,6 +33,7 @@ export default function ResultsPage() {
   const [isLeaving, setIsLeaving] = useState(false);
   const [viewMode, setViewMode] = useState<'chart' | 'list'>('chart');
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const playerId = localStorage.getItem("userId");
 
@@ -120,7 +123,7 @@ export default function ResultsPage() {
     }
   };
 
-  if (!room) return <div className="p-4">Loading results...</div>;
+  if (!room) return <div className="p-4">{t('Loading results...')}</div>;
 
   // Calculate player statistics
   const playersWithStats = Object.values(room.players).map((player) => {
@@ -163,7 +166,7 @@ export default function ResultsPage() {
           <div className="relative">
             <div className="flex items-center justify-center mb-4">
               <MdCelebration className="text-3xl sm:text-4xl lg:text-5xl text-yellow-400 mr-2 sm:mr-3" />
-              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-[#4E342E]">Quiz Complete!</h1>
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-[#4E342E]">{t('Quiz Complete!')}</h1>
               <MdCelebration className="text-3xl sm:text-4xl lg:text-5xl text-yellow-400 ml-2 sm:ml-3" />
             </div>
 
@@ -195,11 +198,11 @@ export default function ResultsPage() {
                   <FaCrown className="text-4xl sm:text-5xl lg:text-6xl mb-3 sm:mb-4 text-yellow-600 animate-pulse" />
                 </div>
                 
-                <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold mb-3 sm:mb-4 text-center text-[#4E342E]">Champion: {winner.nickname}</h2>
+                <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold mb-3 sm:mb-4 text-center text-[#4E342E]">{t('Champion')}: {winner.nickname}</h2>
                 
                 <div className="flex items-center justify-center space-x-2 mb-4 sm:mb-6">
                   <FaTrophy className="text-2xl sm:text-3xl lg:text-4xl text-[#F6D35B]" />
-                  <p className="text-2xl sm:text-3xl lg:text-4xl font-bold text-[#4E342E]">{winner.score} points</p>
+                  <p className="text-2xl sm:text-3xl lg:text-4xl font-bold text-[#4E342E]">{winner.score} {t('points')}</p>
                 </div>
 
                 {/* Readable Statistics Grid (now with dojo colors) */}
@@ -207,30 +210,30 @@ export default function ResultsPage() {
                   <div className="bg-white bg-opacity-90 p-2 sm:p-3 rounded-lg border-2 border-[#6D4C41] hover:bg-opacity-100 hover:scale-105 hover:shadow-lg transition-all duration-200 cursor-pointer text-[#4E342E] font-semibold">
                     <div className="flex items-center justify-center space-x-1 mb-1">
                       <FaAward className="text-sm sm:text-base text-[#F6D35B]" />
-                      <span className="text-xs sm:text-sm font-semibold">Accuracy</span>
+                      <span className="text-xs sm:text-sm font-semibold">{t('resultsAccuracy')}</span>
                     </div>
                     <div className="text-lg sm:text-xl font-bold">{winner.accuracy}%</div>
                   </div>
                   <div className="bg-white bg-opacity-90 p-2 sm:p-3 rounded-lg border-2 border-[#6D4C41] hover:bg-opacity-100 hover:scale-105 hover:shadow-lg transition-all duration-200 cursor-pointer text-[#4E342E] font-semibold">
                     <div className="flex items-center justify-center space-x-1 mb-1">
                       <FaClock className="text-sm sm:text-base text-[#F6D35B]" />
-                      <span className="text-xs sm:text-sm font-semibold">Avg Time</span>
+                      <span className="text-xs sm:text-sm font-semibold">{t('resultsAvgTime')}</span>
                     </div>
                     <div className="text-lg sm:text-xl font-bold">{winner.avgResponseTime}s</div>
                   </div>
                   <div className="bg-white bg-opacity-90 p-2 sm:p-3 rounded-lg border-2 border-[#6D4C41] hover:bg-opacity-100 hover:scale-105 hover:shadow-lg transition-all duration-200 cursor-pointer text-[#4E342E] font-semibold">
                     <div className="flex items-center justify-center space-x-1 mb-1">
                       <FaStar className="text-sm sm:text-base text-[#F6D35B]" />
-                      <span className="text-xs sm:text-sm font-semibold">Correct</span>
+                      <span className="text-xs sm:text-sm font-semibold">{t('resultsCorrect')}</span>
                     </div>
                     <div className="text-lg sm:text-xl font-bold">{winner.correctAnswers}/{winner.totalAnswers}</div>
                   </div>
                   <div className="bg-white bg-opacity-90 p-2 sm:p-3 rounded-lg border-2 border-[#6D4C41] hover:bg-opacity-100 hover:scale-105 hover:shadow-lg transition-all duration-200 cursor-pointer text-[#4E342E] font-semibold">
                     <div className="flex items-center justify-center space-x-1 mb-1">
                       <FaChartLine className="text-sm sm:text-base text-[#F6D35B]" />
-                      <span className="text-xs sm:text-sm font-semibold">Position</span>
+                      <span className="text-xs sm:text-sm font-semibold">{t('resultsPosition')}</span>
                     </div>
-                    <div className="text-lg sm:text-xl font-bold">1st Place</div>
+                    <div className="text-lg sm:text-xl font-bold">{t('resultsFirstPlace')}</div>
                   </div>
                 </div>
 
@@ -238,13 +241,13 @@ export default function ResultsPage() {
                 <div className="bg-white bg-opacity-90 p-3 sm:p-4 rounded-xl border-2 border-[#6D4C41] hover:bg-opacity-100 hover:scale-[1.02] hover:shadow-lg transition-all duration-200 cursor-pointer text-[#4E342E] font-semibold">
                   <div className="flex items-center justify-center space-x-2 mb-2">
                     <IoSparklesSharp className="text-lg sm:text-xl text-[#F6D35B]" />
-                    <span className="text-sm sm:text-base font-semibold">Performance Highlights</span>
+                    <span className="text-sm sm:text-base font-semibold">{t('resultsPerformanceHighlights')}</span>
                     <IoSparklesSharp className="text-lg sm:text-xl text-[#F6D35B]" />
                   </div>
                   <div className="text-xs sm:text-sm opacity-90 text-center">
-                    {winner.accuracy >= 90 ? "🎯 Perfect accuracy! " : winner.accuracy >= 80 ? "🎯 Excellent accuracy! " : "🎯 Good accuracy! "}
-                    {winner.avgResponseTime <= 5 ? "⚡ Lightning fast responses! " : winner.avgResponseTime <= 10 ? "⚡ Quick thinking! " : "⚡ Steady performance! "}
-                    {winner.correctAnswers === winner.totalAnswers ? "🏅 Flawless victory! " : winner.correctAnswers >= winner.totalAnswers * 0.8 ? "🏅 Outstanding performance! " : "🏅 Great effort! "}
+                    {winner.accuracy >= 90 ? t('resultsPerfectAccuracy') : winner.accuracy >= 80 ? t('resultsExcellentAccuracy') : t('resultsGoodAccuracy')}
+                    {winner.avgResponseTime <= 5 ? t('resultsLightningFast') : winner.avgResponseTime <= 10 ? t('resultsQuickThinking') : t('resultsSteadyPerformance')}
+                    {winner.correctAnswers === winner.totalAnswers ? t('resultsFlawlessVictory') : winner.correctAnswers >= winner.totalAnswers * 0.8 ? t('resultsOutstandingPerformance') : t('resultsGreatEffort')}
                   </div>
                 </div>
               </div>
@@ -255,11 +258,11 @@ export default function ResultsPage() {
               <div className="bg-[#F7E2C0] p-3 sm:p-4 rounded-xl mb-4 border-2 border-[#6D4C41]">
                 <div className="flex items-center justify-center space-x-2 mb-2">
                   <FaAward className="text-lg sm:text-xl text-[#6D4C41]" />
-                  <span className="text-sm sm:text-base font-semibold text-[#4E342E]">Runner-up: {sortedPlayers[1].nickname}</span>
+                  <span className="text-sm sm:text-base font-semibold text-[#4E342E]">{t('resultsRunnerUp')}: {sortedPlayers[1].nickname}</span>
                   <FaAward className="text-lg sm:text-xl text-[#6D4C41]" />
                 </div>
                 <div className="text-xs sm:text-sm text-[#6D4C41]">
-                  {sortedPlayers[1].score} points • {sortedPlayers[1].accuracy}% accuracy • {sortedPlayers[1].avgResponseTime}s avg
+                  {sortedPlayers[1].score} {t('points')} • {sortedPlayers[1].accuracy}% {t('resultsAccuracyLower')} • {sortedPlayers[1].avgResponseTime}s {t('resultsAvgTimeLower')}
                 </div>
               </div>
             )}
@@ -271,7 +274,7 @@ export default function ResultsPage() {
           <div className="flex flex-col sm:flex-row items-center justify-between mb-4 sm:mb-6">
             <div className="flex items-center mb-4 sm:mb-0">
               <FaChartLine className="text-2xl sm:text-3xl text-[#10A3A2] mr-2 sm:mr-3" />
-              <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-[#4E342E]">Final Leaderboard</h2>
+              <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-[#4E342E]">{t('Final Leaderboard')}</h2>
             </div>
             
             {/* View Toggle */}
@@ -285,7 +288,7 @@ export default function ResultsPage() {
                 }`}
               >
                 <FaChartBar className="text-sm" />
-                <span>Chart</span>
+                <span>{t('resultsChart')}</span>
               </button>
               <button
                 onClick={() => setViewMode('list')}
@@ -296,7 +299,7 @@ export default function ResultsPage() {
                 }`}
               >
                 <FaList className="text-sm" />
-                <span>List</span>
+                <span>{t('resultsList')}</span>
               </button>
             </div>
           </div>
@@ -349,14 +352,14 @@ export default function ResultsPage() {
                             }`}>
                               {player.nickname}
                               {player.id === playerId && (
-                                <span className="font-medium ml-1 text-[#10A3A2]">(You)</span>
+                                <span className="font-medium ml-1 text-[#10A3A2]">{t('(You)')}</span>
                               )}
                             </span>
                           </div>
                           <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-4 text-xs text-[#6D4C41]">
-                            <span>{player.correctAnswers}/{player.totalAnswers} correct</span>
-                            <span>{player.accuracy}% accuracy</span>
-                            <span>{player.avgResponseTime}s avg</span>
+                            <span>{player.correctAnswers}/{player.totalAnswers} {t('resultsCorrectLower')}</span>
+                            <span>{player.accuracy}% {t('resultsAccuracyLower')}</span>
+                            <span>{player.avgResponseTime}s {t('resultsAvgTimeLower')}</span>
                           </div>
                         </div>
                       </div>
@@ -378,7 +381,7 @@ export default function ResultsPage() {
         <div className="bg-[#F7E2C0] rounded-2xl shadow-xl p-4 sm:p-6 mb-6 sm:mb-8 border-2 border-[#4E342E]">
           <div className="flex items-center justify-center mb-4 sm:mb-6">
             <FaUsers className="text-2xl sm:text-3xl text-[#10A3A2] mr-2 sm:mr-3" />
-            <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-[#4E342E]">Game Statistics</h2>
+            <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-[#4E342E]">{t('Game Statistics')}</h2>
           </div>
 
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
@@ -386,19 +389,19 @@ export default function ResultsPage() {
               <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-[#4E342E] mb-1">
                 {room.questions.length}
               </div>
-              <div className="text-xs sm:text-sm text-[#6D4C41] group-hover:text-[#4E342E] transition-colors duration-300">Questions</div>
+              <div className="text-xs sm:text-sm text-[#6D4C41] group-hover:text-[#4E342E] transition-colors duration-300">{t('resultsQuestions')}</div>
             </div>
             <div className="bg-white p-3 sm:p-4 rounded-xl text-center border-2 border-[#6D4C41] hover:bg-opacity-100 hover:scale-105 hover:shadow-lg transition-all duration-200 cursor-pointer">
               <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-[#4E342E] mb-1">
                 {Object.keys(room.players).length}
               </div>
-              <div className="text-xs sm:text-sm text-[#6D4C41] group-hover:text-[#4E342E] transition-colors duration-300">Players</div>
+              <div className="text-xs sm:text-sm text-[#6D4C41] group-hover:text-[#4E342E] transition-colors duration-300">{t('Players')}</div>
             </div>
             <div className="bg-white p-3 sm:p-4 rounded-xl text-center border-2 border-[#6D4C41] hover:bg-opacity-100 hover:scale-105 hover:shadow-lg transition-all duration-200 cursor-pointer">
               <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-[#4E342E] mb-1 capitalize">
                 {room.difficulty}
               </div>
-              <div className="text-xs sm:text-sm text-[#6D4C41] group-hover:text-[#4E342E] transition-colors duration-300">Difficulty</div>
+              <div className="text-xs sm:text-sm text-[#6D4C41] group-hover:text-[#4E342E] transition-colors duration-300">{t('difficulty')}</div>
             </div>
             <div className="bg-white p-3 sm:p-4 rounded-xl text-center border-2 border-[#6D4C41] hover:bg-opacity-100 hover:scale-105 hover:shadow-lg transition-all duration-200 cursor-pointer">
               <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-[#4E342E] mb-1 ">
@@ -409,7 +412,7 @@ export default function ResultsPage() {
                   ) / Object.keys(room.players).length / 1000 * 10
                 ) / 10}s
               </div>
-              <div className="text-xs sm:text-sm text-[#6D4C41] group-hover:text-[#4E342E] transition-colors duration-300">Avg Time</div>
+              <div className="text-xs sm:text-sm text-[#6D4C41] group-hover:text-[#4E342E] transition-colors duration-300">{t('resultsAvgTime')}</div>
             </div>
           </div>
         </div>
@@ -430,18 +433,18 @@ export default function ResultsPage() {
             {isLeaving ? (
               <>
                 <FaSpinner className="text-lg sm:text-xl animate-spin" />
-                <span>Leaving...</span>
+                <span>{t('Leaving...')}</span>
               </>
             ) : (
               <>
                 <FaHome className="text-lg sm:text-xl" />
-                <span>Back to Home</span>
+                <span>{t('backToHome')}</span>
               </>
             )}
           </button>
 
           <p className="text-xs sm:text-sm text-[#6D4C41] px-4">
-            Thanks for playing! Create another room to play again.
+            {t('Thanks for playing! Create another room to play again.')}
           </p>
         </div>
       </div>
