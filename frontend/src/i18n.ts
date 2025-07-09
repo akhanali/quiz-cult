@@ -150,6 +150,10 @@ const resources = {
       "resultsList": "List",
       "resultsQuestions": "Questions",
       "resultsCorrectLower": "correct",
+      "players answered": "players answered",
+      "All players answered!": "All players answered!",
+      "End Question": "End Question",
+      
     }
   },
   ru: {
@@ -298,6 +302,9 @@ const resources = {
       "resultsList": "Список",
       "resultsQuestions": "Вопросы",
       "resultsCorrectLower": "правильно",
+      "players answered": "игроков ответили",
+      "All players answered!": "Все игроки ответили!",
+      "End Question": "Завершить вопрос",
     }
   }
 };

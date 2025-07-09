@@ -419,29 +419,31 @@ export default function ResultsPage() {
 
         {/* Action Buttons */}
         <div className="text-center space-y-3 sm:space-y-4">
-          <button
-            onClick={handleBackToHome}
-            disabled={isLeaving}
-            className={`w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 rounded-xl font-semibold text-base sm:text-lg 
-                       transition-all duration-300 flex items-center justify-center space-x-2 sm:space-x-3 
-                       shadow-lg hover:shadow-xl transform hover:scale-105 min-h-[48px] sm:min-h-[56px] ${
-              isLeaving 
-                ? "bg-[#6D4C41] text-[#F7E2C0] cursor-not-allowed"
-                : "bg-[#10A3A2] text-white hover:bg-[#05717B]"
-            }`}
-          >
-            {isLeaving ? (
-              <>
-                <FaSpinner className="text-lg sm:text-xl animate-spin" />
-                <span>{t('Leaving...')}</span>
-              </>
-            ) : (
-              <>
-                <FaHome className="text-lg sm:text-xl" />
-                <span>{t('backToHome')}</span>
-              </>
-            )}
-          </button>
+          <div className="flex justify-center">
+            <button
+              onClick={handleBackToHome}
+              disabled={isLeaving}
+              className={`w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 rounded-xl font-semibold text-base sm:text-lg 
+                         transition-all duration-300 flex items-center justify-center space-x-2 sm:space-x-3 
+                         shadow-lg hover:shadow-xl transform hover:scale-105 min-h-[48px] sm:min-h-[56px] ${
+                isLeaving 
+                  ? "bg-[#6D4C41] text-[#F7E2C0] cursor-not-allowed"
+                  : "bg-[#10A3A2] text-white hover:bg-[#05717B]"
+              }`}
+            >
+              {isLeaving ? (
+                <>
+                  <FaSpinner className="text-lg sm:text-xl animate-spin" />
+                  <span>{t('Leaving...')}</span>
+                </>
+              ) : (
+                <>
+                  <FaHome className="text-lg sm:text-xl" />
+                  <span>{t('backToHome')}</span>
+                </>
+              )}
+            </button>
+          </div>
 
           <p className="text-xs sm:text-sm text-[#6D4C41] px-4">
             {t('Thanks for playing! Create another room to play again.')}

@@ -43,7 +43,8 @@ export default function LeaderboardChart({ players, currentPlayerId, maxScore }:
     return {
       width: `${barWidth}%`,
       backgroundColor: barColor,
-      borderColor: borderColor
+      borderColor: borderColor,
+      minWidth: barWidth === 0 ? '0px' : 'auto' // Ensure zero-width bars don't take space
     };
   };
 
@@ -73,7 +74,7 @@ export default function LeaderboardChart({ players, currentPlayerId, maxScore }:
             </div>
 
             {/* Player Name */}
-            <div className="min-w-0 flex-1">
+            <div className="min-w-0 flex-1 max-w-32">
               <div className="flex items-center space-x-2">
                 <span className={`text-sm font-semibold truncate ${
                   player.id === currentPlayerId ? 'text-[#4E342E]' : 'text-gray-800'
@@ -87,23 +88,33 @@ export default function LeaderboardChart({ players, currentPlayerId, maxScore }:
             </div>
 
             {/* Score Bar */}
-            <div className="flex-1 max-w-xs">
+            <div className="flex-1 max-w-xs min-w-0">
               <div className="relative h-6 bg-gray-200 rounded-full border border-gray-300 overflow-hidden">
-                <div
-                  className="h-full rounded-full border-2 transition-all duration-300 ease-out"
-                  style={getPlayerBarStyle(player, index)}
-                />
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <span className="text-xs font-bold text-gray-800 drop-shadow-sm">
-                    {player.score}
-                  </span>
-                </div>
+                {player.score > 0 ? (
+                  <>
+                    <div
+                      className="h-full rounded-full border-2 transition-all duration-300 ease-out"
+                      style={getPlayerBarStyle(player, index)}
+                    />
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <span className="text-xs font-bold text-gray-800 drop-shadow-sm">
+                        {player.score}
+                      </span>
+                    </div>
+                  </>
+                ) : (
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <span className="text-xs font-bold text-gray-600">
+                      0
+                    </span>
+                  </div>
+                )}
               </div>
             </div>
 
-            {/* Score Display */}
-            <div className="text-right flex-shrink-0">
-              <div className="flex items-center space-x-1">
+            {/* Score Display - Fixed Width */}
+            <div className="text-right flex-shrink-0 w-20">
+              <div className="flex items-center justify-end space-x-1">
                 <FaTrophy className="text-yellow-500 text-xs" />
                 <span className="text-sm font-bold text-gray-800">{player.score}</span>
               </div>

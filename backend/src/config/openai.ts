@@ -100,6 +100,15 @@ export const generateQuestionPrompt = (topic: string, difficulty: DifficultyLeve
 
   return `Generate ${count} multiple choice quiz questions about "${topic}" with ${difficulty} difficulty level.
 
+LANGUAGE REQUIREMENTS:
+- Generate ALL questions and options in the SAME language as the topic
+- If the topic is in Russian, generate questions in Russian
+- If the topic is in Spanish, generate questions in Spanish
+- If the topic is in French, generate questions in French
+- If the topic is in German, generate questions in German
+- If the topic is in English, generate questions in English
+- Match the language of the topic exactly - use the same language for everything
+
 DIFFICULTY REQUIREMENTS:
 - Level: ${difficulty.toUpperCase()} (${difficultyInfo.description})
 - Time needed: ${difficultyInfo.timeLimit}
@@ -128,6 +137,7 @@ QUALITY STANDARDS:
 - Avoid trick questions or ambiguous wording
 - Ensure questions match the requested difficulty level
 - Use appropriate time limits based on complexity
+- Maintain consistent language throughout all questions and options
 
 Topic: ${topic}
 Difficulty: ${difficulty}

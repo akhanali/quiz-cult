@@ -16,7 +16,8 @@ import {
   FaArrowLeft,
   FaFlag,
   FaSpinner,
-  FaCross
+  FaStop,
+  FaTimesCircle
 } from 'react-icons/fa';
 import { 
   MdQuiz, 
@@ -100,6 +101,18 @@ export default function QuizPage() {
         // Update the timeLeft state with remaining seconds
         setTimeLeft(remaining);
         
+        // Check if all players have answered (auto-advance logic)
+        if (isHost && !gameState.allPlayersAnswered) {
+          const allAnswered = Object.values(room.players).every(player => 
+            player.answers && player.answers[room.currentQuestionIndex]
+          );
+          
+          if (allAnswered) {
+            // Auto-advance when all players have answered
+            endCurrentQuestion();
+          }
+        }
+        
         // If time has run out (remaining = 0) and this client is the host
         // Then trigger the end of the current question
         if (remaining === 0 && isHost) {
@@ -109,13 +122,21 @@ export default function QuizPage() {
     }, 100); // Run every 100ms for a smooth countdown display
 
     return () => clearInterval(interval);
-  }, [room?.gameState, isHost]);
+  }, [room?.gameState, isHost, room?.players, room?.currentQuestionIndex]);
 
   // Reset answer state when question changes
   useEffect(() => {
     setHasAnswered(false);
     setSelectedOption(null);
   }, [room?.currentQuestionIndex]);
+
+  // Initialize game state when host enters quiz page
+  useEffect(() => {
+    if (isHost && room && !room.gameState) {
+      console.log('🎮 Host initializing game state...');
+      initializeQuestion();
+    }
+  }, [isHost, room, room?.gameState]);
 
   // Initialize game state when starting quiz (host only)
   const initializeQuestion = async () => {
@@ -247,6 +268,22 @@ export default function QuizPage() {
     setHasAnswered(true);
   };
 
+  // Check if all players have answered the current question
+  const allPlayersAnswered = () => {
+    if (!room) return false;
+    return Object.values(room.players).every(player => 
+      player.answers && player.answers[room.currentQuestionIndex]
+    );
+  };
+
+  // Get count of players who have answered
+  const getAnsweredCount = () => {
+    if (!room) return 0;
+    return Object.values(room.players).filter(player => 
+      player.answers && player.answers[room.currentQuestionIndex]
+    ).length;
+  };
+
   if (!room) return <div>{t('Loading quiz...')}</div>;
 
   const qIndex = room.currentQuestionIndex;
@@ -337,11 +374,27 @@ export default function QuizPage() {
                     </p>
                   </div>
                   <p className="text-xs sm:text-sm text-gray-600 font-medium">{t('Time Remaining')}</p>
+                  
+                  {/* Player answer status */}
+                  <div className="mt-2 text-xs text-gray-600">
+                    <p>{getAnsweredCount()}/{Object.keys(room.players).length} {t('players answered')}</p>
+                  </div>
+                  
                   {hasAnswered && (
                     <div className="mt-2 bg-teal-100 border border-teal-300 rounded-lg p-2">
                       <div className="flex items-center justify-center space-x-1">
                         <FaCheckCircle className="text-teal-600 text-xs sm:text-sm" />
                         <p className="text-teal-700 font-medium text-xs">{t('Answer Submitted!')}</p>
+                      </div>
+                    </div>
+                  )}
+                  
+                  {/* Auto-advance notification */}
+                  {allPlayersAnswered() && (
+                    <div className="mt-2 bg-blue-100 border border-blue-300 rounded-lg p-2">
+                      <div className="flex items-center justify-center space-x-1">
+                        <FaRocket className="text-blue-600 text-xs sm:text-sm" />
+                        <p className="text-blue-700 font-medium text-xs">{t('All players answered!')}</p>
                       </div>
                     </div>
                   )}
@@ -407,6 +460,22 @@ export default function QuizPage() {
               </div>
             </div>
 
+            {/* Host End Question Button - Only show during answering phase */}
+            {currentPhase === "answering" && isHost && (
+              <div className="flex justify-center mb-6">
+                <button 
+                  onClick={endCurrentQuestion}
+                  className="bg-gradient-to-r from-red-600 to-orange-600 text-white px-6 py-3 rounded-xl 
+                           hover:from-red-700 hover:to-orange-700 transition-all duration-300 
+                           flex items-center justify-center space-x-2 shadow-lg hover:shadow-xl
+                           transform hover:scale-105 font-semibold"
+                >
+                  <FaStop className="text-lg" />
+                  <span>{t('End Question')}</span>
+                </button>
+              </div>
+            )}
+
             {/* Answer Reveal Phase - Show correct answer and host controls */}
             {currentPhase === "showing-answer" && (
               <div className="bg-white rounded-xl shadow-lg p-6 mb-6 border border-amber-200">
@@ -432,7 +501,7 @@ export default function QuizPage() {
                         {selectedOption === question.correctOption ? (
                           <FaCheckCircle className="text-teal-600 text-xl" />
                         ) : (
-                          <FaCross className="text-red-600 text-xl" />
+                          <FaTimesCircle className="text-red-600 text-xl" />
                         )}
                         <p className={`font-bold text-lg ${
                           selectedOption === question.correctOption ? "text-teal-700" : "text-red-700"

@@ -163,7 +163,7 @@ export default function LobbyPage() {
       trackEngagement.buttonClick('start_quiz', 'lobby_page');
 
       await update(ref(db, `rooms/${room.id}`), {
-        status: "in-progress",
+        status: "active",
         startedAt: Date.now(),
         currentQuestionIndex: 0
       });
@@ -198,7 +198,7 @@ export default function LobbyPage() {
             <div className="bg-[#F7E2C0] rounded-2xl shadow-lg p-4 sm:p-6 text-center border border-[#4E342E]/20">
               <div className="flex items-center justify-center mb-3">
                 <FaCopy className="text-xl sm:text-2xl text-[#10A3A2] mr-2" />
-                <h3 className="text-base sm:text-lg font-bold text-[#4E342E] mb-3">{t('roomCode', 'Room Code')}</h3>
+                <h3 className="text-base sm:text-lg font-bold text-[#4E342E] mb-3">{t('Room Code')}</h3>
               </div>
               <div className="relative">
                 <p className="text-2xl sm:text-3xl font-bold text-[#10A3A2] font-mono tracking-wider mb-3">
@@ -257,7 +257,7 @@ export default function LobbyPage() {
             <div className="flex items-center justify-center space-x-3">
               <FaQuestionCircle className="text-2xl sm:text-3xl text-[#F4B46D]" />
               <div className="text-center">
-                <p className="text-xl sm:text-2xl font-bold text-[#4E342E]">{t('numberOfQuestions')}:{room.totalQuestions} </p>
+                <p className="text-xl sm:text-2xl font-bold text-[#4E342E]">{t('numberOfQuestions')}: {room.totalQuestions} </p>
                 <p className="text-sm sm:text-base text-[#6D4C41]">{t('Ready to challenge you')}</p>
               </div>
             </div>
