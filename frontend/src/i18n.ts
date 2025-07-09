@@ -153,7 +153,14 @@ const resources = {
       "players answered": "players answered",
       "All players answered!": "All players answered!",
       "End Question": "End Question",
-      
+
+      // Feedback
+      'Help us improve Quiz Dojo!': 'Help us improve Quiz Dojo!',
+      'Your feedback helps us create the best quiz experience': 'Your feedback helps us create the best quiz experience',
+      'Close feedback form': 'Close feedback form',
+      'Loading feedback form...': 'Loading feedback form...',
+      'Thank you for helping us improve Quiz Dojo!': 'Thank you for helping us improve Quiz Dojo!',
+      'Give feedback': 'Give feedback',
     }
   },
   ru: {
@@ -305,6 +312,14 @@ const resources = {
       "players answered": "игроков ответили",
       "All players answered!": "Все игроки ответили!",
       "End Question": "Завершить вопрос",
+
+      // Feedback
+      'Help us improve Quiz Dojo!': 'Помогите нам улучшить Quiz Dojo!',
+      'Your feedback helps us create the best quiz experience': 'Ваши отзывы помогают нам создать лучший опыт викторины',
+      'Close feedback form': 'Закрыть форму обратной связи',
+      'Loading feedback form...': 'Загрузка формы обратной связи...',
+      'Thank you for helping us improve Quiz Dojo!': 'Спасибо, что помогаете нам улучшить Quiz Dojo!',
+      'Give feedback': 'Оставить отзыв',
     }
   }
 };

@@ -78,8 +78,8 @@ const validateCreateRoomRequest = (body: any): { valid: boolean; errors: string[
   if (!body.questionCount || typeof body.questionCount !== 'number') {
     errors.push('Question count must be a number');
   }
-  if (body.questionCount && (body.questionCount < 1 || body.questionCount > 20)) {
-    errors.push('Question count must be between 1 and 20');
+  if (body.questionCount && (body.questionCount < 1 || body.questionCount > 50)) {
+    errors.push('Question count must be between 1 and 50');
   }
 
   return { valid: errors.length === 0, errors };

@@ -157,8 +157,8 @@ const validateQuestionRequest = (body: any): { valid: boolean; errors: string[] 
   if (!body.count || typeof body.count !== 'number') {
     errors.push('Count must be a number');
   }
-  if (body.count && (body.count < 1 || body.count > 20)) {
-    errors.push('Count must be between 1 and 20');
+  if (body.count && (body.count < 1 || body.count > 50)) {
+    errors.push('Count must be between 1 and 50');
   }
 
   return { valid: errors.length === 0, errors };
