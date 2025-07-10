@@ -78,8 +78,8 @@ const validateCreateRoomRequest = (body: any): { valid: boolean; errors: string[
   if (!body.questionCount || typeof body.questionCount !== 'number') {
     errors.push('Question count must be a number');
   }
-  if (body.questionCount && (body.questionCount < 1 || body.questionCount > 50)) {
-    errors.push('Question count must be between 1 and 50');
+  if (body.questionCount && (body.questionCount < 1 || body.questionCount > 35)) {
+    errors.push('Question count must be between 1 and 35');
   }
 
   return { valid: errors.length === 0, errors };
@@ -402,11 +402,7 @@ router.post('/', async (req: Request, res: Response) => {
       answers: {}
     };
 
-    // Generate questions for the room immediately
-    console.log(`🧠 Generating questions for room creation: ${questionCount} ${difficulty} questions about "${topic}"`);
-    const questionResult = await generateQuestionsForRoom(topic.trim(), difficulty as DifficultyLevel, questionCount);
-
-    // Create room data with questions already generated
+    // Create room data immediately without questions
     const roomData: Room = {
       id: roomId,
       roomCode,
@@ -420,24 +416,29 @@ router.post('/', async (req: Request, res: Response) => {
       players: {
         [playerId]: hostPlayer
       },
-      questions: questionResult.questions,
+      questions: [], // Empty initially, will be populated asynchronously
       totalQuestions: questionCount,
-      isGameComplete: false
+      isGameComplete: false,
+      questionsGenerating: true // Flag to indicate questions are being generated
     };
 
-    // Save room to Firebase
+    // Save room to Firebase immediately
     await db!.ref(`rooms/${roomId}`).set(roomData);
 
-    console.log(`✅ Room ${roomCode} created successfully with ID: ${roomId} (${questionResult.questions.length} questions, AI: ${questionResult.aiGenerated})`);
+    console.log(`✅ Room ${roomCode} created successfully with ID: ${roomId} (questions generating in background)`);
 
+    // Return room immediately
     const response: CreateRoomResponse = {
       roomId,
       playerId,
-      aiGenerated: questionResult.aiGenerated,
-      fallbackReason: questionResult.fallbackReason
+      aiGenerated: false, // Will be updated when questions are generated
+      fallbackReason: undefined
     };
 
     res.status(201).json(response);
+
+    // Generate questions asynchronously (don't await)
+    generateQuestionsForRoomAsync(roomId, topic.trim(), difficulty as DifficultyLevel, questionCount);
 
   } catch (error: any) {
     console.error('❌ Error creating room:', error);
@@ -447,6 +448,64 @@ router.post('/', async (req: Request, res: Response) => {
     } as ErrorResponse);
   }
 });
+
+/**
+ * Generate questions asynchronously and update the room
+ */
+const generateQuestionsForRoomAsync = async (roomId: string, topic: string, difficulty: DifficultyLevel, count: number): Promise<void> => {
+  try {
+    console.log(`🧠 Generating questions asynchronously for room ${roomId}: ${count} ${difficulty} questions about "${topic}"`);
+    
+    // Request extra questions to account for potential validation losses
+    const requestedCount = count;
+    const bufferCount = Math.ceil(requestedCount * 1.1); // Request 10% more (reduced from 20%)
+    
+    console.log(`🧠 Requesting ${bufferCount} questions from AI (target: ${requestedCount}, buffer: ${bufferCount - requestedCount})`);
+    
+    const questionResult = await generateQuestionsForRoom(topic, difficulty, bufferCount);
+
+    // Update room with generated questions
+    const updateData: Partial<Room> = {
+      questions: questionResult.questions.slice(0, requestedCount),
+      questionsGenerating: false,
+      aiGenerated: questionResult.aiGenerated
+    };
+
+    // Only include fallbackReason if it has a value
+    if (questionResult.fallbackReason) {
+      updateData.fallbackReason = questionResult.fallbackReason;
+    }
+
+    await db!.ref(`rooms/${roomId}`).update(updateData);
+
+    console.log(`✅ Questions generated for room ${roomId}: ${questionResult.questions.length} questions (${questionResult.aiGenerated ? '100% AI' : 'mixed AI + samples'})`);
+
+  } catch (error: any) {
+    console.error(`❌ Error generating questions for room ${roomId}:`, error);
+    
+    // Fallback to sample questions if AI generation fails
+    const sampleQuestions = getSampleQuestions(difficulty);
+    const selectedQuestions = sampleQuestions.slice(0, count);
+    
+    // Pad with repeated questions if needed
+    while (selectedQuestions.length < count) {
+      const remaining = count - selectedQuestions.length;
+      const additionalQuestions = sampleQuestions.slice(0, remaining);
+      selectedQuestions.push(...additionalQuestions);
+    }
+
+    const updateData: Partial<Room> = {
+      questions: selectedQuestions.slice(0, count),
+      questionsGenerating: false,
+      aiGenerated: false,
+      fallbackReason: 'AI generation failed, using sample questions'
+    };
+
+    await db!.ref(`rooms/${roomId}`).update(updateData);
+    
+    console.log(`✅ Fallback questions set for room ${roomId}: ${selectedQuestions.length} sample questions`);
+  }
+};
 
 /**
  * POST /api/rooms/join

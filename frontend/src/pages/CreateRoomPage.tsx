@@ -72,8 +72,8 @@ export default function CreateRoomPage() {
     }
     
     const questionCount = Number(count);
-    if (questionCount < 1 || questionCount > 50) {
-      setError('Number of questions must be between 1 and 50');
+    if (questionCount < 1 || questionCount > 35) {
+      setError('Number of questions must be between 1 and 35');
       return;
     }
     
@@ -280,7 +280,7 @@ export default function CreateRoomPage() {
                        text-base sm:text-lg min-h-[44px] sm:min-h-[48px] bg-[#FDF0DC] text-[#4E342E]"
               disabled={isLoading}
             />
-            <p className="text-[#6D4C41] text-sm mt-1">{t('Choose between 1-50 questions')}</p>
+            <p className="text-[#6D4C41] text-sm mt-1">{t('Choose between 1-40 questions')}</p>
           </div>
 
           {/* Create Button */}

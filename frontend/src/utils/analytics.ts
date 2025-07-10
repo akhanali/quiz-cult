@@ -29,9 +29,21 @@ const getSessionId = (): string => {
   return newSessionId;
 };
 
+// Check if analytics is ready
+const isAnalyticsReady = (): boolean => {
+  return typeof window !== 'undefined' && 
+         window.gtag && 
+         typeof window.gtag === 'function';
+};
+
 // Track page view
 export const trackPageView = (page: string) => {
-  if (typeof window !== 'undefined' && window.gtag) {
+  if (!isAnalyticsReady()) {
+    console.warn('Analytics not ready, skipping page view:', page);
+    return;
+  }
+
+  try {
     const userId = generateUserId();
     const sessionId = getSessionId();
     
@@ -51,10 +63,52 @@ export const trackPageView = (page: string) => {
       custom_user_id: userId,
       custom_session_id: sessionId
     });
+    
+    console.log('Analytics page view sent:', page);
+  } catch (error) {
+    console.error('Analytics page view failed:', page, error);
   }
 };
 
-// Track custom events
+// Retry failed analytics events
+const retryAnalyticsEvent = (
+  eventName: string,
+  eventData: any,
+  maxRetries: number = 3,
+  delay: number = 1000
+): void => {
+  let retryCount = 0;
+  
+  const attemptEvent = () => {
+    if (!isAnalyticsReady()) {
+      if (retryCount < maxRetries) {
+        retryCount++;
+        console.log(`Analytics not ready, retrying ${eventName} (attempt ${retryCount}/${maxRetries})`);
+        setTimeout(attemptEvent, delay);
+      } else {
+        console.warn(`Analytics event failed after ${maxRetries} retries:`, eventName);
+      }
+      return;
+    }
+
+    try {
+      window.gtag('event', eventName, eventData);
+      console.log('Analytics event sent (with retry):', eventName);
+    } catch (error) {
+      if (retryCount < maxRetries) {
+        retryCount++;
+        console.log(`Analytics event failed, retrying ${eventName} (attempt ${retryCount}/${maxRetries})`);
+        setTimeout(attemptEvent, delay);
+      } else {
+        console.error(`Analytics event failed after ${maxRetries} retries:`, eventName, error);
+      }
+    }
+  };
+  
+  attemptEvent();
+};
+
+// Track custom events with retry
 export const trackEvent = (
   eventName: string,
   eventCategory: string,
@@ -62,19 +116,31 @@ export const trackEvent = (
   eventValue?: number,
   customParameters?: Record<string, any>
 ) => {
-  if (typeof window !== 'undefined' && window.gtag) {
-    const userId = generateUserId();
-    const sessionId = getSessionId();
-    
-    window.gtag('event', eventName, {
-      event_category: eventCategory,
-      event_label: eventLabel,
-      value: eventValue,
-      custom_user_id: userId,
-      custom_session_id: sessionId,
-      ...customParameters
-    });
+  const userId = generateUserId();
+  const sessionId = getSessionId();
+  
+  const eventData = {
+    event_category: eventCategory,
+    event_label: eventLabel,
+    value: eventValue,
+    custom_user_id: userId,
+    custom_session_id: sessionId,
+    ...customParameters
+  };
+
+  // Try immediate send first
+  if (isAnalyticsReady()) {
+    try {
+      window.gtag('event', eventName, eventData);
+      console.log('Analytics event sent:', eventName, { eventCategory, eventLabel, eventValue });
+      return;
+    } catch (error) {
+      console.error('Analytics event failed, will retry:', eventName, error);
+    }
   }
+
+  // If immediate send fails or analytics not ready, retry
+  retryAnalyticsEvent(eventName, eventData);
 };
 
 // Track quiz-specific events

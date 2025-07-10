@@ -27,27 +27,31 @@ export default function LanguageSwitcher() {
     <div className="relative">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center space-x-2 bg-white/80 backdrop-blur-sm px-3 py-2 rounded-lg 
-                   border border-gray-200 hover:bg-white/90 transition-all duration-200 
-                   shadow-sm hover:shadow-md text-gray-700 hover:text-gray-900"
+        className="flex items-center space-x-2 bg-[#F7E2C0] hover:bg-[#F4B46D] px-3 py-2 rounded-lg 
+                   border-2 border-[#10A3A2] hover:border-[#05717B] transition-all duration-200 
+                   shadow-lg hover:shadow-xl text-[#4E342E] hover:text-[#4E342E] transform 
+                   backdrop-blur-sm"
         aria-label="Switch language"
       >
-        <FaGlobe className="text-sm" />
+        <FaGlobe className="text-sm text-[#10A3A2]" />
         <span className="text-sm font-medium">{currentLanguage.flag}</span>
-        <FaChevronDown className={`text-xs transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
+        <FaChevronDown className={`text-xs text-[#10A3A2] transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 top-full mt-1 bg-white rounded-lg shadow-lg border border-gray-200 
-                        py-1 min-w-[140px] z-50">
+        <div className="absolute right-0 top-full mt-2 bg-[#F7E2C0] rounded-lg shadow-xl border-2 border-[#10A3A2] 
+                        py-1 min-w-[160px] z-50 backdrop-blur-sm">
           {languages.map((language) => (
             <button
               key={language.code}
               onClick={() => handleLanguageChange(language.code)}
-              className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-50 transition-colors duration-150
-                         ${i18n.language === language.code ? 'bg-blue-50 text-blue-700' : 'text-gray-700'}`}
+              className={`w-full text-left px-4 py-3 text-sm transition-all duration-150 hover:bg-[#F4B46D] 
+                        first:rounded-t-md last:rounded-b-md
+                         ${i18n.language === language.code 
+                           ? 'bg-[#10A3A2] text-white font-semibold' 
+                           : 'text-[#4E342E] hover:text-[#4E342E]'}`}
             >
-              <span className="mr-2">{language.flag}</span>
+              <span className="mr-3">{language.flag}</span>
               {language.name}
             </button>
           ))}

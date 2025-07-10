@@ -157,8 +157,8 @@ const validateQuestionRequest = (body: any): { valid: boolean; errors: string[] 
   if (!body.count || typeof body.count !== 'number') {
     errors.push('Count must be a number');
   }
-  if (body.count && (body.count < 1 || body.count > 50)) {
-    errors.push('Count must be between 1 and 50');
+  if (body.count && (body.count < 1 || body.count > 35)) {
+    errors.push('Count must be between 1 and 35');
   }
 
   return { valid: errors.length === 0, errors };
@@ -172,24 +172,69 @@ const validateAndEnhanceQuestions = (
   params: QuestionGenerationParams
 ): Question[] => {
   const validQuestions: Question[] = [];
+  let totalProcessed = 0;
+  let validationFailures = 0;
+
+  console.log(`🔍 Validating ${questions.length} AI-generated questions...`);
 
   for (const q of questions) {
+    totalProcessed++;
     try {
       // Validate basic structure
       if (!q.text || !Array.isArray(q.options) || !q.correctOption) {
-        console.warn('⚠️ Skipping question with missing required fields:', q);
+        console.warn(`⚠️ Question ${totalProcessed} failed: Missing required fields`, {
+          hasText: !!q.text,
+          hasOptions: Array.isArray(q.options),
+          hasCorrectOption: !!q.correctOption,
+          question: q
+        });
+        validationFailures++;
+        continue;
+      }
+
+      // Clean and validate text
+      const cleanText = q.text.trim();
+      if (!cleanText || cleanText.length < 10) {
+        console.warn(`⚠️ Question ${totalProcessed} failed: Text too short or empty`, {
+          text: cleanText,
+          length: cleanText.length
+        });
+        validationFailures++;
         continue;
       }
 
       // Validate options array
-      if (q.options.length !== 4) {
-        console.warn('⚠️ Skipping question with incorrect number of options:', q);
+      if (!Array.isArray(q.options) || q.options.length !== 4) {
+        console.warn(`⚠️ Question ${totalProcessed} failed: Incorrect number of options (${q.options?.length || 0}, expected 4)`, {
+          question: cleanText,
+          optionsCount: q.options?.length || 0,
+          options: q.options
+        });
+        validationFailures++;
+        continue;
+      }
+
+      // Clean and validate options
+      const cleanOptions = q.options.map((opt: any) => {
+        if (typeof opt !== 'string') {
+          return String(opt).trim();
+        }
+        return opt.trim();
+      }).filter((opt: string) => opt.length > 0);
+
+      if (cleanOptions.length !== 4) {
+        console.warn(`⚠️ Question ${totalProcessed} failed: Invalid options after cleaning`, {
+          question: cleanText,
+          originalOptions: q.options,
+          cleanOptions: cleanOptions
+        });
+        validationFailures++;
         continue;
       }
 
       // Validate correct option exists in options array
       const correctOptionText = q.correctOption.trim();
-      const optionTexts = q.options.map((opt: string) => opt.trim());
+      const optionTexts = cleanOptions;
       
       if (!optionTexts.includes(correctOptionText)) {
         // Try case-insensitive matching
@@ -198,17 +243,33 @@ const validateAndEnhanceQuestions = (
         const matchIndex = lowerOptions.findIndex((opt: string) => opt === lowerCorrect);
         
         if (matchIndex !== -1) {
-          console.warn('⚠️ Fixed case mismatch in correct option:', correctOptionText, '→', optionTexts[matchIndex]);
+          console.warn(`⚠️ Question ${totalProcessed}: Fixed case mismatch in correct option:`, correctOptionText, '→', optionTexts[matchIndex]);
           q.correctOption = optionTexts[matchIndex];
         } else {
-          console.warn('⚠️ Skipping question - correct option not found in options:', q);
-          continue;
+          // Try partial matching for common AI mistakes
+          const partialMatch = optionTexts.find((opt: string) => 
+            opt.toLowerCase().includes(correctOptionText.toLowerCase()) ||
+            correctOptionText.toLowerCase().includes(opt.toLowerCase())
+          );
+          
+          if (partialMatch) {
+            console.warn(`⚠️ Question ${totalProcessed}: Fixed partial match in correct option:`, correctOptionText, '→', partialMatch);
+            q.correctOption = partialMatch;
+          } else {
+            console.warn(`⚠️ Question ${totalProcessed} failed: Correct option not found in options`, {
+              question: cleanText,
+              correctOption: correctOptionText,
+              availableOptions: optionTexts
+            });
+            validationFailures++;
+            continue;
+          }
         }
       }
 
       // Set appropriate time limit based on difficulty if not provided
       let timeLimit = q.timeLimit;
-      if (!timeLimit || typeof timeLimit !== 'number') {
+      if (!timeLimit || typeof timeLimit !== 'number' || timeLimit < 5 || timeLimit > 60) {
         switch (params.difficulty) {
           case 'easy':
             timeLimit = 15;
@@ -226,8 +287,8 @@ const validateAndEnhanceQuestions = (
 
       // Create validated question
       const validQuestion: Question = {
-        text: q.text.trim(),
-        options: q.options.map((opt: string) => opt.trim()),
+        text: cleanText,
+        options: optionTexts,
         correctOption: q.correctOption.trim(),
         timeLimit,
         difficulty: params.difficulty
@@ -236,8 +297,19 @@ const validateAndEnhanceQuestions = (
       validQuestions.push(validQuestion);
 
     } catch (error) {
-      console.warn('⚠️ Error validating question:', error, q);
+      console.warn(`⚠️ Question ${totalProcessed} failed: Error during validation:`, error, q);
+      validationFailures++;
     }
+  }
+
+  console.log(`✅ Validation complete: ${validQuestions.length}/${totalProcessed} questions passed validation (${validationFailures} failures)`);
+  
+  if (validationFailures > 0) {
+    console.log(`📊 Validation Summary:`);
+    console.log(`   - Total questions processed: ${totalProcessed}`);
+    console.log(`   - Valid questions: ${validQuestions.length}`);
+    console.log(`   - Failed questions: ${validationFailures}`);
+    console.log(`   - Success rate: ${((validQuestions.length / totalProcessed) * 100).toFixed(1)}%`);
   }
 
   return validQuestions;
@@ -271,7 +343,14 @@ const generateQuestions = async (params: QuestionGenerationParams): Promise<Ques
 
   try {
     const openai = getOpenAIClient()!;
-    const prompt = generateQuestionPrompt(params.topic, params.difficulty, params.count);
+    
+    // Request extra questions to account for potential validation losses
+    const requestedCount = params.count;
+    const bufferCount = Math.ceil(requestedCount * 1.1); // Request 10% more (reduced from 20%)
+    
+    console.log(`🧠 Requesting ${bufferCount} questions from AI (target: ${requestedCount}, buffer: ${bufferCount - requestedCount})`);
+    
+    const prompt = generateQuestionPrompt(params.topic, params.difficulty, bufferCount);
 
     console.log('🧠 Sending request to OpenAI...');
     const response = await openai.chat.completions.create({
@@ -315,18 +394,18 @@ const generateQuestions = async (params: QuestionGenerationParams): Promise<Ques
     }
 
     // If we don't have enough valid questions, pad with samples
-    if (validQuestions.length < params.count) {
-      console.warn(`⚠️ Only ${validQuestions.length} valid questions generated, needed ${params.count}`);
+    if (validQuestions.length < requestedCount) {
+      console.warn(`⚠️ Only ${validQuestions.length} valid questions generated, needed ${requestedCount}`);
       const sampleQuestions = getSampleQuestions(params.difficulty);
-      const needed = params.count - validQuestions.length;
+      const needed = requestedCount - validQuestions.length;
       validQuestions.push(...sampleQuestions.slice(0, needed));
     }
 
-    console.log(`✅ Successfully generated ${validQuestions.length} questions using OpenAI`);
+    console.log(`✅ Successfully generated ${validQuestions.length} questions using OpenAI (${validQuestions.length >= requestedCount ? '100% AI' : 'mixed AI + samples'})`);
 
     return {
-      questions: validQuestions.slice(0, params.count),
-      aiGenerated: true
+      questions: validQuestions.slice(0, requestedCount),
+      aiGenerated: validQuestions.length >= requestedCount
     };
 
   } catch (error: any) {

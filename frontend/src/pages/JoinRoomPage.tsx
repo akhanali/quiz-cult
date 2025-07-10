@@ -33,12 +33,12 @@ export default function JoinRoomPage() {
     setError("");
     
     try {
-      // Track room joining event
-      trackQuizEvent.roomJoined(roomCode);
-      trackEngagement.buttonClick('join_room', 'join_room_page');
-
       const roomData = await joinRoom(roomCode, nickname);
       localStorage.setItem("userId", roomData.playerId);
+      
+      // Track room joining event AFTER successful join
+      trackQuizEvent.roomJoined(roomCode);
+      trackEngagement.buttonClick('join_room', 'join_room_page');
       
       // Set up onDisconnect for the player immediately after joining
       presenceManager.setupDisconnectCleanup(roomData.foundRoomId, roomData.playerId, false);

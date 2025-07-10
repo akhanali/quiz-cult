@@ -82,8 +82,8 @@ async function createRoomFirebase(
     throw new Error(topicValidation.suggestion || 'Invalid topic');
   }
   
-  if (questionCount < 1 || questionCount > 50) {
-    throw new Error('Question count must be between 1 and 50');
+  if (questionCount < 1 || questionCount > 35) {
+    throw new Error('Question count must be between 1 and 35');
   }
 
   const roomCode = Math.floor(100000 + Math.random() * 900000).toString(); 

@@ -67,7 +67,7 @@ export const getOpenAIClient = (): OpenAI | null => {
 export const OPENAI_CONFIG = {
   model: 'gpt-4o-mini',
   temperature: 0.7,
-  max_tokens: 2000,
+  max_tokens: 4000,  // Increased from 2000 to maximum allowed
   timeout: 30000, 
 } as const;
 
@@ -116,18 +116,42 @@ DIFFICULTY REQUIREMENTS:
 - Examples: ${difficultyInfo.examples}
 
 CRITICAL FORMAT REQUIREMENTS:
-1. Return ONLY a valid JSON array, no extra text
-2. Each question must have exactly 4 options
+1. Return ONLY a valid JSON array, no extra text, no markdown formatting
+2. Each question MUST have exactly 4 options (no more, no less)
 3. correctOption MUST be the exact text from one of the options (not A, B, C, D)
 4. All text must be clean and properly escaped for JSON
+5. Do not include any numbering, letters, or extra formatting in the options
+6. Ensure correctOption matches one of the options exactly (case-sensitive)
 
-Example format:
+MANDATORY JSON EXAMPLE STRUCTURE:
+[
+  {
+    "text": "Question text here?",
+    "options": ["Option A", "Option B", "Option C", "Option D"],
+    "correctOption": "Option A",
+    "timeLimit": 15
+  }
+]
+
+VALIDATION RULES:
+- text: Required string, ends with question mark
+- options: Required array with exactly 4 strings
+- correctOption: Required string that exactly matches one option
+- timeLimit: Optional number (will be auto-set if missing)
+
+Example valid questions:
 [
   {
     "text": "What is the capital of France?",
     "options": ["London", "Berlin", "Paris", "Madrid"],
     "correctOption": "Paris",
     "timeLimit": 15
+  },
+  {
+    "text": "Which programming language uses curly braces for code blocks?",
+    "options": ["Python", "JavaScript", "HTML", "CSS"],
+    "correctOption": "JavaScript",
+    "timeLimit": 20
   }
 ]
 
@@ -138,12 +162,13 @@ QUALITY STANDARDS:
 - Ensure questions match the requested difficulty level
 - Use appropriate time limits based on complexity
 - Maintain consistent language throughout all questions and options
+- Each question should be independent and self-contained
 
 Topic: ${topic}
 Difficulty: ${difficulty}
 Count: ${count}
 
-Return the JSON array:`;
+IMPORTANT: Return ONLY the JSON array, no additional text, explanations, or formatting.`;
 };
 
 /**
@@ -230,9 +255,9 @@ export const getOpenAIInfo = () => {
   return {
     model: OPENAI_CONFIG.model,
     available: isOpenAIAvailable(),
-    estimatedCostPer1000Tokens: 0.002, 
+    estimatedCostPer1000Tokens: 0.0024, // Updated to current GPT-4o-mini output pricing
     averageTokensPerQuestion: 100,
-    estimatedCostPerQuestion: 0.0002,
+    estimatedCostPerQuestion: 0.00026,  // Updated cost per question
   };
 };
 

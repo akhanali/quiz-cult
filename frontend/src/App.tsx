@@ -42,7 +42,7 @@ function App() {
       <div className={`fixed bottom-4 z-40 ${import.meta.env.MODE === 'development' ? 'right-20' : 'right-4'}`}>
         <button
           onClick={handleFeedbackClick}
-          className="bg-gradient-to-r from-[#10A3A2] to-[#05717B] text-white p-3 rounded-full shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 group"
+          className="bg-[#10A3A2] text-white p-3 rounded-full shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 group"
           aria-label={t('Give feedback')}
           title={t('Give feedback')}
         >

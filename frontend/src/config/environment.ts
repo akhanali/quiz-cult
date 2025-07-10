@@ -9,7 +9,7 @@ const isProduction = import.meta.env.VITE_ENV === 'production';
 // Backend configuration
 export const BACKEND_CONFIG = {
   URL: import.meta.env.VITE_BACKEND_URL || 'http://localhost:3001',
-  TIMEOUT: parseInt(import.meta.env.VITE_API_TIMEOUT || '10000'),
+  TIMEOUT: parseInt(import.meta.env.VITE_API_TIMEOUT || '90000'), // Increased to 90 seconds for async room creation
   RETRY_ATTEMPTS: parseInt(import.meta.env.VITE_API_RETRY_ATTEMPTS || '3'),
   HEALTH_CHECK_INTERVAL: parseInt(import.meta.env.VITE_HEALTH_CHECK_INTERVAL || '30000'),
 };
@@ -19,7 +19,7 @@ export const MIGRATION_FLAGS: Record<string, any> = {
   // Core API migrations (Phase 1-3)
   USE_BACKEND_FOR_ROOM_CREATION: import.meta.env.VITE_USE_BACKEND_ROOM_CREATION === 'true' || true,
   USE_BACKEND_FOR_ROOM_JOINING: import.meta.env.VITE_USE_BACKEND_ROOM_JOINING === 'true' || true,
-  USE_BACKEND_FOR_GAME_START: import.meta.env.VITE_USE_BACKEND_GAME_START === 'true' || false, // Temporarily disabled
+  USE_BACKEND_FOR_GAME_START: import.meta.env.VITE_USE_BACKEND_GAME_START === 'true' || true, // Re-enabled backend game start
   
   // Real-time migrations (Phase 4)
   USE_SOCKET_FOR_LOBBY: import.meta.env.VITE_USE_SOCKET_LOBBY === 'true' || false,

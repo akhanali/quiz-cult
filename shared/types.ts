@@ -59,6 +59,7 @@ export type Room = {
   finishedAt?: number; // When the quiz game ended
   totalQuestions: number; // Total number of questions in this quiz
   isGameComplete: boolean; // Whether all questions have been completed
+  questionsGenerating?: boolean; // Whether questions are currently being generated
 };
 
 // API Request/Response types for backend communication

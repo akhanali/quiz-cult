@@ -326,21 +326,47 @@ export default function LobbyPage() {
                     <IoSparklesSharp className="text-2xl sm:text-3xl text-[#F4B46D] mr-2" />
                     <h3 className="text-xl sm:text-2xl font-bold text-[#4E342E]">{t('Ready to Start?')}</h3>
                   </div>
-                  <p className="text-sm sm:text-base text-[#6D4C41] mb-4 sm:mb-6 px-4">
-                    {t('All players are waiting for you to begin the quiz!')}
-                  </p>
-                  <button 
-                    onClick={handleStartQuiz}
-                    className="bg-[#10A3A2] hover:bg-[#05717B] 
-                             text-white font-bold py-3 sm:py-4 px-6 sm:px-8 rounded-xl transition-all duration-300 
-                             text-base sm:text-xl shadow-lg hover:shadow-xl transform hover:scale-105
-                             flex items-center space-x-2 sm:space-x-3 mx-auto min-h-[48px] sm:min-h-[56px]"
-                  >
-                    <FaRocket className="text-lg sm:text-2xl" />
-                    <span>{t('Start Quiz')}</span>
-                  </button>
+                  
+                  {/* Show different content based on question generation status */}
+                  {room.questionsGenerating ? (
+                    <>
+                      <p className="text-sm sm:text-base text-[#6D4C41] mb-4 sm:mb-6 px-4">
+                        {t('Generating questions... Please wait.')}
+                      </p>
+                      <div className="flex items-center justify-center space-x-3 mb-4">
+                        <FaSpinner className="text-xl sm:text-2xl text-[#10A3A2] animate-spin" />
+                        <span className="text-[#10A3A2] font-medium">{t('Creating your quiz...')}</span>
+                      </div>
+                      <button 
+                        disabled
+                        className="bg-[#6D4C41]/30 text-[#6D4C41]/50 font-bold py-3 sm:py-4 px-6 sm:px-8 rounded-xl 
+                                 text-base sm:text-xl shadow-lg cursor-not-allowed
+                                 flex items-center space-x-2 sm:space-x-3 mx-auto min-h-[48px] sm:min-h-[56px]"
+                      >
+                        <FaSpinner className="text-lg sm:text-2xl animate-spin" />
+                        <span>{t('Generating Questions...')}</span>
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <p className="text-sm sm:text-base text-[#6D4C41] mb-4 sm:mb-6 px-4">
+                        {t('All players are waiting for you to begin the quiz!')}
+                      </p>
+                      <button 
+                        onClick={handleStartQuiz}
+                        className="bg-[#10A3A2] hover:bg-[#05717B] 
+                                 text-white font-bold py-3 sm:py-4 px-6 sm:px-8 rounded-xl transition-all duration-300 
+                                 text-base sm:text-xl shadow-lg hover:shadow-xl transform hover:scale-105
+                                 flex items-center space-x-2 sm:space-x-3 mx-auto min-h-[48px] sm:min-h-[56px]"
+                      >
+                        <FaRocket className="text-lg sm:text-2xl" />
+                        <span>{t('Start Quiz')}</span>
+                      </button>
+                    </>
+                  )}
+                  
                   <p className="text-[#6D4C41] text-xs sm:text-sm mt-3">
-                    {t('Only the host can start the quiz')}
+                    {room.questionsGenerating ? t('Questions are being generated...') : t('Only the host can start the quiz')}
                   </p>
                 </div>
               )}
@@ -353,10 +379,15 @@ export default function LobbyPage() {
                 <div className="bg-[#F7E2C0] rounded-2xl shadow-lg p-6 sm:p-8 border border-[#4E342E]/20">
                   <div className="flex items-center justify-center mb-4">
                     <MdAccessTime className="text-2xl sm:text-3xl text-[#10A3A2] mr-2 animate-pulse" />
-                    <h3 className="text-xl sm:text-2xl font-bold text-[#4E342E]">Almost Ready!</h3>
+                    <h3 className="text-xl sm:text-2xl font-bold text-[#4E342E]">
+                      {room.questionsGenerating ? t('Preparing Quiz...') : t('Almost Ready!')}
+                    </h3>
                   </div>
                   <p className="text-sm sm:text-base text-[#6D4C41] text-lg mb-4">
-                    {t('Waiting for the host to start the quiz...')}  
+                    {room.questionsGenerating 
+                      ? t('Questions are being generated... Please wait.') 
+                      : t('Waiting for the host to start the quiz...')
+                    }
                   </p>
                   <div className="flex items-center justify-center space-x-2 text-[#10A3A2]">
                     <div className="w-2 h-2 bg-[#10A3A2] rounded-full animate-bounce"></div>
