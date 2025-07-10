@@ -17,7 +17,8 @@ import {
   FaFlag,
   FaSpinner,
   FaStop,
-  FaTimesCircle
+  FaTimesCircle,
+  FaLock
 } from 'react-icons/fa';
 import { 
   MdQuiz, 
@@ -383,7 +384,7 @@ export default function QuizPage() {
                   {hasAnswered && (
                     <div className="mt-2 bg-teal-100 border border-teal-300 rounded-lg p-2">
                       <div className="flex items-center justify-center space-x-1">
-                        <FaCheckCircle className="text-teal-600 text-xs sm:text-sm" />
+                        <FaLock className="text-teal-600 text-xs sm:text-sm" />
                         <p className="text-teal-700 font-medium text-xs">{t('Answer Submitted!')}</p>
                       </div>
                     </div>
@@ -433,11 +434,21 @@ export default function QuizPage() {
                       buttonClass += "bg-gray-100 border-gray-300 text-gray-600"; // Other options grayed out
                     }
                   } else {
-                    // Answering phase: highlight selected option
-                    if (selectedOption === opt) {
-                      buttonClass += "bg-amber-100 border-amber-500 text-amber-800 shadow-lg";
+                    // Answering phase: handle different states
+                    if (hasAnswered) {
+                      // After submission: lock selected answer, disable others
+                      if (selectedOption === opt) {
+                        buttonClass += "bg-amber-100 border-amber-500 text-amber-800 shadow-lg relative"; // Selected and locked
+                      } else {
+                        buttonClass += "bg-gray-100 border-gray-300 text-gray-400 opacity-50 cursor-not-allowed"; // Disabled options
+                      }
                     } else {
-                      buttonClass += "bg-white border-gray-300 text-gray-800 hover:bg-amber-50 hover:border-amber-400 shadow-sm hover:shadow-md";
+                      // Before submission: normal interactive state
+                      if (selectedOption === opt) {
+                        buttonClass += "bg-amber-100 border-amber-500 text-amber-800 shadow-lg";
+                      } else {
+                        buttonClass += "bg-white border-gray-300 text-gray-800 hover:bg-amber-50 hover:border-amber-400 shadow-sm hover:shadow-md";
+                      }
                     }
                   }
 
@@ -453,7 +464,13 @@ export default function QuizPage() {
                         }
                       }}
                     >
-                      {opt}
+                      <div className="flex items-center justify-between">
+                        <span>{opt}</span>
+                        {/* Show lock icon for selected answer after submission */}
+                        {hasAnswered && selectedOption === opt && currentPhase === "answering" && (
+                          <FaLock className="text-amber-600 text-lg flex-shrink-0 ml-2" />
+                        )}
+                      </div>
                     </button>
                   );
                 })}
