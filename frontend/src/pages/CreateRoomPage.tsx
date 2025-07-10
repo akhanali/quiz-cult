@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { createRoom } from '../api/createRoom';
 import { useNavigate, Link } from 'react-router-dom';
 import { presenceManager } from '../api/presenceManager';
@@ -275,12 +275,12 @@ export default function CreateRoomPage() {
               onChange={(e) => handleCountChange(e.target.value)}
               onBlur={handleCountBlur}
               min={1}
-              max={20}
+              max={35}
               className="w-full border border-[#4E342E]/30 rounded-lg px-3 sm:px-4 py-2 sm:py-3 focus:ring-2 focus:ring-[#10A3A2] focus:border-[#10A3A2]
                        text-base sm:text-lg min-h-[44px] sm:min-h-[48px] bg-[#FDF0DC] text-[#4E342E]"
               disabled={isLoading}
             />
-            <p className="text-[#6D4C41] text-sm mt-1">{t('Choose between 1-40 questions')}</p>
+            <p className="text-[#6D4C41] text-sm mt-1">{t('Choose between 1-35 questions')}</p>
           </div>
 
           {/* Create Button */}

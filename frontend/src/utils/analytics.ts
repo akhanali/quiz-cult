@@ -116,16 +116,16 @@ export const trackEvent = (
   eventValue?: number,
   customParameters?: Record<string, any>
 ) => {
-  const userId = generateUserId();
-  const sessionId = getSessionId();
-  
+    const userId = generateUserId();
+    const sessionId = getSessionId();
+    
   const eventData = {
-    event_category: eventCategory,
-    event_label: eventLabel,
-    value: eventValue,
-    custom_user_id: userId,
-    custom_session_id: sessionId,
-    ...customParameters
+      event_category: eventCategory,
+      event_label: eventLabel,
+      value: eventValue,
+      custom_user_id: userId,
+      custom_session_id: sessionId,
+      ...customParameters
   };
 
   // Try immediate send first
