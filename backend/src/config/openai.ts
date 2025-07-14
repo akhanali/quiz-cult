@@ -77,22 +77,22 @@ export const OPENAI_CONFIG = {
 export const generateQuestionPrompt = (topic: string, difficulty: DifficultyLevel, count: number): string => {
   const difficultyInstructions = {
     easy: {
-      description: 'Basic recall or recognition questions',
+      description: 'Basic recall and recognition questions requiring minimal thinking',
       timeLimit: '10-15 seconds',
-      complexity: 'Simple facts, definitions, or obvious connections. No calculations or deep thinking required.',
-      examples: 'What is the capital of France? Which planet is closest to the Sun?'
+      complexity: 'Direct factual recall, simple identification, or basic vocabulary. No calculations, analysis, or complex reasoning required. Questions should be answerable from memory or immediate recognition.',
+      examples: 'What is the capital of France? Which planet is closest to the Sun? What color is the sky? Who wrote Romeo and Juliet?'
     },
     medium: {
-      description: 'Understanding and light reasoning questions', 
+      description: 'Understanding and application questions requiring moderate analysis', 
       timeLimit: '20-25 seconds',
-      complexity: 'Requires understanding concepts, making connections, or light calculations. Some analysis needed.',
-      examples: 'Which programming concept helps prevent code duplication? What causes ocean tides?'
+      complexity: 'Requires understanding relationships between concepts, applying knowledge to new situations, or performing simple calculations. May involve comparing options, identifying patterns, or connecting related ideas.',
+      examples: 'Which programming concept helps prevent code duplication? What causes ocean tides? How does photosynthesis work? Which historical event led to the American Revolution?'
     },
     hard: {
-      description: 'Critical thinking and domain knowledge questions',
+      description: 'Critical thinking and specialized knowledge questions requiring deep analysis',
       timeLimit: '30+ seconds', 
-      complexity: 'Complex analysis, multi-step reasoning, or specialized knowledge. Requires careful thought.',
-      examples: 'Analyze the impact of X on Y. What would happen if Z occurred?'
+      complexity: 'Requires complex reasoning, multi-step problem solving, or specialized domain knowledge. May involve analyzing cause-and-effect relationships, evaluating multiple factors, or applying advanced concepts to novel situations.',
+      examples: 'How would a change in Earth\'s axial tilt affect global climate patterns? What are the implications of quantum computing for cryptography? Analyze the economic impact of the Industrial Revolution on social structures.'
     }
   };
 
