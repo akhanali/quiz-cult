@@ -453,7 +453,7 @@ export default function LobbyPage() {
                     </div>
                   </div>
                   <div className="flex items-center space-x-2 flex-shrink-0">
-                    {roomPlayer.isHost && (
+                  {roomPlayer.isHost && (
                       <div className="bg-[#F4B46D]/50 text-[#4E342E] px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-bold flex items-center space-x-1 border border-[#F4B46D]/70">
                         <FaCrown className="text-xs" />
                         <span className="hidden sm:inline">{t('Host')}</span>
@@ -471,7 +471,7 @@ export default function LobbyPage() {
                         <span className="hidden sm:inline">{t('Kick')}</span>
                       </button>
                     )}
-                  </div>
+                    </div>
                 </div>
               ))}
             </div>

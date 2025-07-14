@@ -61,15 +61,15 @@ export default function ResultsPage() {
   // Fetch room data (one-time fetch, no listener)
   useEffect(() => {
     const fetchRoomData = async () => {
-      if (!roomId) return;
+    if (!roomId) return;
 
       try {
-        const roomRef = ref(db, `rooms/${roomId}`);
+    const roomRef = ref(db, `rooms/${roomId}`);
         const snapshot = await get(roomRef);
         const data = snapshot.val();
         
-        if (data) {
-          setRoom(data);
+      if (data) {
+        setRoom(data);
         } else {
           // Room doesn't exist, redirect to home
           navigate("/");
