@@ -282,9 +282,20 @@ class BackendAPIClient {
     difficulty: DifficultyLevel;
     count: number;
   }): Promise<{ questions: any[]; aiGenerated: boolean; fallbackReason?: string }> {
-    return this.retryRequest(() =>
-      this.client.post('/api/questions/generate', data).then(response => response.data)
-    );
+    return this.retryRequest(async () => {
+      const response = await this.client.post('/questions/generate', data);
+      return response.data;
+    });
+  }
+
+  async kickPlayer(roomId: string, hostId: string, playerIdToKick: string): Promise<{ success: boolean; kickedPlayer: { id: string; nickname: string }; message: string }> {
+    return this.retryRequest(async () => {
+      const response = await this.client.post(`/api/rooms/${roomId}/kick-player`, {
+        hostId,
+        playerIdToKick
+      });
+      return response.data;
+    });
   }
 
   // Health and monitoring methods
@@ -325,6 +336,7 @@ export const startGame = apiClient.startGame.bind(apiClient);
 export const getRoom = apiClient.getRoom.bind(apiClient);
 export const getSampleQuestions = apiClient.getSampleQuestions.bind(apiClient);
 export const generateQuestions = apiClient.generateQuestions.bind(apiClient);
+export const kickPlayer = apiClient.kickPlayer.bind(apiClient);
 
 // Export health monitoring functions
 export const isBackendHealthy = apiClient.isHealthy.bind(apiClient);

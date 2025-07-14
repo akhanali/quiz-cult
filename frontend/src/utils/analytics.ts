@@ -186,6 +186,11 @@ export const trackQuizEvent = {
     trackEvent('language_changed', 'settings', language);
   },
   
+  // Player kicked
+  playerKicked: (playerNickname: string) => {
+    trackEvent('player_kicked', 'moderation', playerNickname);
+  },
+  
   // User session
   sessionStart: () => {
     const userId = generateUserId();

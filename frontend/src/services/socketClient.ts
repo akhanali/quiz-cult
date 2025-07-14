@@ -13,6 +13,9 @@ interface ServerToClientEvents {
   'player-connected': (data: { player: Player; room: Room }) => void;
   'player-disconnected': (data: { playerId: string; room: Room; reason: string }) => void;
   'player-answered': (data: { playerId: string; hasAnswered: boolean; room: Room }) => void;
+  'player-kicked': (data: { reason: string; timestamp: string }) => void;
+  'player-kicked-by-host': (data: { kickedPlayerId: string; kickedPlayerNickname: string; kickedByHost: string; timestamp: string }) => void;
+  'player-kick-success': (data: { kickedPlayerId: string; kickedPlayerNickname: string; timestamp: string }) => void;
   
   // Game events
   'next-question': (data: { questionIndex: number; question: Question; gameState: GameState; room: Room }) => void;
@@ -50,6 +53,11 @@ interface ClientToServerEvents {
     hostId: string; 
     action: string; 
     gameState?: Partial<GameState> 
+  }) => void;
+  'kick-player': (data: {
+    roomId: string;
+    hostId: string;
+    playerIdToKick: string;
   }) => void;
   
   // Health events
@@ -177,6 +185,9 @@ class SocketIOClient {
       'player-connected',
       'player-disconnected',
       'player-answered',
+      'player-kicked',
+      'player-kicked-by-host',
+      'player-kick-success',
       'next-question',
       'show-results',
       'all-players-answered',
@@ -326,6 +337,10 @@ class SocketIOClient {
 
   updateGameState(roomId: string, hostId: string, action: string, gameState?: Partial<GameState>): void {
     this.emit('game-state-change', { roomId, hostId, action, gameState });
+  }
+
+  kickPlayer(roomId: string, hostId: string, playerIdToKick: string): void {
+    this.emit('kick-player', { roomId, hostId, playerIdToKick });
   }
 
   // State getters

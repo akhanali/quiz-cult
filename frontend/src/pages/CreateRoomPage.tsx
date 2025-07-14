@@ -43,7 +43,7 @@ export default function CreateRoomPage() {
     if (value.trim().length > 0) {
       const validation = validateTopic(value);
       if (!validation.valid) {
-        setTopicError(validation.suggestion || 'Invalid topic');
+        setTopicError(validation.suggestion || t('Invalid topic'));
       }
     }
   };
@@ -55,25 +55,25 @@ export default function CreateRoomPage() {
     
     // Validate inputs
     if (!nickname.trim()) {
-      setError('Please enter your nickname');
+      setError(t('Please enter your nickname'));
       return;
     }
     
     if (!topic.trim()) {
-      setError('Please enter a quiz topic');
+      setError(t('Please enter a quiz topic'));
       return;
     }
 
     // Validate topic
     const topicValidation = validateTopic(topic);
     if (!topicValidation.valid) {
-      setError(topicValidation.suggestion || 'Please choose a valid topic');
+      setError(topicValidation.suggestion || t('Please choose a valid topic'));
       return;
     }
     
     const questionCount = Number(count);
     if (questionCount < 1 || questionCount > 35) {
-      setError('Number of questions must be between 1 and 35');
+      setError(t('Number of questions must be between 1 and 35'));
       return;
     }
     
@@ -81,7 +81,10 @@ export default function CreateRoomPage() {
     
     try {
       // Show appropriate generation status
-      setGenerationStatus(`Creating ${questionCount} ${difficulty} questions...`);
+      setGenerationStatus(t('Creating {{count}} {{difficulty}} questions...', { 
+        count: questionCount, 
+        difficulty: difficulty 
+      }));
       
       // Track room creation event
       trackQuizEvent.roomCreated(topic, difficulty as DifficultyLevel, questionCount);
@@ -91,12 +94,20 @@ export default function CreateRoomPage() {
       
       // Show success message with generation result
       if (roomData.aiGenerated) {
-        setGenerationStatus(`Successfully generated ${questionCount} AI questions about "${topic}"!`);
+        setGenerationStatus(t('Successfully generated {{count}} AI questions about "{{topic}}"!', {
+          count: questionCount,
+          topic: topic
+        }));
       } else {
         if (roomData.fallbackReason) {
-          setGenerationStatus(`Created ${questionCount} questions (${roomData.fallbackReason})`);
+          setGenerationStatus(t('Created {{count}} questions ({{reason}})', {
+            count: questionCount,
+            reason: roomData.fallbackReason
+          }));
         } else {
-          setGenerationStatus(`Created ${questionCount} questions successfully`);
+          setGenerationStatus(t('Created {{count}} questions successfully', {
+            count: questionCount
+          }));
         }
       }
       
@@ -112,7 +123,7 @@ export default function CreateRoomPage() {
       
     } catch (error) {
       console.error('Error creating room:', error);
-      setError(error instanceof Error ? error.message : 'Failed to create room. Please try again.');
+      setError(error instanceof Error ? error.message : t('Failed to create room. Please try again.'));
       setGenerationStatus('');
     } finally {
       setIsLoading(false);

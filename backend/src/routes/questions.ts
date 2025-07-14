@@ -262,7 +262,7 @@ const validateAndEnhanceQuestions = (
               availableOptions: optionTexts
             });
             validationFailures++;
-            continue;
+          continue;
           }
         }
       }

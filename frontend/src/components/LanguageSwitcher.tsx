@@ -8,8 +8,11 @@ export default function LanguageSwitcher() {
   const [isOpen, setIsOpen] = useState(false);
 
   const languages = [
-    { code: 'en', name: 'English', flag: '🇺🇸' },
-    { code: 'ru', name: 'Русский', flag: '🇷🇺' }
+    { code: 'en', name: 'Eng', flag: '🇺🇸' },
+    { code: 'ru', name: 'Рус', flag: '🇷🇺' },
+    { code: 'fr', name: 'Fra', flag: '🇫🇷' },
+    { code: 'kz', name: 'Қаз', flag: '🇰🇿' },
+    { code: 'es', name: 'Esp', flag: '🇪🇸' }
   ];
 
   const currentLanguage = languages.find(lang => lang.code === i18n.language) || languages[0];
@@ -40,18 +43,18 @@ export default function LanguageSwitcher() {
 
       {isOpen && (
         <div className="absolute right-0 top-full mt-2 bg-[#F7E2C0] rounded-lg shadow-xl border-2 border-[#10A3A2] 
-                        py-1 min-w-[160px] z-50 backdrop-blur-sm">
+                        py-1 min-w-[120px] z-50 backdrop-blur-sm">
           {languages.map((language) => (
             <button
               key={language.code}
               onClick={() => handleLanguageChange(language.code)}
-              className={`w-full text-left px-4 py-3 text-sm transition-all duration-150 hover:bg-[#F4B46D] 
+              className={`w-full text-left px-3 py-2 text-xs transition-all duration-150 hover:bg-[#F4B46D] 
                         first:rounded-t-md last:rounded-b-md
                          ${i18n.language === language.code 
                            ? 'bg-[#10A3A2] text-white font-semibold' 
                            : 'text-[#4E342E] hover:text-[#4E342E]'}`}
             >
-              <span className="mr-3">{language.flag}</span>
+              <span className="mr-2">{language.flag}</span>
               {language.name}
             </button>
           ))}

@@ -444,10 +444,10 @@ export default function QuizPage() {
                       }
                     } else {
                       // Before submission: normal interactive state
-                      if (selectedOption === opt) {
-                        buttonClass += "bg-amber-100 border-amber-500 text-amber-800 shadow-lg";
-                      } else {
-                        buttonClass += "bg-white border-gray-300 text-gray-800 hover:bg-amber-50 hover:border-amber-400 shadow-sm hover:shadow-md";
+                    if (selectedOption === opt) {
+                      buttonClass += "bg-amber-100 border-amber-500 text-amber-800 shadow-lg";
+                    } else {
+                      buttonClass += "bg-white border-gray-300 text-gray-800 hover:bg-amber-50 hover:border-amber-400 shadow-sm hover:shadow-md";
                       }
                     }
                   }
@@ -641,7 +641,7 @@ export default function QuizPage() {
                         <div className="flex items-center space-x-2">
                           <FaTrophy className="text-amber-600" />
                           <span className="text-xl font-bold text-amber-600">
-                            {player.score} pts
+                            {player.score} {t('pts')}
                           </span>
                         </div>
                       </div>

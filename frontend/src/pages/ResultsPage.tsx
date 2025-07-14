@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { db } from "../lib/firebase";
-import { onValue, ref, remove } from "firebase/database";
+import { get, ref, remove } from "firebase/database";
 import type { Room } from "../../../shared/types";
 import { presenceManager } from "../api/presenceManager";
 import LeaderboardChart from "../components/LeaderboardChart";
@@ -16,7 +16,11 @@ import {
   FaStar,
   FaSpinner,
   FaChartBar,
-  FaList
+  FaList,
+  FaPlus,
+  FaUserFriends,
+  FaLightbulb,
+  FaCheckCircle
 } from 'react-icons/fa';
 import { 
   MdCelebration 
@@ -54,38 +58,30 @@ export default function ResultsPage() {
     };
   }, []);
 
-  // Fetch room data
+  // Fetch room data (one-time fetch, no listener)
   useEffect(() => {
-    if (!roomId) return;
+    const fetchRoomData = async () => {
+      if (!roomId) return;
 
-    const roomRef = ref(db, `rooms/${roomId}`);
-    const unsub = onValue(roomRef, (snap) => {
-      const data = snap.val();
-      if (data) {
-        setRoom(data);
+      try {
+        const roomRef = ref(db, `rooms/${roomId}`);
+        const snapshot = await get(roomRef);
+        const data = snapshot.val();
         
-        // Set up onDisconnect cleanup when room data loads (same pattern as LobbyPage/QuizPage)
-        if (playerId && data.players && playerId in data.players) {
-          const currentPlayer = data.players[playerId];
-          presenceManager.setupDisconnectCleanup(roomId, playerId, currentPlayer.isHost);
+        if (data) {
+          setRoom(data);
+        } else {
+          // Room doesn't exist, redirect to home
+          navigate("/");
         }
-      } else {
-        // Room doesn't exist, redirect to home
+      } catch (error) {
+        console.error('❌ Error fetching room data:', error);
         navigate("/");
       }
-    }, (error) => {
-      console.error('❌ Firebase listener error:', error);
-    });
-
-    return () => unsub();
-  }, [roomId, playerId]);
-
-  // Cleanup on component unmount
-  useEffect(() => {
-    return () => {
-      presenceManager.clearDisconnectHandlers();
     };
-  }, []);
+
+    fetchRoomData();
+  }, [roomId, navigate]);
 
   // Enhanced navigation handler with proper cleanup
   const handleBackToHome = async () => {
@@ -111,9 +107,6 @@ export default function ResultsPage() {
         // Player: Remove only themselves
         await remove(ref(db, `rooms/${roomId}/players/${playerId}`));
       }
-      
-      // Clear onDisconnect handlers to prevent double-cleanup
-      presenceManager.clearDisconnectHandlers();
       
     } catch (error) {
       // Still navigate to prevent user being stuck
@@ -413,6 +406,66 @@ export default function ResultsPage() {
                 ) / 10}s
               </div>
               <div className="text-xs sm:text-sm text-[#6D4C41] group-hover:text-[#4E342E] transition-colors duration-300">{t('resultsAvgTime')}</div>
+            </div>
+          </div>
+        </div>
+
+        {/* How to Play Again Section */}
+        <div className="bg-[#F7E2C0] rounded-2xl shadow-xl p-4 sm:p-6 mb-6 sm:mb-8 border-2 border-[#4E342E]">
+          <div className="flex items-center justify-center mb-4 sm:mb-6">
+            <FaLightbulb className="text-2xl sm:text-3xl text-[#F4B46D] mr-2 sm:mr-3" />
+            <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-[#4E342E]">{t('How to Play Again')}</h2>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* For Hosts */}
+            <div className="bg-white rounded-xl p-4 shadow-sm border border-[#4E342E]/10">
+              <div className="flex items-center mb-3">
+                <FaCrown className="text-lg text-[#F4B46D] mr-2" />
+                <h3 className="font-semibold text-[#4E342E]">{t('Create New Room')}</h3>
+              </div>
+              <div className="space-y-2 text-sm text-[#6D4C41]">
+                <p>• {t('Choose a new topic and difficulty')}</p>
+                <p>• {t('Generate fresh AI questions')}</p>
+                <p>• {t('Invite friends with the new room code')}</p>
+                <p>• {t('Start a completely new quiz experience')}</p>
+              </div>
+            </div>
+
+            {/* For Players */}
+            <div className="bg-white rounded-xl p-4 shadow-sm border border-[#4E342E]/10">
+              <div className="flex items-center mb-3">
+                <FaUserFriends className="text-lg text-[#10A3A2] mr-2" />
+                <h3 className="font-semibold text-[#4E342E]">{t('Join Another Room')}</h3>
+              </div>
+              <div className="space-y-2 text-sm text-[#6D4C41]">
+                <p>• {t('Get a room code from a friend')}</p>
+                <p>• {t('Join with your preferred nickname')}</p>
+                <p>• {t('Compete in a different quiz')}</p>
+                <p>• {t('Try to improve your performance')}</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Performance Tips */}
+          <div className="mt-6 bg-white rounded-xl p-4 shadow-sm border border-[#4E342E]/10">
+            <div className="flex items-center mb-3">
+              <FaTrophy className="text-lg text-[#F6D35B] mr-2" />
+              <h3 className="font-semibold text-[#4E342E]">{t('Performance Tips')}</h3>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-[#6D4C41]">
+              <div className="flex items-start">
+                <FaClock className="text-[#10A3A2] mr-2 mt-0.5 text-xs" />
+                <span>{t('Answer quickly for higher scores - speed matters!')}</span>
+              </div>
+              <div className="flex items-start">
+                <FaCheckCircle className="text-[#10A3A2] mr-2 mt-0.5 text-xs" />
+                <span>{t('Focus on accuracy first, then work on speed')}</span>
+              </div>
+              <div className="flex items-start">
+                <FaLightbulb className="text-[#F4B46D] mr-2 mt-0.5 text-xs" />
+                <span>{t('Choose topics you\'re familiar with to start')}</span>
+              </div>
             </div>
           </div>
         </div>

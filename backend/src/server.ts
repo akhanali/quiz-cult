@@ -572,7 +572,119 @@ io.on('connection', (socket) => {
   });
 
   /**
-   * Handle player disconnection
+   * Handle player kick (host only)
+   */
+  socket.on('kick-player', async (data: {
+    roomId: string;
+    hostId: string;
+    playerIdToKick: string;
+  }) => {
+    try {
+      const { roomId, hostId, playerIdToKick } = data;
+      
+      console.log(`👢 Host ${hostId} attempting to kick player ${playerIdToKick} from room ${roomId}`);
+
+      // Verify host permissions
+      const connection = activeConnections.get(socket.id);
+      if (!connection || connection.roomId !== roomId || connection.playerId !== hostId) {
+        socket.emit('error', { message: 'Only the host can kick players', code: 'INSUFFICIENT_PERMISSIONS' });
+        return;
+      }
+
+      if (!db) {
+        socket.emit('error', { message: 'Database not available', code: 'DATABASE_ERROR' });
+        return;
+      }
+
+      // Get current room state
+      const roomSnapshot = await db.ref(`rooms/${roomId}`).once('value');
+      if (!roomSnapshot.exists()) {
+        socket.emit('error', { message: 'Room not found', code: 'ROOM_NOT_FOUND' });
+        return;
+      }
+
+      const room = roomSnapshot.val();
+
+      // Verify host permissions again
+      if (room.hostId !== hostId) {
+        socket.emit('error', { message: 'Only the room host can kick players', code: 'INSUFFICIENT_PERMISSIONS' });
+        return;
+      }
+
+      // Check if room is still in waiting status
+      if (room.status !== 'waiting') {
+        socket.emit('error', { message: 'Cannot kick players after the game has started', code: 'GAME_ALREADY_STARTED' });
+        return;
+      }
+
+      // Check if player exists in the room
+      if (!room.players || !room.players[playerIdToKick]) {
+        socket.emit('error', { message: 'Player not found in room', code: 'PLAYER_NOT_FOUND' });
+        return;
+      }
+
+      const playerToKick = room.players[playerIdToKick];
+
+      // Prevent host from kicking themselves
+      if (playerToKick.isHost) {
+        socket.emit('error', { message: 'Host cannot kick themselves', code: 'CANNOT_KICK_HOST' });
+        return;
+      }
+
+      // Remove player from room in database
+      await db.ref(`rooms/${roomId}/players/${playerIdToKick}`).remove();
+
+      // Find socket connections for the kicked player
+      const kickedPlayerSockets: string[] = [];
+      for (const [socketId, connectionData] of activeConnections.entries()) {
+        if (connectionData.roomId === roomId && connectionData.playerId === playerIdToKick) {
+          kickedPlayerSockets.push(socketId);
+        }
+      }
+
+      // Notify the kicked player
+      kickedPlayerSockets.forEach(socketId => {
+        const kickedSocket = io.sockets.sockets.get(socketId);
+        if (kickedSocket) {
+          kickedSocket.emit('player-kicked', {
+            reason: 'Kicked by host',
+            timestamp: new Date().toISOString()
+          });
+          // Remove from room
+          kickedSocket.leave(roomId);
+          // Remove from tracking
+          activeConnections.delete(socketId);
+          if (roomConnections.has(roomId)) {
+            roomConnections.get(roomId)!.delete(socketId);
+          }
+        }
+      });
+
+      // Notify other players in the room
+      socket.to(roomId).emit('player-kicked-by-host', {
+        kickedPlayerId: playerIdToKick,
+        kickedPlayerNickname: playerToKick.nickname,
+        kickedByHost: hostId,
+        timestamp: new Date().toISOString()
+      });
+
+      console.log(`✅ Player ${playerToKick.nickname} (${playerIdToKick}) kicked from room ${roomId} by host ${hostId}`);
+
+      // Confirm to host
+      socket.emit('player-kick-success', {
+        kickedPlayerId: playerIdToKick,
+        kickedPlayerNickname: playerToKick.nickname,
+        timestamp: new Date().toISOString()
+      });
+
+    } catch (error: any) {
+      console.error('❌ Error kicking player:', error);
+      socket.emit('error', { message: 'Failed to kick player', details: error.message });
+    }
+  });
+
+  /**
+   * Handle disconnection
    */
   socket.on('disconnect', () => {
     console.log(`🔌 Client disconnected: ${socket.id}`);

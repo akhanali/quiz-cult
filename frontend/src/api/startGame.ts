@@ -5,7 +5,7 @@ import { db } from "../lib/firebase";
 import { MIGRATION_FLAGS } from "../config/environment";
 import { startGame as startGameBackend, isBackendHealthy } from "../services/apiClient";
 
-export async function startGame(roomId: string): Promise<void> {
+export async function startGame(roomId: string, hostId: string): Promise<void> {
   
   // Dynamic feature flag check - check current flag value at runtime
   const useBackend = MIGRATION_FLAGS.USE_BACKEND_FOR_GAME_START && 
@@ -20,13 +20,6 @@ export async function startGame(roomId: string): Promise<void> {
       // Check backend health before attempting
       if (!isBackendHealthy()) {
         console.warn('⚠️ Backend not healthy, falling back to Firebase for game start');
-        return await startGameFirebase(roomId);
-      }
-      
-      // Get host ID from localStorage
-      const hostId = localStorage.getItem("userId");
-      if (!hostId) {
-        console.warn('⚠️ No host ID found, falling back to Firebase for game start');
         return await startGameFirebase(roomId);
       }
       

@@ -107,6 +107,8 @@ LANGUAGE REQUIREMENTS:
 - If the topic is in French, generate questions in French
 - If the topic is in German, generate questions in German
 - If the topic is in English, generate questions in English
+- If the topic is in Ukrainian, generate questions in Ukrainian
+- If the topic is in Kazakh, generate questions in Kazakh
 - Match the language of the topic exactly - use the same language for everything
 
 DIFFICULTY REQUIREMENTS:

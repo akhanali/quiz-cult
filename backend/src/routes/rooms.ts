@@ -771,6 +771,99 @@ router.delete('/:roomId', async (req: Request, res: Response) => {
 });
 
 /**
+ * POST /api/rooms/:roomId/kick-player
+ * Kick a player from the room (host only)
+ */
+router.post('/:roomId/kick-player', async (req: Request, res: Response) => {
+  try {
+    console.log('👢 Kicking player from room:', req.params.roomId, req.body);
+
+    const { roomId } = req.params;
+    const { hostId, playerIdToKick } = req.body;
+
+    // Validate request
+    if (!hostId || !playerIdToKick) {
+      return res.status(400).json({
+        error: 'Missing required fields: hostId and playerIdToKick',
+        code: 'MISSING_FIELDS'
+      } as ErrorResponse);
+    }
+
+    // Check database availability
+    if (!checkDatabaseAvailable(res)) {
+      return;
+    }
+
+    // Get room data
+    const roomSnapshot = await db!.ref(`rooms/${roomId}`).once('value');
+    if (!roomSnapshot.exists()) {
+      return res.status(404).json({
+        error: 'Room not found',
+        code: 'ROOM_NOT_FOUND'
+      } as ErrorResponse);
+    }
+
+    const room = roomSnapshot.val() as Room;
+
+    // Verify host permissions
+    if (room.hostId !== hostId) {
+      return res.status(403).json({
+        error: 'Only the room host can kick players',
+        code: 'INSUFFICIENT_PERMISSIONS'
+      } as ErrorResponse);
+    }
+
+    // Check if room is still in waiting status
+    if (room.status !== 'waiting') {
+      return res.status(400).json({
+        error: 'Cannot kick players after the game has started',
+        code: 'GAME_ALREADY_STARTED'
+      } as ErrorResponse);
+    }
+
+    // Check if player exists in the room
+    if (!room.players || !room.players[playerIdToKick]) {
+      return res.status(404).json({
+        error: 'Player not found in room',
+        code: 'PLAYER_NOT_FOUND'
+      } as ErrorResponse);
+    }
+
+    const playerToKick = room.players[playerIdToKick];
+
+    // Prevent host from kicking themselves
+    if (playerToKick.isHost) {
+      return res.status(400).json({
+        error: 'Host cannot kick themselves',
+        code: 'CANNOT_KICK_HOST'
+      } as ErrorResponse);
+    }
+
+    // Remove player from room
+    await db!.ref(`rooms/${roomId}/players/${playerIdToKick}`).remove();
+
+    console.log(`✅ Player ${playerToKick.nickname} (${playerIdToKick}) kicked from room ${roomId} by host ${hostId}`);
+
+    // Return success response
+    res.status(200).json({
+      success: true,
+      kickedPlayer: {
+        id: playerIdToKick,
+        nickname: playerToKick.nickname
+      },
+      message: `Player ${playerToKick.nickname} has been kicked from the room`
+    });
+
+  } catch (error: any) {
+    console.error('❌ Error kicking player:', error);
+    res.status(500).json({
+      error: 'Failed to kick player',
+      details: error.message
+    } as ErrorResponse);
+  }
+});
+
+/**
  * Clean up expired rooms that have been waiting too long
  */
 const cleanupExpiredRooms = async (): Promise<void> => {

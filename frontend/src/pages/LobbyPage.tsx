@@ -5,6 +5,8 @@ import { onValue, ref, update } from "firebase/database";
 import type { Room, Player, DifficultyLevel } from "../../../shared/types";
 import { startGame } from "../api/startGame";
 import { presenceManager } from "../api/presenceManager";
+import { kickPlayer } from "../api/kickPlayer";
+import socketClient from "../services/socketClient";
 import { 
   FaUsers, 
   FaCrown, 
@@ -17,7 +19,10 @@ import {
   FaPlay,
   FaArrowLeft,
   FaSpinner,
-  FaTrophy
+  FaTrophy,
+  FaUserSlash,
+  FaChevronDown,
+  FaChevronUp
 } from 'react-icons/fa';
 import { 
   MdQuiz, 
@@ -30,6 +35,7 @@ import {
 import quizDojoLogo from '/logo-lockup.png';
 import { useTranslation } from 'react-i18next';
 import { trackQuizEvent, trackEngagement } from '../utils/analytics';
+import KickConfirmationModal from '../components/KickConfirmationModal';
 
 export default function LobbyPage() {
   const { id } = useParams<{ id: string }>();
@@ -37,6 +43,9 @@ export default function LobbyPage() {
   const navigate = useNavigate();
   const [player, setPlayer] = useState<Player | null>(null);
   const [copiedCode, setCopiedCode] = useState(false);
+  const [isKickConfirmationOpen, setIsKickConfirmationOpen] = useState(false);
+  const [playerToKick, setPlayerToKick] = useState<Player | null>(null);
+  const [showGameRules, setShowGameRules] = useState(false);
   const { t } = useTranslation();
 
   useEffect(() => {
@@ -62,6 +71,10 @@ export default function LobbyPage() {
           
           // Set up onDisconnect cleanup for this user
           presenceManager.setupDisconnectCleanup(id, playerId, currentPlayer.isHost);
+        } else {
+          // Player is not in the room (kicked or room was deleted)
+          console.log("Player not found in room, redirecting to home");
+          navigate("/");
         }
       } else {
         // Room was deleted (probably host disconnected)
@@ -70,8 +83,34 @@ export default function LobbyPage() {
       }
     });
 
+    // Set up socket event listeners for kick notifications
+    const handlePlayerKicked = (data: { reason: string; timestamp: string }) => {
+      console.log('You have been kicked from the room:', data.reason);
+      // Redirect to home page when kicked
+      navigate("/");
+    };
+
+    const handlePlayerKickedByHost = (data: { kickedPlayerId: string; kickedPlayerNickname: string; kickedByHost: string; timestamp: string }) => {
+      console.log(`Player ${data.kickedPlayerNickname} was kicked by host`);
+      // The room data will be updated automatically via Firebase listener
+    };
+
+    const handlePlayerKickSuccess = (data: { kickedPlayerId: string; kickedPlayerNickname: string; timestamp: string }) => {
+      console.log(`Successfully kicked player ${data.kickedPlayerNickname}`);
+      // The room data will be updated automatically via Firebase listener
+    };
+
+    // Register socket event listeners
+    socketClient.on('player-kicked', handlePlayerKicked);
+    socketClient.on('player-kicked-by-host', handlePlayerKickedByHost);
+    socketClient.on('player-kick-success', handlePlayerKickSuccess);
+
     return () => {
       unsubscribe();
+      // Clean up socket event listeners
+      socketClient.off('player-kicked', handlePlayerKicked);
+      socketClient.off('player-kicked-by-host', handlePlayerKickedByHost);
+      socketClient.off('player-kick-success', handlePlayerKickSuccess);
       // Don't clear disconnect handlers here - only clear when legitimately navigating
     };
   }, [id, navigate]);
@@ -162,14 +201,35 @@ export default function LobbyPage() {
       trackQuizEvent.quizStarted(room.roomCode, playerCount);
       trackEngagement.buttonClick('start_quiz', 'lobby_page');
 
-      await update(ref(db, `rooms/${room.id}`), {
-        status: "active",
-        startedAt: Date.now(),
-        currentQuestionIndex: 0
-      });
+      await startGame(room.id, room.hostId);
     } catch (error) {
       console.error("Failed to start quiz:", error);
     }
+  };
+
+  const handleKickPlayer = (player: Player) => {
+    setPlayerToKick(player);
+    setIsKickConfirmationOpen(true);
+  };
+
+  const handleConfirmKick = async () => {
+    if (!playerToKick || !room || !player) return;
+
+    try {
+      await kickPlayer(room.id, room.hostId, playerToKick.id);
+      setIsKickConfirmationOpen(false);
+      setPlayerToKick(null);
+      // Track kick event
+      trackQuizEvent.playerKicked(playerToKick.nickname);
+      trackEngagement.buttonClick('kick_player', 'lobby_page');
+    } catch (error) {
+      console.error("Failed to kick player:", error);
+    }
+  };
+
+  const handleCancelKick = () => {
+    setIsKickConfirmationOpen(false);
+    setPlayerToKick(null);
   };
 
   return (
@@ -263,6 +323,97 @@ export default function LobbyPage() {
             </div>
           </div>
 
+          {/* Game Rules Section */}
+          <div className="bg-[#F7E2C0] rounded-2xl shadow-lg p-4 sm:p-6 mb-6 sm:mb-8 border border-[#4E342E]/20">
+            <button
+              onClick={() => setShowGameRules(!showGameRules)}
+              className="w-full flex items-center justify-between p-2 rounded-lg hover:bg-[#F4B46D]/20 transition-colors duration-200"
+            >
+              <div className="flex items-center">
+                <FaTrophy className="text-xl sm:text-2xl text-[#F4B46D] mr-3" />
+                <h3 className="text-lg sm:text-xl font-bold text-[#4E342E]">{t('Game Rules')}</h3>
+              </div>
+              {showGameRules ? (
+                <FaChevronUp className="text-[#4E342E] text-lg" />
+              ) : (
+                <FaChevronDown className="text-[#4E342E] text-lg" />
+              )}
+            </button>
+            
+            {showGameRules && (
+              <div className="mt-4 pt-4 border-t border-[#4E342E]/20">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Scoring System */}
+                  <div className="bg-white rounded-xl p-4 shadow-sm border border-[#4E342E]/10">
+                    <div className="flex items-center mb-3">
+                      <MdAccessTime className="text-lg text-[#10A3A2] mr-2" />
+                      <h4 className="font-semibold text-[#4E342E]">{t('Scoring System')}</h4>
+                    </div>
+                    <div className="space-y-2 text-sm text-[#6D4C41]">
+                      <p>• {t('Faster answers earn more points')}</p>
+                      <p>• {t('Correct answers: 100-500 points based on speed')}</p>
+                      <p>• {t('Wrong answers: 0 points')}</p>
+                      <p>• {t('Difficulty multipliers: Easy (1x), Medium (1.5x), Hard (2x)')}</p>
+                    </div>
+                  </div>
+
+                  {/* Difficulty Levels */}
+                  <div className="bg-white rounded-xl p-4 shadow-sm border border-[#4E342E]/10">
+                    <div className="flex items-center mb-3">
+                      <FaRocket className="text-lg text-[#F4B46D] mr-2" />
+                      <h4 className="font-semibold text-[#4E342E]">{t('Difficulty Levels')}</h4>
+                    </div>
+                    <div className="space-y-2 text-sm text-[#6D4C41]">
+                      <div className="flex items-center">
+                        <FaCheckCircle className="text-[#10A3A2] mr-2 text-xs" />
+                        <span><strong>Easy:</strong> {t('Easy: 10-20 seconds, basic recall')}</span>
+                      </div>
+                      <div className="flex items-center">
+                        <FaClock className="text-[#05717B] mr-2 text-xs" />
+                        <span><strong>Medium:</strong> {t('Medium: 21-30 seconds, understanding')}</span>
+                      </div>
+                      <div className="flex items-center">
+                        <FaRocket className="text-[#F4B46D] mr-2 text-xs" />
+                        <span><strong>Hard:</strong> {t('Hard: 35+ seconds, critical thinking')}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Host Controls */}
+                  <div className="bg-white rounded-xl p-4 shadow-sm border border-[#4E342E]/10">
+                    <div className="flex items-center mb-3">
+                      <FaCrown className="text-lg text-[#F4B46D] mr-2" />
+                      <h4 className="font-semibold text-[#4E342E]">{t('Host Controls')}</h4>
+                    </div>
+                    <div className="space-y-2 text-sm text-[#6D4C41]">
+                      <p>• {t('Start the quiz when ready')}</p>
+                      <p>• {t('End questions early if needed')}</p>
+                      <p>• {t('Show mid-game scoreboards')}</p>
+                      <p>• {t('Kick players if necessary')}</p>
+                      <p>• {t('Control game pacing')}</p>
+                    </div>
+                  </div>
+
+                  {/* Game Flow */}
+                  <div className="bg-white rounded-xl p-4 shadow-sm border border-[#4E342E]/10">
+                    <div className="flex items-center mb-3">
+                      <FaPlay className="text-lg text-[#10A3A2] mr-2" />
+                      <h4 className="font-semibold text-[#4E342E]">{t('Game Flow')}</h4>
+                    </div>
+                    <div className="space-y-2 text-sm text-[#6D4C41]">
+                      <p>{t('1. Host starts the quiz')}</p>
+                      <p>{t('2. Questions appear with timer')}</p>
+                      <p>{t('3. Players select and submit answers')}</p>
+                      <p>{t('4. Correct answers and scores shown')}</p>
+                      <p>{t('5. Host advances to next question')}</p>
+                      <p>{t('6. Final leaderboard at the end')}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+
           {/* Players Section */}
           <div className="bg-[#F7E2C0] rounded-2xl shadow-lg p-4 sm:p-6 mb-6 sm:mb-8 border border-[#4E342E]/20">
             <div className="flex items-center mb-4 sm:mb-6">
@@ -301,14 +452,26 @@ export default function LobbyPage() {
                       )}
                     </div>
                   </div>
-                  {roomPlayer.isHost && (
-                    <div className="flex items-center space-x-2 flex-shrink-0">
+                  <div className="flex items-center space-x-2 flex-shrink-0">
+                    {roomPlayer.isHost && (
                       <div className="bg-[#F4B46D]/50 text-[#4E342E] px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-bold flex items-center space-x-1 border border-[#F4B46D]/70">
                         <FaCrown className="text-xs" />
                         <span className="hidden sm:inline">{t('Host')}</span>
                       </div>
-                    </div>
-                  )}
+                    )}
+                    {/* Kick button - only show for host and non-host players */}
+                    {isHost && !roomPlayer.isHost && roomPlayer.id !== player?.id && (
+                      <button
+                        onClick={() => handleKickPlayer(roomPlayer)}
+                        className="bg-red-100 hover:bg-red-200 text-red-600 px-2 sm:px-3 py-1 rounded-lg 
+                                 transition-colors duration-300 flex items-center space-x-1 text-xs sm:text-sm border border-red-300"
+                        title={`Kick ${roomPlayer.nickname}`}
+                      >
+                        <FaUserSlash className="text-xs" />
+                        <span className="hidden sm:inline">{t('Kick')}</span>
+                      </button>
+                    )}
+                  </div>
                 </div>
               ))}
             </div>
@@ -349,19 +512,19 @@ export default function LobbyPage() {
                     </>
                   ) : (
                     <>
-                      <p className="text-sm sm:text-base text-[#6D4C41] mb-4 sm:mb-6 px-4">
-                        {t('All players are waiting for you to begin the quiz!')}
-                      </p>
-                      <button 
-                        onClick={handleStartQuiz}
-                        className="bg-[#10A3A2] hover:bg-[#05717B] 
-                                 text-white font-bold py-3 sm:py-4 px-6 sm:px-8 rounded-xl transition-all duration-300 
-                                 text-base sm:text-xl shadow-lg hover:shadow-xl transform hover:scale-105
-                                 flex items-center space-x-2 sm:space-x-3 mx-auto min-h-[48px] sm:min-h-[56px]"
-                      >
-                        <FaRocket className="text-lg sm:text-2xl" />
-                        <span>{t('Start Quiz')}</span>
-                      </button>
+                  <p className="text-sm sm:text-base text-[#6D4C41] mb-4 sm:mb-6 px-4">
+                    {t('All players are waiting for you to begin the quiz!')}
+                  </p>
+                  <button 
+                    onClick={handleStartQuiz}
+                    className="bg-[#10A3A2] hover:bg-[#05717B] 
+                             text-white font-bold py-3 sm:py-4 px-6 sm:px-8 rounded-xl transition-all duration-300 
+                             text-base sm:text-xl shadow-lg hover:shadow-xl transform hover:scale-105
+                             flex items-center space-x-2 sm:space-x-3 mx-auto min-h-[48px] sm:min-h-[56px]"
+                  >
+                    <FaRocket className="text-lg sm:text-2xl" />
+                    <span>{t('Start Quiz')}</span>
+                  </button>
                     </>
                   )}
                   
@@ -399,6 +562,12 @@ export default function LobbyPage() {
           </div>
         </div>
       </div>
+             <KickConfirmationModal
+         isOpen={isKickConfirmationOpen}
+         onClose={handleCancelKick}
+         onConfirm={handleConfirmKick}
+         playerName={playerToKick?.nickname || ''}
+       />
     </div>
   );
 }
