@@ -922,7 +922,7 @@ const resources = {
       'from the room?': 'бөлмеден?',
       'This action cannot be undone. The player will be immediately removed from the room.': 'Бұл әрекетті болдырмау мүмкін емес. Ойыншы бөлмеден дереу шығарылады.',
       'Kicked': 'Шығарылды',
-      'Kicked by host': 'Хост тарапынан шығарылды',
+      'Kicked by host': 'Қожа тарапынан шығарылды',
       'Kicking...': 'Шығару...',
       'Cancel': 'Бас тарту',
 
