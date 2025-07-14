@@ -68,6 +68,6 @@ jobs:
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v3
         with:
-          app-name: 'quiz-dojo'
+          app-name: 'quiz-cult'
           slot-name: 'Production'
           package: . 
