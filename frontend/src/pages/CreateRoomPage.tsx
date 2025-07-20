@@ -12,6 +12,7 @@ import { useTranslation } from 'react-i18next';
 import { trackQuizEvent, trackEngagement } from '../utils/analytics';
 import { DocumentUploader } from '../components/DocumentUploader';
 import { QuizConfigurationSection } from '../components/QuizConfigurationSection';
+import { BACKEND_CONFIG } from '../config/environment';
 
 // Document analysis interface
 interface DocumentAnalysis {
@@ -73,10 +74,16 @@ export default function CreateRoomPage() {
       const formData = new FormData();
       formData.append('document', file);
 
-      const response = await fetch('/api/documents/upload', {
+      console.log('Uploading document to:', `${BACKEND_CONFIG.URL}/api/documents/upload`);
+      
+      const response = await fetch(`${BACKEND_CONFIG.URL}/api/documents/upload`, {
         method: 'POST',
         body: formData
       });
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
 
       const result = await response.json();
 
@@ -94,6 +101,7 @@ export default function CreateRoomPage() {
       }
     } catch (error) {
       console.error('Document upload failed:', error);
+      console.error('Backend URL:', BACKEND_CONFIG.URL);
       setError(error instanceof Error ? error.message : 'Document upload failed');
       setUploadedFile(null);
     } finally {
@@ -120,7 +128,9 @@ export default function CreateRoomPage() {
     }
 
     try {
-      const response = await fetch('/api/documents/generate-questions', {
+      console.log('Generating questions from:', `${BACKEND_CONFIG.URL}/api/documents/generate-questions`);
+      
+      const response = await fetch(`${BACKEND_CONFIG.URL}/api/documents/generate-questions`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -133,6 +143,10 @@ export default function CreateRoomPage() {
         }),
       });
 
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+
       const result = await response.json();
 
       if (result.success) {
@@ -142,6 +156,7 @@ export default function CreateRoomPage() {
       }
     } catch (error) {
       console.error('Question generation failed:', error);
+      console.error('Backend URL:', BACKEND_CONFIG.URL);
       throw error;
     }
   };
