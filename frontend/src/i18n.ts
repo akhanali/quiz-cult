@@ -284,7 +284,7 @@ const resources = {
       'Document Type': 'Document Type',
       'Difficulty Level': 'Difficulty Level',
       'Processing Coverage': 'Processing Coverage',
-      'Analyzed ~{count} words from your document': 'Analyzed ~{count} words from your document',
+      'Analyzed ~{count} words from your document': 'Analyzed {{count}} words from your document',
       'Extracted Topics': 'Extracted Topics',
       'Drag and drop your document here, or click to browse': 'Drag and drop your document here, or click to browse',
       'Supported:': 'Supported:',
