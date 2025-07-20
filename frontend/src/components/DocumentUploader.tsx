@@ -1,5 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { FaFileUpload, FaFile, FaTimes, FaSpinner } from 'react-icons/fa';
+import { useTranslation } from 'react-i18next';
 
 interface DocumentUploaderProps {
   onFileUpload: (file: File) => void;
@@ -18,6 +19,7 @@ export const DocumentUploader: React.FC<DocumentUploaderProps> = ({
   supportedTypes = ['pdf', 'docx', 'txt'],
   maxSize = 50 * 1024 * 1024 // 50MB default
 }) => {
+  const { t } = useTranslation();
   const [dragActive, setDragActive] = useState(false);
   const [error, setError] = useState<string>('');
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -55,13 +57,13 @@ export const DocumentUploader: React.FC<DocumentUploaderProps> = ({
     // Validate file type
     const fileExtension = file.name.split('.').pop()?.toLowerCase();
     if (!supportedTypes.includes(fileExtension || '')) {
-      setError(`Unsupported file type. Please upload: ${supportedTypes.join(', ')}`);
+      setError(`${t('Unsupported file type. Please upload:')} ${supportedTypes.join(', ')}`);
       return;
     }
 
     // Validate file size
     if (file.size > maxSize) {
-      setError(`File too large. Maximum size: ${(maxSize / (1024 * 1024)).toFixed(0)}MB`);
+      setError(`${t('File too large. Maximum size:')} ${(maxSize / (1024 * 1024)).toFixed(0)}MB`);
       return;
     }
 
@@ -134,16 +136,16 @@ export const DocumentUploader: React.FC<DocumentUploaderProps> = ({
         {isProcessing ? (
           <div className="space-y-2">
             <FaSpinner className="text-4xl text-[#10A3A2] mx-auto animate-spin" />
-            <p className="text-[#10A3A2] font-medium">Processing document...</p>
+            <p className="text-[#10A3A2] font-medium">{t('Processing document...')}</p>
           </div>
         ) : (
           <div className="space-y-2">
             <FaFileUpload className="text-4xl text-gray-400 mx-auto" />
             <p className="text-gray-600 font-medium">
-              Drag and drop your document here, or click to browse
+              {t('Drag and drop your document here, or click to browse')}
             </p>
             <p className="text-sm text-gray-500">
-              Supported: {supportedTypes.join(', ').toUpperCase()} (max {(maxSize / (1024 * 1024)).toFixed(0)}MB)
+              {t('Supported:')} {supportedTypes.join(', ').toUpperCase()} (max {(maxSize / (1024 * 1024)).toFixed(0)}MB)
             </p>
           </div>
         )}

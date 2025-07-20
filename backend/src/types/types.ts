@@ -72,6 +72,7 @@ export interface CreateRoomRequest {
   topic: string;
   difficulty: DifficultyLevel;
   questionCount: number;
+  questions?: Question[]; // Optional: pre-generated questions (for document-based quizzes)
 }
 
 export interface CreateRoomResponse {

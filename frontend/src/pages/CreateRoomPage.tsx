@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { createRoom } from '../api/createRoom';
+import { createRoom, createRoomWithQuestions } from '../api/createRoom';
 import type { Question } from '../../../shared/types';
 import { useNavigate, Link } from 'react-router-dom';
 import { presenceManager } from '../api/presenceManager';
@@ -130,18 +130,18 @@ export default function CreateRoomPage() {
     try {
       console.log('Generating questions from:', `${BACKEND_CONFIG.URL}/api/documents/generate-questions`);
       
-      const response = await fetch(`${BACKEND_CONFIG.URL}/api/documents/generate-questions`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          fileId: documentAnalysis.fileId,
-          difficulty,
-          count: questionCount,
-          extractedText: documentAnalysis.extractedText
-        }),
-      });
+              const response = await fetch(`${BACKEND_CONFIG.URL}/api/documents/generate-questions`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            fileId: documentAnalysis.fileId,
+            difficulty,
+            count: questionCount,
+            extractedText: documentAnalysis.extractedText
+          }),
+        });
 
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
@@ -183,12 +183,15 @@ export default function CreateRoomPage() {
         }
       }
 
-      // Use the regular createRoom API
-      const roomData = await createRoom(
+      console.log('🎯 Creating room with document-generated questions:', questions.length);
+
+      // Create room with pre-generated questions
+      const roomData = await createRoomWithQuestions(
         nickname,
         topicName,
         config.difficulty,
-        config.questionCount
+        config.questionCount,
+        questions
       );
 
       navigate(`/lobby/${roomData.roomId}`, { 
@@ -449,12 +452,12 @@ export default function CreateRoomPage() {
               {isDocumentMode ? (
                 <>
                   <FaBook />
-                  Document Mode
+                  {t('Document Mode')}
                 </>
               ) : (
                 <>
                   <FaFileAlt />
-                  Switch to Document
+                  {t('Switch to Document')}
                 </>
               )}
             </button>
@@ -472,15 +475,15 @@ export default function CreateRoomPage() {
                 </div>
                 <div className="flex-1">
                   <h3 className="text-sm font-medium text-[#4E342E] mb-2">
-                    Document Processing Limits
+                    {t('Document Processing Limits')}
                   </h3>
                   <div className="text-sm text-[#6D4C41] space-y-1">
-                    <p>• <strong>File Size:</strong> Up to 50MB</p>
-                    <p>• <strong>Supported Formats:</strong> PDF, DOCX, TXT</p>
-                    <p>• <strong>Processing Coverage:</strong> We analyze up to ~4,000 words from your document</p>
-                    <p>• <strong>Large Documents:</strong> We analyze the beginning portion</p>
-                    <p>• <strong>Small Documents:</strong> We process the entire document</p>
-                    <p>• <strong>Question Limit:</strong> Generate 1-30 questions per quiz</p>
+                    <p>• <strong>{t('File Size:')}</strong> {t('Up to 50MB')}</p>
+                    <p>• <strong>{t('Supported Formats:')}</strong> {t('PDF, DOCX, TXT')}</p>
+                    <p>• <strong>{t('Processing Coverage:')}</strong> {t('We analyze up to ~4,000 words from your document')}</p>
+                    <p>• <strong>{t('Large Documents:')}</strong> {t('We analyze the beginning portion')}</p>
+                    <p>• <strong>{t('Small Documents:')}</strong> {t('We process the entire document')}</p>
+                    <p>• <strong>{t('Question Limit:')}</strong> {t('Generate 1-30 questions per quiz')}</p>
                   </div>
                 </div>
               </div>
@@ -500,29 +503,29 @@ export default function CreateRoomPage() {
               <div className="bg-white rounded-xl shadow-lg p-4 sm:p-6 border border-[#4E342E]/10">
                 <h3 className="text-lg font-semibold text-[#4E342E] mb-4 flex items-center gap-2">
                   <FaFileAlt className="text-[#10A3A2]" />
-                  Document Analysis Results
+                  {t('Document Analysis Results')}
                 </h3>
                 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                   <div className="bg-[#F7E2C0] rounded-lg p-3 border border-[#4E342E]/10">
-                    <div className="text-sm text-[#6D4C41]">Document Type</div>
+                    <div className="text-sm text-[#6D4C41]">{t('Document Type')}</div>
                     <div className="font-medium text-[#4E342E] capitalize">{documentAnalysis.contentType}</div>
                   </div>
                   <div className="bg-[#F7E2C0] rounded-lg p-3 border border-[#4E342E]/10">
-                    <div className="text-sm text-[#6D4C41]">Difficulty Level</div>
+                    <div className="text-sm text-[#6D4C41]">{t('Difficulty Level')}</div>
                     <div className="font-medium text-[#4E342E] capitalize">{documentAnalysis.difficultyLevel}</div>
                   </div>
                 </div>
 
                 <div className="bg-[#F7E2C0] rounded-lg p-3 mb-4 border border-[#4E342E]/10">
-                  <div className="text-sm text-[#6D4C41]">Processing Coverage</div>
+                  <div className="text-sm text-[#6D4C41]">{t('Processing Coverage')}</div>
                   <div className="font-medium text-[#4E342E]">
-                    Analyzed ~{Math.round(documentAnalysis.wordCount)} words from your document
+                    {t('Analyzed ~{count} words from your document', { count: Math.round(documentAnalysis.wordCount) })}
                   </div>
                 </div>
 
                 <div className="bg-[#F7E2C0] rounded-lg p-3 border border-[#4E342E]/10">
-                  <div className="text-sm text-[#6D4C41] mb-2">Extracted Topics</div>
+                  <div className="text-sm text-[#6D4C41] mb-2">{t('Extracted Topics')}</div>
                   <div className="flex flex-wrap gap-2">
                     {documentAnalysis.topics.map((topic, index) => (
                       <span

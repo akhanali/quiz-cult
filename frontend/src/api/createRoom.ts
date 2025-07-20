@@ -176,3 +176,131 @@ async function createRoomFirebase(
 
 // Export Firebase implementation for testing/debugging
 export { createRoomFirebase };
+
+// Function to create room with pre-generated questions (for document-based quizzes)
+export async function createRoomWithQuestions(
+  nickname: string,
+  topic: string,
+  difficulty: DifficultyLevel,
+  questionCount: number,
+  questions: any[]
+): Promise<{roomId: string, playerId: string, aiGenerated: boolean, fallbackReason?: string}> {
+  
+  // Dynamic feature flag check - check current flag value at runtime
+  const useBackend = MIGRATION_FLAGS.USE_BACKEND_FOR_ROOM_CREATION && 
+                    !MIGRATION_FLAGS.FORCE_FIREBASE_FALLBACK && 
+                    !MIGRATION_FLAGS.DISABLE_BACKEND_COMPLETELY;
+
+  // Feature flag check - try backend first if enabled
+  if (useBackend) {
+    try {
+      console.log('🔄 Attempting room creation with pre-generated questions via backend...');
+      
+      // Check backend health before attempting
+      if (!isBackendHealthy()) {
+        console.warn('⚠️ Backend not healthy, falling back to Firebase');
+        return await createRoomFirebaseWithQuestions(nickname, topic, difficulty, questionCount, questions);
+      }
+      
+      // Try backend room creation with pre-generated questions
+      const result = await createRoomBackend({
+        nickname: nickname.trim(),
+        topic: topic.trim(),
+        difficulty,
+        questionCount,
+        questions // Pass the pre-generated questions
+      });
+      
+      console.log('✅ Room created successfully with pre-generated questions via backend:', result.roomId);
+      
+      // Store player ID in localStorage for consistency with Firebase approach
+      localStorage.setItem("userId", result.playerId);
+      
+      return result;
+      
+    } catch (error: any) {
+      console.warn('🔄 Backend room creation with pre-generated questions failed, falling back to Firebase:', error.message);
+      
+      // Automatic fallback to Firebase on any backend error
+      return await createRoomFirebaseWithQuestions(nickname, topic, difficulty, questionCount, questions);
+    }
+  }
+  
+  // Default: Use Firebase (original implementation)
+  console.log('🔥 Creating room with pre-generated questions via Firebase (default)');
+  return await createRoomFirebaseWithQuestions(nickname, topic, difficulty, questionCount, questions);
+}
+
+// Firebase implementation for creating room with pre-generated questions
+async function createRoomFirebaseWithQuestions(
+  nickname: string,
+  topic: string,
+  difficulty: DifficultyLevel,
+  questionCount: number,
+  questions: any[]
+): Promise<{roomId: string, playerId: string, aiGenerated: boolean, fallbackReason?: string}> {
+  
+  // Validate inputs
+  if (!nickname.trim()) {
+    throw new Error('Nickname is required');
+  }
+  
+  if (!topic.trim()) {
+    throw new Error('Topic is required');
+  }
+  
+  if (questionCount < 1 || questionCount > 35) {
+    throw new Error('Question count must be between 1 and 35');
+  }
+
+  if (!questions || questions.length !== questionCount) {
+    throw new Error(`Expected ${questionCount} questions, but received ${questions?.length || 0}`);
+  }
+
+  const roomCode = Math.floor(100000 + Math.random() * 900000).toString(); 
+  const hostId = `host_${Date.now()}`;
+
+  // Create room with pre-generated questions
+  const roomRef = push(ref(db, "rooms"));
+  const roomId = roomRef.key!;
+
+  const hostPlayer: Player = {
+    id: hostId,
+    nickname: nickname.trim(),
+    isHost: true,
+    score: 0,
+    joinedAt: Date.now(),
+    answers: {}
+  };
+
+  const roomData: Room = {
+    id: roomId,
+    roomCode,
+    topic: topic.trim(),
+    difficulty,
+    questionCount,
+    status: "waiting",
+    hostId,
+    createdAt: Date.now(),
+    currentQuestionIndex: 0,
+    players: {
+      [hostId]: hostPlayer
+    },
+    questions: questions,
+    totalQuestions: questionCount,
+    isGameComplete: false,
+    aiGenerated: true, // Pre-generated questions are considered AI-generated
+    questionsGenerating: false // Questions are already available
+  };
+
+  await update(ref(db, `rooms/${roomId}`), roomData);
+
+  console.log(`✅ Room ${roomCode} created with ${questions.length} pre-generated questions`);
+
+  return {
+    roomId,
+    playerId: hostId,
+    aiGenerated: true,
+    fallbackReason: undefined
+  };
+}

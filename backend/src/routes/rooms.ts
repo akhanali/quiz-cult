@@ -65,6 +65,27 @@ const validateCreateRoomRequest = (body: any): { valid: boolean; errors: string[
     errors.push('Question count must be between 1 and 35');
   }
 
+  // Validate pre-generated questions if provided
+  if (body.questions) {
+    if (!Array.isArray(body.questions)) {
+      errors.push('Questions must be an array');
+    } else {
+      if (body.questions.length !== body.questionCount) {
+        errors.push(`Expected ${body.questionCount} questions, but received ${body.questions.length}`);
+      }
+      
+      for (let i = 0; i < body.questions.length; i++) {
+        const question = body.questions[i];
+        if (!question.text || !Array.isArray(question.options) || question.options.length !== 4 || !question.correctOption) {
+          errors.push(`Question ${i + 1} is invalid: must have text, exactly 4 options, and correctOption`);
+        }
+        if (!question.options.includes(question.correctOption)) {
+          errors.push(`Question ${i + 1}: correctOption must match one of the provided options`);
+        }
+      }
+    }
+  }
+
   return { valid: errors.length === 0, errors };
 };
 
@@ -267,7 +288,7 @@ router.post('/', async (req: Request, res: Response) => {
       } as ErrorResponse);
     }
 
-    const { nickname, topic, difficulty, questionCount }: CreateRoomRequest = req.body;
+    const { nickname, topic, difficulty, questionCount, questions }: CreateRoomRequest = req.body;
 
     // Generate unique room code
     let roomCode: string;
@@ -303,7 +324,10 @@ router.post('/', async (req: Request, res: Response) => {
       answers: {}
     };
 
-    // Create room data immediately without questions
+    // Determine if we have pre-generated questions or need to generate them
+    const hasPreGeneratedQuestions = questions && questions.length > 0;
+    
+    // Create room data
     const roomData: Room = {
       id: roomId,
       roomCode,
@@ -317,29 +341,43 @@ router.post('/', async (req: Request, res: Response) => {
       players: {
         [playerId]: hostPlayer
       },
-      questions: [], // Empty initially, will be populated asynchronously
+      questions: hasPreGeneratedQuestions ? questions : [], // Use pre-generated questions or empty initially
       totalQuestions: questionCount,
       isGameComplete: false,
-      questionsGenerating: true // Flag to indicate questions are being generated
+      questionsGenerating: !hasPreGeneratedQuestions // Only generating if no pre-generated questions
     };
 
     // Save room to Firebase immediately
     await db!.ref(`rooms/${roomId}`).set(roomData);
 
-    console.log(`✅ Room ${roomCode} created successfully with ID: ${roomId} (questions generating in background)`);
+    if (hasPreGeneratedQuestions) {
+      console.log(`✅ Room ${roomCode} created successfully with ID: ${roomId} (using ${questions.length} pre-generated questions)`);
+      
+      // Return room immediately with pre-generated questions
+      const response: CreateRoomResponse = {
+        roomId,
+        playerId,
+        aiGenerated: true, // Pre-generated questions are considered AI-generated
+        fallbackReason: undefined
+      };
 
-    // Return room immediately
-    const response: CreateRoomResponse = {
-      roomId,
-      playerId,
-      aiGenerated: false, // Will be updated when questions are generated
-      fallbackReason: undefined
-    };
+      res.status(201).json(response);
+    } else {
+      console.log(`✅ Room ${roomCode} created successfully with ID: ${roomId} (questions generating in background)`);
+      
+      // Return room immediately
+      const response: CreateRoomResponse = {
+        roomId,
+        playerId,
+        aiGenerated: false, // Will be updated when questions are generated
+        fallbackReason: undefined
+      };
 
-    res.status(201).json(response);
+      res.status(201).json(response);
 
-    // Generate questions asynchronously (don't await)
-    generateQuestionsForRoomAsync(roomId, topic.trim(), difficulty as DifficultyLevel, questionCount);
+      // Generate questions asynchronously (don't await)
+      generateQuestionsForRoomAsync(roomId, topic.trim(), difficulty as DifficultyLevel, questionCount);
+    }
 
   } catch (error: any) {
     console.error('❌ Error creating room:', error);

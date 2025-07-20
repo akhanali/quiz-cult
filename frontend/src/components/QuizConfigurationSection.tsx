@@ -53,7 +53,7 @@ export const QuizConfigurationSection: React.FC<QuizConfigurationSectionProps> =
   const difficultyOptions = [
     {
       value: 'easy',
-      title: t('easy'),
+      title: t('easyTitle'),
       description: t('easyDescription'),
       details: t('easyDetails'),
       examples: t('easyExamples'),
@@ -63,7 +63,7 @@ export const QuizConfigurationSection: React.FC<QuizConfigurationSectionProps> =
     },
     {
       value: 'medium',
-      title: t('medium'),
+      title: t('mediumTitle'),
       description: t('mediumDescription'),
       details: t('mediumDetails'),
       examples: t('mediumExamples'),
@@ -73,7 +73,7 @@ export const QuizConfigurationSection: React.FC<QuizConfigurationSectionProps> =
     },
     {
       value: 'hard',
-      title: t('hard'),
+      title: t('hardTitle'),
       description: t('hardDescription'),
       details: t('hardDetails'),
       examples: t('hardExamples'),
@@ -85,7 +85,7 @@ export const QuizConfigurationSection: React.FC<QuizConfigurationSectionProps> =
 
   const handleGenerateAndCreate = async () => {
     if (!generateQuestionsFromDocument) {
-      setError(t('questionGenerationNotAvailable'));
+      setError(t('Question generation function not available'));
       return;
     }
 
@@ -100,7 +100,7 @@ export const QuizConfigurationSection: React.FC<QuizConfigurationSectionProps> =
       onGenerateAndCreate(questions, { topic: 'Document Content', difficulty, questionCount });
     } catch (error) {
       console.error('Question generation failed:', error);
-      setError(error instanceof Error ? error.message : t('failedToGenerateQuestions'));
+      setError(error instanceof Error ? error.message : t('Failed to generate questions'));
     } finally {
       setIsGenerating(false);
     }
@@ -111,7 +111,7 @@ export const QuizConfigurationSection: React.FC<QuizConfigurationSectionProps> =
       <div className="flex items-center gap-3 mb-4">
         <FaBrain className="text-2xl text-[#10A3A2]" />
         <h3 className="text-xl font-bold text-[#4E342E]">
-          {t('quizConfiguration')}
+          {t('Quiz Configuration')}
         </h3>
       </div>
 
@@ -119,38 +119,38 @@ export const QuizConfigurationSection: React.FC<QuizConfigurationSectionProps> =
         {/* Document Analysis Summary */}
         {document && (
           <div className="bg-[#F7E2C0] rounded-lg p-3 border border-[#4E342E]/10">
-            <h4 className="font-semibold text-[#4E342E] mb-2 flex items-center gap-2">
-              <FaFileAlt className="text-[#8D6E63]" />
-              {t('documentAnalysis')}
-            </h4>
+                          <h4 className="font-semibold text-[#4E342E] mb-2 flex items-center gap-2">
+                <FaFileAlt className="text-[#8D6E63]" />
+                {t('Document Analysis')}
+              </h4>
             <div className="grid grid-cols-2 gap-2 text-sm">
               <div>
-                <span className="text-[#6D4C41]">{t('contentType')}:</span>
+                <span className="text-[#6D4C41]">{t('Content Type:')}</span>
                 <span className="ml-2 font-medium text-[#4E342E] capitalize">{document.contentType}</span>
               </div>
               <div>
-                <span className="text-[#6D4C41]">{t('difficulty')}:</span>
+                <span className="text-[#6D4C41]">{t('Difficulty:')}</span>
                 <span className="ml-2 font-medium text-[#4E342E] capitalize">{document.difficultyLevel}</span>
               </div>
               <div>
-                <span className="text-[#6D4C41]">{t('wordCount')}:</span>
+                <span className="text-[#6D4C41]">{t('Word Count:')}</span>
                 <span className="ml-2 font-medium text-[#4E342E]">{document.wordCount.toLocaleString()}</span>
               </div>
               <div>
-                <span className="text-[#6D4C41]">{t('topicsFound')}:</span>
+                <span className="text-[#6D4C41]">{t('Topics Found:')}</span>
                 <span className="ml-2 font-medium text-[#4E342E]">{document.topics.length}</span>
               </div>
             </div>
             <div className="mt-2 text-xs text-[#6D4C41] flex items-start gap-1">
               <FaQuestionCircle className="text-[#8D6E63] mt-0.5 flex-shrink-0" />
-              <span>{t('documentQuestionGenerationNote')}</span>
+              <span>{t('Questions will be generated from the entire document content, not filtered by specific topics.')}</span>
             </div>
           </div>
         )}
 
         {/* Difficulty Selection */}
         <div>
-          <label className="block text-sm font-medium text-[#4E342E] mb-3 sm:mb-4">{t('difficultyLevel')}</label>
+          <label className="block text-sm font-medium text-[#4E342E] mb-3 sm:mb-4">{t('difficulty')}</label>
           <div className="space-y-3">
             {difficultyOptions.map((option) => (
               <div
@@ -184,7 +184,7 @@ export const QuizConfigurationSection: React.FC<QuizConfigurationSectionProps> =
                     <p className="text-[#4E342E] font-medium mb-1 text-sm sm:text-base">{option.description}</p>
                     <p className="text-[#6D4C41] text-xs sm:text-sm mb-2">{option.details}</p>
                     <p className="text-[#6D4C41]/80 text-xs">
-                      <strong>{t('examples')}:</strong> {option.examples}
+                      <strong>{t('Examples:')}</strong> {option.examples}
                     </p>
                   </div>
                 </div>
@@ -207,7 +207,7 @@ export const QuizConfigurationSection: React.FC<QuizConfigurationSectionProps> =
                      text-base sm:text-lg min-h-[44px] sm:min-h-[48px] bg-[#FDF0DC] text-[#4E342E]"
             disabled={isProcessing || isGenerating}
           />
-          <p className="text-[#6D4C41] text-sm mt-1">{t('chooseBetweenQuestions')}</p>
+          <p className="text-[#6D4C41] text-sm mt-1">{t('Choose between 1-30 questions')}</p>
         </div>
 
         {/* Error Display */}
@@ -227,12 +227,12 @@ export const QuizConfigurationSection: React.FC<QuizConfigurationSectionProps> =
             {isGenerating ? (
               <>
                 <FaCog className="animate-spin" />
-                {t('generatingQuestions')}
+                {t('Generating Questions...')}
               </>
             ) : (
               <>
                 <FaRobot />
-                {t('generateAndCreateRoom')}
+                {t('Generate & Create Room')}
               </>
             )}
           </button>

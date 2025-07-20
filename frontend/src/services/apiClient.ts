@@ -244,6 +244,7 @@ class BackendAPIClient {
     topic: string;
     difficulty: DifficultyLevel;
     questionCount: number;
+    questions?: any[];
   }): Promise<{ roomId: string; playerId: string; aiGenerated: boolean; fallbackReason?: string }> {
     return this.retryRequest(() => 
       this.client.post('/api/rooms', data).then(response => response.data)
