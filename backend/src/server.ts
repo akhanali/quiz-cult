@@ -12,6 +12,7 @@ import { isOpenAIAvailable, testOpenAIConnection, getOpenAIInfo } from './config
 // Import API routes
 import roomsRouter from './routes/rooms';
 import questionsRouter from './routes/questions';
+import documentsRouter from './routes/documents';
 
 /**
  * Quiz Cult Backend Server
@@ -216,6 +217,7 @@ app.get('/status', async (req, res) => {
 // Mount API routes
 app.use('/api/rooms', roomsRouter);
 app.use('/api/questions', questionsRouter);
+app.use('/api/documents', documentsRouter);
 
 // API information endpoint
 app.get('/api', (req, res) => {
