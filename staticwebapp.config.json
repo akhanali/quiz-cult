@@ -6,6 +6,10 @@
       "statusCode": 200
     }
   ],
+  "navigationFallback": {
+    "rewrite": "/index.html",
+    "exclude": ["/images/*", "/css/*", "/js/*", "/api/*", "*.{png,jpg,gif,svg,css,js,ico,woff,woff2,ttf,eot}"]
+  },
   "mimeTypes": {
     ".js": "text/javascript",
     ".mjs": "text/javascript",
@@ -23,7 +27,10 @@
     ".eot": "application/vnd.ms-fontobject"
   },
   "globalHeaders": {
-    "Cache-Control": "no-cache"
+    "Cache-Control": "no-cache",
+    "X-Content-Type-Options": "nosniff",
+    "X-Frame-Options": "DENY",
+    "X-XSS-Protection": "1; mode=block"
   },
   "responseOverrides": {
     "404": {
