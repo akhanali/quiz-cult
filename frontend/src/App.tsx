@@ -1,4 +1,4 @@
-import { Routes, Route, useLocation } from "react-router-dom";
+import { Routes, Route, useLocation, Navigate } from "react-router-dom";
 import HomePage from "./pages/HomePage";
 import CreateRoomPage from "./pages/CreateRoomPage";
 import JoinRoomPage from "./pages/JoinRoomPage";
@@ -57,6 +57,7 @@ function App() {
         <Route path="/lobby/:id" element={<LobbyPage />} />
         <Route path="/quiz/:id" element={<QuizPage />} />
         <Route path="/results/:roomId" element={<ResultsPage />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
       
       {/* Health Monitor - only shows in development mode */}
