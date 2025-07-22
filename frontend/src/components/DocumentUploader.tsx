@@ -17,7 +17,7 @@ export const DocumentUploader: React.FC<DocumentUploaderProps> = ({
   uploadedFile,
   isProcessing,
   supportedTypes = ['pdf', 'docx', 'txt'],
-  maxSize = 50 * 1024 * 1024 // 50MB default
+  maxSize = 10 * 1024 * 1024 // 10MB default
 }) => {
   const { t } = useTranslation();
   const [dragActive, setDragActive] = useState(false);

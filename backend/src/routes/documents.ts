@@ -15,7 +15,7 @@ const documentQuestionService = new DocumentQuestionService();
 const upload = multer({
   storage: multer.memoryStorage(), // Store in memory, not disk
   limits: {
-    fileSize: 50 * 1024 * 1024, // 50MB max
+    fileSize: 10 * 1024 * 1024, // 10MB max
   },
   fileFilter: (req, file, cb) => {
     const allowedTypes = [

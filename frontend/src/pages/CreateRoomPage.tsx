@@ -478,12 +478,8 @@ export default function CreateRoomPage() {
                     {t('Document Processing Limits')}
                   </h3>
                   <div className="text-sm text-[#6D4C41] space-y-1">
-                    <p>• <strong>{t('File Size:')}</strong> {t('Up to 50MB')}</p>
-                    <p>• <strong>{t('Supported Formats:')}</strong> {t('PDF, DOCX, TXT')}</p>
-                    <p>• <strong>{t('Processing Coverage:')}</strong> {t('We analyze up to ~4,000 words from your document')}</p>
-                    <p>• <strong>{t('Large Documents:')}</strong> {t('We analyze the beginning portion')}</p>
-                    <p>• <strong>{t('Small Documents:')}</strong> {t('We process the entire document')}</p>
-                    <p>• <strong>{t('Question Limit:')}</strong> {t('Generate 1-30 questions per quiz')}</p>
+                    <p>• <strong>{t('File Size:')}</strong> {t('Up to 10MB')} • <strong>{t('Formats:')}</strong> {t('PDF, DOCX, TXT')}</p>
+                    <p>• <strong>{t('Processing:')}</strong> {t('Analyzes up to 4,000 words')} • <strong>{t('Questions:')}</strong> {t('1-30 per quiz')}</p>
                   </div>
                 </div>
               </div>
@@ -495,7 +491,7 @@ export default function CreateRoomPage() {
               uploadedFile={uploadedFile}
               isProcessing={isProcessingDocument}
               supportedTypes={['pdf', 'docx', 'txt']}
-              maxSize={50 * 1024 * 1024} // 50MB
+              maxSize={10 * 1024 * 1024} // 10MB
             />
 
             {/* Document Analysis Results */}
