@@ -37,9 +37,11 @@ export const QuizConfigurationSection: React.FC<QuizConfigurationSectionProps> =
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState<string>('');
 
-  // Handle question count input changes
+  // Handle question count input changes - only allow numbers
   const handleQuestionCountChange = (value: string) => {
-    setQuestionCount(Number(value));
+    // Only allow digits (0-9)
+    const numericValue = value.replace(/[^0-9]/g, '');
+    setQuestionCount(Number(numericValue));
   };
 
   // Reset to default when leaving field empty
@@ -167,7 +169,8 @@ export const QuizConfigurationSection: React.FC<QuizConfigurationSectionProps> =
                     type="radio"
                     checked={difficulty === option.value}
                     onChange={() => setDifficulty(option.value as DifficultyLevel)}
-                    className="mt-1 mr-3 w-4 h-4 sm:w-5 sm:h-5 text-[#10A3A2] focus:ring-[#10A3A2]"
+                    className="mt-1 mr-3 w-4 h-4 sm:w-5 sm:h-5 focus:ring-[#10A3A2]"
+                    style={{ accentColor: '#10A3A2' }}
                     disabled={isProcessing || isGenerating}
                   />
                   <div className="flex-1 min-w-0">
@@ -222,7 +225,7 @@ export const QuizConfigurationSection: React.FC<QuizConfigurationSectionProps> =
           <button
             onClick={handleGenerateAndCreate}
             disabled={isProcessing || isGenerating}
-            className="w-full flex items-center justify-center gap-2 bg-[#10A3A2] text-white py-3 px-4 rounded-lg font-medium hover:bg-[#0D8A89] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full flex items-center justify-center gap-2 bg-[#10A3A2] text-white py-3 px-4 rounded-lg font-medium hover:bg-[#0D8A89] transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isGenerating ? (
               <>

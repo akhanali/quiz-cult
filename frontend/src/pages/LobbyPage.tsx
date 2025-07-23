@@ -266,7 +266,7 @@ export default function LobbyPage() {
                 </p>
                 <button
                   onClick={copyRoomCode}
-                  className="bg-[#10A3A2]/20 hover:bg-[#10A3A2]/30 text-[#10A3A2] px-3 sm:px-4 py-2 rounded-lg 
+                  className="bg-[#10A3A2]/20 hover:bg-[#10A3A2]/30 text-[#10A3A2] px-3 sm:px-4 py-2 rounded-lg cursor-pointer
                            transition-colors duration-300 flex items-center space-x-2 mx-auto text-sm sm:text-base border border-[#10A3A2]/30"
                 >
                   {copiedCode ? (
@@ -327,7 +327,7 @@ export default function LobbyPage() {
           <div className="bg-[#F7E2C0] rounded-2xl shadow-lg p-4 sm:p-6 mb-6 sm:mb-8 border border-[#4E342E]/20">
             <button
               onClick={() => setShowGameRules(!showGameRules)}
-              className="w-full flex items-center justify-between p-2 rounded-lg hover:bg-[#F4B46D]/20 transition-colors duration-200"
+              className="w-full flex items-center justify-between p-2 rounded-lg hover:bg-[#F4B46D]/20 transition-colors duration-200 cursor-pointer"
             >
               <div className="flex items-center">
                 <FaTrophy className="text-xl sm:text-2xl text-[#F4B46D] mr-3" />
@@ -463,7 +463,7 @@ export default function LobbyPage() {
                     {isHost && !roomPlayer.isHost && roomPlayer.id !== player?.id && (
                       <button
                         onClick={() => handleKickPlayer(roomPlayer)}
-                        className="bg-red-100 hover:bg-red-200 text-red-600 px-2 sm:px-3 py-1 rounded-lg 
+                        className="bg-red-100 hover:bg-red-200 text-red-600 px-2 sm:px-3 py-1 rounded-lg cursor-pointer
                                  transition-colors duration-300 flex items-center space-x-1 text-xs sm:text-sm border border-red-300"
                         title={`Kick ${roomPlayer.nickname}`}
                       >
@@ -518,7 +518,7 @@ export default function LobbyPage() {
                   <button 
                     onClick={handleStartQuiz}
                     className="bg-[#10A3A2] hover:bg-[#05717B] 
-                             text-white font-bold py-3 sm:py-4 px-6 sm:px-8 rounded-xl transition-all duration-300 
+                             text-white font-bold py-3 sm:py-4 px-6 sm:px-8 rounded-xl transition-all duration-300 cursor-pointer
                              text-base sm:text-xl shadow-lg hover:shadow-xl transform hover:scale-105
                              flex items-center space-x-2 sm:space-x-3 mx-auto min-h-[48px] sm:min-h-[56px]"
                   >

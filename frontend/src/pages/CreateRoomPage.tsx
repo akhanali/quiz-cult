@@ -34,7 +34,7 @@ export default function CreateRoomPage() {
   const [nickname, setNickname] = useState('');
   const [topic, setTopic] = useState('');
   const [difficulty, setDifficulty] = useState<DifficultyLevel>('medium');
-  const [questionCount, setQuestionCount] = useState(10);
+  const [questionCount, setQuestionCount] = useState("10"); // Keep as string
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -52,15 +52,22 @@ export default function CreateRoomPage() {
   const [showQuestionPreview, setShowQuestionPreview] = useState(false);
   const [questionConfig, setQuestionConfig] = useState<any>(null);
 
-  // Handle count input change - allow deletion
+  // Handle count input change - only allow numbers
   const handleCountChange = (value: string) => {
-    setQuestionCount(Number(value));
+    // Only allow digits (0-9)
+    const numericValue = value.replace(/[^0-9]/g, '');
+    setQuestionCount(numericValue);
   };
-
-  // Reset to default when leaving field empty
+  
   const handleCountBlur = () => {
-    if (questionCount === 0) {
-      setQuestionCount(10);
+    // Convert to number on blur
+    const num = Number(questionCount);
+    if (!num || num < 1) {
+      setQuestionCount("10"); // Reset to default
+    } else if (num > 30) {
+      setQuestionCount("30"); // Clamp to max
+    } else {
+      setQuestionCount(String(num)); // Remove leading zeros
     }
   };
 
@@ -255,8 +262,11 @@ export default function CreateRoomPage() {
     //   return;
     // }
     
+    // Convert questionCount string to number for validation
+    const questionCountNum = Number(questionCount);
+    
     // Validate question count
-    if (questionCount < 1 || questionCount > 30) {
+    if (questionCountNum < 1 || questionCountNum > 30) {
       setError(t('Number of questions must be between 1 and 30'));
       return;
     }
@@ -277,7 +287,7 @@ export default function CreateRoomPage() {
           body: JSON.stringify({
             fileId: documentAnalysis.fileId,
             difficulty: customization?.difficulty || difficulty,
-            count: customization?.questionCount || questionCount,
+            count: customization?.questionCount || questionCountNum, // Use number here
             extractedText: documentAnalysis.extractedText,
             questionMode: 'document-only' // Always use document-only mode
           })
@@ -291,7 +301,7 @@ export default function CreateRoomPage() {
             nickname,
             'Document Content', // Use generic topic name for document-based quizzes
             customization?.difficulty || difficulty as DifficultyLevel,
-            customization?.questionCount || questionCount
+            customization?.questionCount || questionCountNum // Use number here
           );
           
           // setGenerationStatus(t('Successfully generated {{count}} questions from document!', { // This state was removed, so this line is removed
@@ -308,10 +318,10 @@ export default function CreateRoomPage() {
         // }));
       
       // Track room creation event
-      trackQuizEvent.roomCreated(topic, difficulty as DifficultyLevel, questionCount);
+      trackQuizEvent.roomCreated(topic, difficulty as DifficultyLevel, questionCountNum); // Use number here
       trackEngagement.buttonClick('create_room', 'create_room_page');
 
-        roomData = await createRoom(nickname, topic, difficulty as DifficultyLevel, questionCount);
+        roomData = await createRoom(nickname, topic, difficulty as DifficultyLevel, questionCountNum); // Use number here
       
       // Show success message with generation result
       if (roomData.aiGenerated) {
@@ -442,7 +452,7 @@ export default function CreateRoomPage() {
                   setShowDocumentSection(false);
                 }
               }}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors"
+              className="flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors cursor-pointer"
               style={{
                 backgroundColor: isDocumentMode ? '#10A3A2' : '#F7E2C0',
                 color: isDocumentMode ? 'white' : '#4E342E',
@@ -612,7 +622,8 @@ export default function CreateRoomPage() {
                       type="radio"
                       checked={difficulty === option.value}
                       onChange={() => setDifficulty(option.value as DifficultyLevel)}
-                      className="mt-1 mr-3 w-4 h-4 sm:w-5 sm:h-5 text-[#10A3A2] focus:ring-[#10A3A2]"
+                      className="mt-1 mr-3 w-4 h-4 sm:w-5 sm:h-5 focus:ring-[#10A3A2]"
+                      style={{ accentColor: '#10A3A2' }}
                       disabled={isLoading}
                     />
                     <div className="flex-1 min-w-0">
@@ -658,7 +669,7 @@ export default function CreateRoomPage() {
           {/* Create Button */}
           <button 
             onClick={handleCreate} 
-            className={`w-full px-4 sm:px-6 py-3 sm:py-4 rounded-lg font-semibold text-base sm:text-lg transition-colors
+            className={`w-full px-4 sm:px-6 py-3 sm:py-4 rounded-lg font-semibold text-base sm:text-lg transition-colors cursor-pointer
                        min-h-[48px] sm:min-h-[56px] ${
               isLoading 
                 ? 'bg-[#6D4C41] cursor-not-allowed' 

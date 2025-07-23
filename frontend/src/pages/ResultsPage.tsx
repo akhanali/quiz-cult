@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import { db } from "../lib/firebase";
 import { get, ref, remove } from "firebase/database";
 import type { Room } from "../../../shared/types";
@@ -20,7 +20,8 @@ import {
   FaPlus,
   FaUserFriends,
   FaLightbulb,
-  FaCheckCircle
+  FaCheckCircle,
+  FaRocket
 } from 'react-icons/fa';
 import { 
   MdCelebration 
@@ -200,28 +201,28 @@ export default function ResultsPage() {
 
                 {/* Readable Statistics Grid (now with dojo colors) */}
                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-4 sm:mb-6">
-                  <div className="bg-white bg-opacity-90 p-2 sm:p-3 rounded-lg border-2 border-[#6D4C41] hover:bg-opacity-100 hover:scale-105 hover:shadow-lg transition-all duration-200 cursor-pointer text-[#4E342E] font-semibold">
+                  <div className="bg-white bg-opacity-90 p-2 sm:p-3 rounded-lg border-2 border-[#6D4C41] hover:bg-opacity-100 hover:scale-105 hover:shadow-lg transition-all duration-200 text-[#4E342E] font-semibold">
                     <div className="flex items-center justify-center space-x-1 mb-1">
                       <FaAward className="text-sm sm:text-base text-[#F6D35B]" />
                       <span className="text-xs sm:text-sm font-semibold">{t('resultsAccuracy')}</span>
                     </div>
                     <div className="text-lg sm:text-xl font-bold">{winner.accuracy}%</div>
                   </div>
-                  <div className="bg-white bg-opacity-90 p-2 sm:p-3 rounded-lg border-2 border-[#6D4C41] hover:bg-opacity-100 hover:scale-105 hover:shadow-lg transition-all duration-200 cursor-pointer text-[#4E342E] font-semibold">
+                  <div className="bg-white bg-opacity-90 p-2 sm:p-3 rounded-lg border-2 border-[#6D4C41] hover:bg-opacity-100 hover:scale-105 hover:shadow-lg transition-all duration-200 text-[#4E342E] font-semibold">
                     <div className="flex items-center justify-center space-x-1 mb-1">
                       <FaClock className="text-sm sm:text-base text-[#F6D35B]" />
                       <span className="text-xs sm:text-sm font-semibold">{t('resultsAvgTime')}</span>
                     </div>
                     <div className="text-lg sm:text-xl font-bold">{winner.avgResponseTime}s</div>
                   </div>
-                  <div className="bg-white bg-opacity-90 p-2 sm:p-3 rounded-lg border-2 border-[#6D4C41] hover:bg-opacity-100 hover:scale-105 hover:shadow-lg transition-all duration-200 cursor-pointer text-[#4E342E] font-semibold">
+                  <div className="bg-white bg-opacity-90 p-2 sm:p-3 rounded-lg border-2 border-[#6D4C41] hover:bg-opacity-100 hover:scale-105 hover:shadow-lg transition-all duration-200 text-[#4E342E] font-semibold">
                     <div className="flex items-center justify-center space-x-1 mb-1">
                       <FaStar className="text-sm sm:text-base text-[#F6D35B]" />
                       <span className="text-xs sm:text-sm font-semibold">{t('resultsCorrect')}</span>
                     </div>
                     <div className="text-lg sm:text-xl font-bold">{winner.correctAnswers}/{winner.totalAnswers}</div>
                   </div>
-                  <div className="bg-white bg-opacity-90 p-2 sm:p-3 rounded-lg border-2 border-[#6D4C41] hover:bg-opacity-100 hover:scale-105 hover:shadow-lg transition-all duration-200 cursor-pointer text-[#4E342E] font-semibold">
+                  <div className="bg-white bg-opacity-90 p-2 sm:p-3 rounded-lg border-2 border-[#6D4C41] hover:bg-opacity-100 hover:scale-105 hover:shadow-lg transition-all duration-200 text-[#4E342E] font-semibold">
                     <div className="flex items-center justify-center space-x-1 mb-1">
                       <FaChartLine className="text-sm sm:text-base text-[#F6D35B]" />
                       <span className="text-xs sm:text-sm font-semibold">{t('resultsPosition')}</span>
@@ -231,7 +232,7 @@ export default function ResultsPage() {
                 </div>
 
                 {/* Readable Performance Highlights (same style, dojo colors) */}
-                <div className="bg-white bg-opacity-90 p-3 sm:p-4 rounded-xl border-2 border-[#6D4C41] hover:bg-opacity-100 hover:scale-[1.02] hover:shadow-lg transition-all duration-200 cursor-pointer text-[#4E342E] font-semibold">
+                <div className="bg-white bg-opacity-90 p-3 sm:p-4 rounded-xl border-2 border-[#6D4C41] hover:bg-opacity-100 hover:scale-[1.02] hover:shadow-lg transition-all duration-200 text-[#4E342E] font-semibold">
                   <div className="flex items-center justify-center space-x-2 mb-2">
                     <IoSparklesSharp className="text-lg sm:text-xl text-[#F6D35B]" />
                     <span className="text-sm sm:text-base font-semibold">{t('resultsPerformanceHighlights')}</span>
@@ -378,25 +379,25 @@ export default function ResultsPage() {
           </div>
 
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-            <div className="bg-white p-3 sm:p-4 rounded-xl text-center border-2 border-[#6D4C41] hover:bg-opacity-100 hover:scale-105 hover:shadow-lg transition-all duration-200 cursor-pointer">
+            <div className="bg-white p-3 sm:p-4 rounded-xl text-center border-2 border-[#6D4C41] hover:bg-opacity-100 hover:scale-105 hover:shadow-lg transition-all duration-200">
               <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-[#4E342E] mb-1">
                 {room.questions.length}
               </div>
               <div className="text-xs sm:text-sm text-[#6D4C41] group-hover:text-[#4E342E] transition-colors duration-300">{t('resultsQuestions')}</div>
             </div>
-            <div className="bg-white p-3 sm:p-4 rounded-xl text-center border-2 border-[#6D4C41] hover:bg-opacity-100 hover:scale-105 hover:shadow-lg transition-all duration-200 cursor-pointer">
+            <div className="bg-white p-3 sm:p-4 rounded-xl text-center border-2 border-[#6D4C41] hover:bg-opacity-100 hover:scale-105 hover:shadow-lg transition-all duration-200">
               <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-[#4E342E] mb-1">
                 {Object.keys(room.players).length}
               </div>
               <div className="text-xs sm:text-sm text-[#6D4C41] group-hover:text-[#4E342E] transition-colors duration-300">{t('Players')}</div>
             </div>
-            <div className="bg-white p-3 sm:p-4 rounded-xl text-center border-2 border-[#6D4C41] hover:bg-opacity-100 hover:scale-105 hover:shadow-lg transition-all duration-200 cursor-pointer">
+            <div className="bg-white p-3 sm:p-4 rounded-xl text-center border-2 border-[#6D4C41] hover:bg-opacity-100 hover:scale-105 hover:shadow-lg transition-all duration-200">
               <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-[#4E342E] mb-1 capitalize">
                 {room.difficulty}
               </div>
               <div className="text-xs sm:text-sm text-[#6D4C41] group-hover:text-[#4E342E] transition-colors duration-300">{t('difficulty')}</div>
             </div>
-            <div className="bg-white p-3 sm:p-4 rounded-xl text-center border-2 border-[#6D4C41] hover:bg-opacity-100 hover:scale-105 hover:shadow-lg transition-all duration-200 cursor-pointer">
+            <div className="bg-white p-3 sm:p-4 rounded-xl text-center border-2 border-[#6D4C41] hover:bg-opacity-100 hover:scale-105 hover:shadow-lg transition-all duration-200">
               <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-[#4E342E] mb-1 ">
                 {Math.round(
                   Object.values(room.players).reduce(
@@ -410,69 +411,9 @@ export default function ResultsPage() {
           </div>
         </div>
 
-        {/* How to Play Again Section */}
-        <div className="bg-[#F7E2C0] rounded-2xl shadow-xl p-4 sm:p-6 mb-6 sm:mb-8 border-2 border-[#4E342E]">
-          <div className="flex items-center justify-center mb-4 sm:mb-6">
-            <FaLightbulb className="text-2xl sm:text-3xl text-[#F4B46D] mr-2 sm:mr-3" />
-            <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-[#4E342E]">{t('How to Play Again')}</h2>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* For Hosts */}
-            <div className="bg-white rounded-xl p-4 shadow-sm border border-[#4E342E]/10">
-              <div className="flex items-center mb-3">
-                <FaCrown className="text-lg text-[#F4B46D] mr-2" />
-                <h3 className="font-semibold text-[#4E342E]">{t('Create New Room')}</h3>
-              </div>
-              <div className="space-y-2 text-sm text-[#6D4C41]">
-                <p>• {t('Choose a new topic and difficulty')}</p>
-                <p>• {t('Generate fresh AI questions')}</p>
-                <p>• {t('Invite friends with the new room code')}</p>
-                <p>• {t('Start a completely new quiz experience')}</p>
-              </div>
-            </div>
-
-            {/* For Players */}
-            <div className="bg-white rounded-xl p-4 shadow-sm border border-[#4E342E]/10">
-              <div className="flex items-center mb-3">
-                <FaUserFriends className="text-lg text-[#10A3A2] mr-2" />
-                <h3 className="font-semibold text-[#4E342E]">{t('Join Another Room')}</h3>
-              </div>
-              <div className="space-y-2 text-sm text-[#6D4C41]">
-                <p>• {t('Get a room code from a friend')}</p>
-                <p>• {t('Join with your preferred nickname')}</p>
-                <p>• {t('Compete in a different quiz')}</p>
-                <p>• {t('Try to improve your performance')}</p>
-              </div>
-            </div>
-          </div>
-
-          {/* Performance Tips */}
-          <div className="mt-6 bg-white rounded-xl p-4 shadow-sm border border-[#4E342E]/10">
-            <div className="flex items-center mb-3">
-              <FaTrophy className="text-lg text-[#F6D35B] mr-2" />
-              <h3 className="font-semibold text-[#4E342E]">{t('Performance Tips')}</h3>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-[#6D4C41]">
-              <div className="flex items-start">
-                <FaClock className="text-[#10A3A2] mr-2 mt-0.5 text-xs" />
-                <span>{t('Answer quickly for higher scores - speed matters!')}</span>
-              </div>
-              <div className="flex items-start">
-                <FaCheckCircle className="text-[#10A3A2] mr-2 mt-0.5 text-xs" />
-                <span>{t('Focus on accuracy first, then work on speed')}</span>
-              </div>
-              <div className="flex items-start">
-                <FaLightbulb className="text-[#F4B46D] mr-2 mt-0.5 text-xs" />
-                <span>{t('Choose topics you\'re familiar with to start')}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
         {/* Action Buttons */}
         <div className="text-center space-y-3 sm:space-y-4">
-          <div className="flex justify-center">
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
             <button
               onClick={handleBackToHome}
               disabled={isLeaving}
@@ -496,6 +437,17 @@ export default function ResultsPage() {
                 </>
               )}
             </button>
+            
+            <Link
+              to="/create-room"
+              className="w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 rounded-xl font-semibold text-base sm:text-lg 
+                       transition-all duration-300 flex items-center justify-center space-x-2 sm:space-x-3 
+                       shadow-lg hover:shadow-xl transform hover:scale-105 min-h-[48px] sm:min-h-[56px]
+                       bg-[#F4B46D] text-[#4E342E] hover:bg-[#F6D35B] cursor-pointer"
+            >
+              <FaRocket className="text-lg sm:text-xl" />
+              <span>{t('New Quiz')}</span>
+            </Link>
           </div>
 
           <p className="text-xs sm:text-sm text-[#6D4C41] px-4">

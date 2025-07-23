@@ -146,7 +146,7 @@ export default function JoinRoomPage() {
               <button 
                 onClick={handleJoin} 
                 disabled={isLoading || !roomCode.trim() || !nickname.trim()}
-                className={`w-full px-4 sm:px-6 py-3 sm:py-4 rounded-xl font-semibold text-base sm:text-lg transition-all duration-300 
+                className={`w-full px-4 sm:px-6 py-3 sm:py-4 rounded-xl font-semibold text-base sm:text-lg transition-all duration-300 cursor-pointer
                           flex items-center justify-center space-x-2 sm:space-x-3 shadow-lg hover:shadow-xl
                           transform hover:scale-105 min-h-[48px] sm:min-h-[56px] ${
                   isLoading || !roomCode.trim() || !nickname.trim()

@@ -482,7 +482,7 @@ export default function QuizPage() {
               <div className="flex justify-center mb-6">
                 <button 
                   onClick={endCurrentQuestion}
-                  className="bg-gradient-to-r from-red-600 to-orange-600 text-white px-6 py-3 rounded-xl 
+                  className="bg-gradient-to-r from-red-600 to-orange-600 text-white px-6 py-3 rounded-xl cursor-pointer
                            hover:from-red-700 hover:to-orange-700 transition-all duration-300 
                            flex items-center justify-center space-x-2 shadow-lg hover:shadow-xl
                            transform hover:scale-105 font-semibold"
@@ -557,7 +557,7 @@ export default function QuizPage() {
                   <div className="flex flex-col sm:flex-row gap-4 justify-center">
                     <button 
                       onClick={showScoreboard}
-                      className="bg-gradient-to-r from-amber-600 to-orange-600 text-white px-6 py-3 rounded-xl 
+                      className="bg-gradient-to-r from-amber-600 to-orange-600 text-white px-6 py-3 rounded-xl cursor-pointer
                                hover:from-amber-700 hover:to-orange-700 transition-all duration-300 
                                flex items-center justify-center space-x-2 shadow-lg hover:shadow-xl
                                transform hover:scale-105 font-semibold"
@@ -567,8 +567,8 @@ export default function QuizPage() {
                     </button>
                     <button 
                       onClick={nextQuestion}
-                      className="bg-gradient-to-r from-teal-600 to-amber-600 text-white px-6 py-3 rounded-xl 
-                               hover:from-teal-700 hover:to-amber-700 transition-all duration-300 
+                      className="bg-[#10A3A2] hover:bg-[#05717B] text-white px-6 py-3 rounded-xl cursor-pointer
+                               transition-all duration-300 
                                flex items-center justify-center space-x-2 shadow-lg hover:shadow-xl
                                transform hover:scale-105 font-semibold"
                     >
