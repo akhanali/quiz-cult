@@ -557,7 +557,7 @@ export default function CreateRoomPage() {
                     value={nickname}
                     onChange={(e) => setNickname(e.target.value)}
                     placeholder={t('Enter your nickname')}
-                    className="w-full px-3 py-2 border border-[#4E342E]/30 rounded-lg focus:ring-2 focus:ring-[#10A3A2] focus:border-transparent bg-[#FDF0DC] text-[#4E342E] placeholder-[#6D4C41]/60"
+                    className="w-full border-2 border-[#4E342E]/30 rounded-lg px-3 sm:px-4 py-2 sm:py-3 focus:ring-2 focus:ring-[#10A3A2] focus:border-[#10A3A2] bg-[#FDF0DC] text-[#4E342E] placeholder-[#6D4C41]/60"
                   />
                 </div>
                 
@@ -583,7 +583,7 @@ export default function CreateRoomPage() {
                 value={nickname}
                 onChange={(e) => setNickname(e.target.value)}
                 placeholder={t('Enter your nickname')}
-                className="w-full border border-[#4E342E]/30 rounded-lg px-3 sm:px-4 py-2 sm:py-3 focus:ring-2 focus:ring-[#10A3A2] focus:border-[#10A3A2]
+                className="w-full border-2 border-[#4E342E]/30 rounded-lg px-3 sm:px-4 py-2 sm:py-3 focus:ring-2 focus:ring-[#10A3A2] focus:border-[#10A3A2]
                          text-base sm:text-lg min-h-[44px] sm:min-h-[48px] bg-[#FDF0DC] text-[#4E342E] placeholder-[#6D4C41]/60"
                 disabled={isLoading}
               />
@@ -659,7 +659,7 @@ export default function CreateRoomPage() {
               onBlur={handleCountBlur}
               min={1}
               max={30}
-              className="w-full border border-[#4E342E]/30 rounded-lg px-3 sm:px-4 py-2 sm:py-3 focus:ring-2 focus:ring-[#10A3A2] focus:border-[#10A3A2]
+              className="w-full border-2 border-[#4E342E]/30 rounded-lg px-3 sm:px-4 py-2 sm:py-3 focus:ring-2 focus:ring-[#10A3A2] focus:border-[#10A3A2]
                        text-base sm:text-lg min-h-[44px] sm:min-h-[48px] bg-[#FDF0DC] text-[#4E342E]"
               disabled={isLoading}
             />

@@ -103,11 +103,11 @@ export default function JoinRoomPage() {
                 </label>
                 <input
                   type="text"
-                  placeholder={t('Enter 6-digit room code')}
+                  placeholder={t('Enter room code')}
                   value={roomCode}
                   onChange={e => setRoomCode(e.target.value.toUpperCase())}
                   onKeyPress={handleKeyPress}
-                  className="w-full px-3 sm:px-4 py-3 sm:py-4 border-2 border-[#4E342E]/30 rounded-xl focus:border-[#10A3A2] 
+                  className="w-full px-3 sm:px-4 py-3 sm:py-4 border-2 border-[#4E342E]/50 rounded-xl focus:border-[#10A3A2] 
                            focus:ring-2 focus:ring-[#10A3A2]/20 outline-none transition-all duration-300
                            text-center text-base sm:text-lg font-mono tracking-widest placeholder-[#6D4C41]/60
                            min-h-[48px] sm:min-h-[56px] bg-[#FDF0DC] text-[#4E342E]"
@@ -131,7 +131,7 @@ export default function JoinRoomPage() {
                   value={nickname}
                   onChange={e => setNickname(e.target.value)}
                   onKeyPress={handleKeyPress}
-                  className="w-full px-3 sm:px-4 py-3 sm:py-4 border-2 border-[#4E342E]/30 rounded-xl focus:border-[#10A3A2] 
+                  className="w-full px-3 sm:px-4 py-3 sm:py-4 border-2 border-[#4E342E]/50 rounded-xl focus:border-[#10A3A2] 
                            focus:ring-2 focus:ring-[#10A3A2]/20 outline-none transition-all duration-300
                            placeholder-[#6D4C41]/60 text-base sm:text-lg min-h-[48px] sm:min-h-[56px] bg-[#FDF0DC] text-[#4E342E]"
                   disabled={isLoading}
