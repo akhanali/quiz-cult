@@ -33,7 +33,7 @@ export const QuizConfigurationSection: React.FC<QuizConfigurationSectionProps> =
 }) => {
   const { t } = useTranslation();
   const [difficulty, setDifficulty] = useState<DifficultyLevel>('medium');
-  const [questionCount, setQuestionCount] = useState(10);
+  const [questionCount, setQuestionCount] = useState("10");
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState<string>('');
 
@@ -41,13 +41,19 @@ export const QuizConfigurationSection: React.FC<QuizConfigurationSectionProps> =
   const handleQuestionCountChange = (value: string) => {
     // Only allow digits (0-9)
     const numericValue = value.replace(/[^0-9]/g, '');
-    setQuestionCount(Number(numericValue));
+    setQuestionCount(numericValue);
   };
 
   // Reset to default when leaving field empty
   const handleQuestionCountBlur = () => {
-    if (questionCount === 0) {
-      setQuestionCount(10);
+    // Convert to number on blur
+    const num = Number(questionCount);
+    if (!num || num < 1) {
+      setQuestionCount("10"); // Reset to default
+    } else if (num > 30) {
+      setQuestionCount("30"); // Clamp to max
+    } else {
+      setQuestionCount(String(num)); // Remove leading zeros
     }
   };
 
@@ -97,9 +103,9 @@ export const QuizConfigurationSection: React.FC<QuizConfigurationSectionProps> =
     try {
       const questions = await generateQuestionsFromDocument(
         difficulty,
-        questionCount
+        Number(questionCount)
       );
-      onGenerateAndCreate(questions, { topic: 'Document Content', difficulty, questionCount });
+      onGenerateAndCreate(questions, { topic: 'Document Content', difficulty, questionCount: Number(questionCount) });
     } catch (error) {
       console.error('Question generation failed:', error);
       setError(error instanceof Error ? error.message : t('Failed to generate questions'));
@@ -206,7 +212,7 @@ export const QuizConfigurationSection: React.FC<QuizConfigurationSectionProps> =
             onBlur={handleQuestionCountBlur}
             min={1}
             max={30}
-            className="w-full border border-[#4E342E]/30 rounded-lg px-3 sm:px-4 py-2 sm:py-3 focus:ring-2 focus:ring-[#10A3A2] focus:border-[#10A3A2]
+            className="w-full border-2 border-[#4E342E]/30 rounded-lg px-3 sm:px-4 py-2 sm:py-3 focus:ring-2 focus:ring-[#10A3A2] focus:border-[#10A3A2]
                      text-base sm:text-lg min-h-[44px] sm:min-h-[48px] bg-[#FDF0DC] text-[#4E342E]"
             disabled={isProcessing || isGenerating}
           />
